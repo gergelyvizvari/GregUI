@@ -2274,13 +2274,22 @@ body {
 .g-app-shell[data-appearance='dashboard'] > .g-sidebar {
   width: 240px;
   background: var(--g-surface);
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  padding-block: 1rem;
+  gap: 1rem;
+}
+.g-app-shell[data-appearance='dashboard'] > .g-sidebar > * {
+  flex-shrink: 0;
 }
 .g-app-shell[data-appearance='dashboard'] .g-toolbar {
   background: var(--g-surface);
 }
 .g-app-shell[data-appearance='dashboard'] .g-nav-item {
-  font-size: 0.95rem;
-  padding: 1rem;
+  font-size: 0.875rem;
+  padding: var(--g-control-padding-y) 0.75rem;
 }
 .g-app-shell[data-appearance='dashboard'] .g-nav-item[aria-current='page'] {
   background: var(--g-background);

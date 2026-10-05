@@ -101,3 +101,9 @@ Added opt-in AppShell editorial/dashboard appearances, brandMark, FeaturePanel, 
 ### City Pulse follow-up
 
 Added immersive FeaturePanel, EditorialLead, SignalCard, ChipLink and AccentLink with explicit hex/4.5:1 action-palette validation. 82 unit/interaction/SSR tests, workspace types/style boundary, all builds and formatting passed. Two targeted Chromium supporting-page axe and 320px/reduced-motion tests passed. New CityLink homepage axe/reflow assertions passed at 1280px and 390px. Manual visual acceptance remains unverified due to the host browser access restriction. No new Firefox/WebKit claims.
+
+## 2026-10-05 — Dashboard sidebar overflow and density
+
+Dashboard sidebars now stay within 100dvh and scroll independently, including wheel containment. Dashboard navigation uses density padding and retains 44px minimum targets. No public API change. CityLink consumes the built package through a new local tarball; no package was published.
+
+Verification: npm run check passed (82 tests, type/style checks, package/workbench/consumer builds). Chromium workbench default-view accessibility and five-preset light/dark checks passed (2 tests). CityLink's HU/EN regression covers a 1366×600 viewport, reaching and activating bottom navigation by keyboard without moving the document, control alignment, and 390px reflow; broader admin tests cover mobile drawer Escape/focus and axe. A live local CityLink admin was visually inspected. This is not cross-browser certification or manual screen-reader acceptance.
