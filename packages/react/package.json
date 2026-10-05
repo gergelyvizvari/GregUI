@@ -1,0 +1,36 @@
+{
+  "name": "@gregui/react",
+  "version": "0.1.0",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "build": "tsup src/index.tsx --format esm --dts --clean --target es2020 && cp src/styles.css dist/styles.css"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@gregui/tokens": "0.1.0",
+    "@gregui/localization": "0.1.0",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@radix-ui/react-alert-dialog": "^1.1.0",
+    "@radix-ui/react-tabs": "^1.1.0",
+    "@radix-ui/react-tooltip": "^1.2.0",
+    "@radix-ui/react-popover": "^1.1.0"
+  }
+}

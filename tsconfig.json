@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@gregui/tokens": ["packages/tokens/src/index.ts"],
+      "@gregui/localization": ["packages/localization/src/index.tsx"],
+      "@gregui/react": ["packages/react/src/index.tsx"]
+    }
+  },
+  "include": ["packages", "apps", "examples", "tests", "*.ts"]
+}
