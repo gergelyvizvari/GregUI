@@ -30,3 +30,28 @@ it('creates, moves, resizes and clears a region using the keyboard', () => {
   fireEvent.keyDown(editor, { key: 'Delete' });
   expect(screen.getByRole('status')).toHaveTextContent('null');
 });
+
+it('keeps annotation geometry when compact is requested on an editable image', () => {
+  const { rerender } = render(<ImageRegion src="test.png" alt="Preview" compact />);
+  expect(screen.getByRole('img', { name: 'Preview' }).closest('figure')).toHaveAttribute(
+    'data-compact',
+    'true',
+  );
+  rerender(<ImageRegion src="test.png" alt="Preview" compact onChange={() => {}} />);
+  expect(screen.getByRole('img', { name: 'Preview' }).closest('figure')).toHaveAttribute(
+    'data-compact',
+    'false',
+  );
+  rerender(
+    <ImageRegion
+      src="test.png"
+      alt="Preview"
+      compact
+      value={{ x: 0, y: 0, width: 50, height: 50 }}
+    />,
+  );
+  expect(screen.getByRole('img', { name: 'Preview' }).closest('figure')).toHaveAttribute(
+    'data-compact',
+    'false',
+  );
+});

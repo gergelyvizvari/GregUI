@@ -7,7 +7,9 @@ async function navigate(page: Page, name: string) {
 }
 test('default view is accessible and fits narrow screens', async ({ page }, testInfo) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Five styles. One foundation.' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Five directions. One foundation.' }),
+  ).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
@@ -18,11 +20,11 @@ test('default view is accessible and fits narrow screens', async ({ page }, test
     fullPage: true,
   });
 });
-test('five presets and dark mode preserve accessible rendered content', async ({
+test('featured presets and dark mode preserve accessible rendered content', async ({
   page,
 }, testInfo) => {
   await page.goto('/');
-  for (const name of ['Flat', 'Glass', 'Soft', 'Elevated', 'Outline']) {
+  for (const name of ['Workspace', 'Bloom', 'Clay', 'Neumorphic', 'Glass']) {
     await page.getByRole('button', { name: new RegExp(`^${name} `) }).click();
     for (const dark of [false, true]) {
       await page.getByRole('switch', { name: 'Dark mode' }).setChecked(dark);
@@ -274,7 +276,22 @@ test('editorial authentication inherits every material in light and dark', async
   page,
 }, testInfo) => {
   await page.goto('/');
-  for (const preset of ['Flat', 'Glass', 'Soft', 'Elevated', 'Outline']) {
+  for (const preset of [
+    'Flat',
+    'Glass',
+    'Soft',
+    'Elevated',
+    'Outline',
+    'Editorial',
+    'Porcelain',
+    'Aurora',
+    'Studio',
+    'Canvas',
+    'Joyful',
+    'Professional',
+    'Clay',
+    'Neumorphic',
+  ]) {
     for (const dark of [false, true]) {
       await navigate(page, 'Overview');
       await page.getByRole('button', { name: new RegExp(`^${preset} `) }).click();
@@ -363,7 +380,22 @@ test('onboarding validates, retains fields, retries saves and completes', async 
 
 test('new workflow components support every material and paginated content', async ({ page }) => {
   await page.goto('/');
-  for (const preset of ['Flat', 'Glass', 'Soft', 'Elevated', 'Outline']) {
+  for (const preset of [
+    'Flat',
+    'Glass',
+    'Soft',
+    'Elevated',
+    'Outline',
+    'Editorial',
+    'Porcelain',
+    'Aurora',
+    'Studio',
+    'Canvas',
+    'Joyful',
+    'Professional',
+    'Clay',
+    'Neumorphic',
+  ]) {
     for (const dark of [false, true]) {
       await navigate(page, 'Overview');
       await page.getByRole('button', { name: new RegExp(`^${preset} `) }).click();
@@ -506,7 +538,22 @@ test('expanded catalog retains contrast across all materials and modes', async (
   );
   test.setTimeout(120000);
   await page.goto('/');
-  for (const preset of ['Flat', 'Glass', 'Soft', 'Elevated', 'Outline']) {
+  for (const preset of [
+    'Flat',
+    'Glass',
+    'Soft',
+    'Elevated',
+    'Outline',
+    'Editorial',
+    'Porcelain',
+    'Aurora',
+    'Studio',
+    'Canvas',
+    'Joyful',
+    'Professional',
+    'Clay',
+    'Neumorphic',
+  ]) {
     for (const dark of [false, true]) {
       await navigate(page, 'Overview');
       await page.getByRole('button', { name: new RegExp(`^${preset} `) }).click();
@@ -531,7 +578,22 @@ test('pricing makes current and recommended plans distinct in every theme', asyn
 }, testInfo) => {
   test.setTimeout(90000);
   await page.goto('/');
-  for (const preset of ['Flat', 'Glass', 'Soft', 'Elevated', 'Outline']) {
+  for (const preset of [
+    'Flat',
+    'Glass',
+    'Soft',
+    'Elevated',
+    'Outline',
+    'Editorial',
+    'Porcelain',
+    'Aurora',
+    'Studio',
+    'Canvas',
+    'Joyful',
+    'Professional',
+    'Clay',
+    'Neumorphic',
+  ]) {
     for (const dark of [false, true]) {
       await navigate(page, 'Overview');
       await page.getByRole('button', { name: new RegExp(`^${preset} `) }).click();

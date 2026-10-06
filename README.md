@@ -1,6 +1,6 @@
 # gregUI
 
-A reusable React UI foundation with five visual presets, typed design tokens, localization, accessible interaction primitives and a theme workbench. Built for the owner's future applications.
+A reusable React UI foundation with six featured visual directions and backwards-compatible legacy presets, typed design tokens, localization, accessible interaction primitives and a theme workbench. Built for the owner's future applications.
 
 ## Run locally
 
@@ -81,7 +81,7 @@ Apps own domain content, state, routing, validation rules and data processing. g
 
 ## Current scope and limits
 
-This is the first working foundation, not a production certification. The initial catalog includes buttons/links, labeled fields, select/textarea, checkbox/radio/switch, layouts, dialogs/drawers/full-screen flows, confirmation, tooltip/popover, tabs/navigation, alerts/status/progress/skeletons, tables and empty states. Five presets work in light/dark modes. Glass uses decorative effects with opaque content surfaces so readability does not depend on an unknown backdrop.
+This is the first working foundation, not a production certification. The initial catalog includes buttons/links, labeled fields, select/textarea, checkbox/radio/switch, layouts, dialogs/drawers/full-screen flows, confirmation, tooltip/popover, tabs/navigation, alerts/status/progress/skeletons, tables and empty states. Fourteen presets work in light/dark modes. Glass uses decorative effects with opaque content surfaces so readability does not depend on an unknown backdrop.
 
 Date pickers, comboboxes, advanced tables, charts, upload orchestration, consent integrations and native mobile components remain future additions. Apps must complete their own accessibility, privacy and sector-specific checks. The 24-month browser policy is documented; historical devices and manual assistive-technology testing remain unverified.
 
@@ -89,8 +89,10 @@ See [component contracts](docs/COMPONENTS.md), [compatibility and verification](
 
 ### Palette choices
 
-Every style supports Forest, Plum, Clay, Cobalt and Ink & cream: 25 combinations with light/dark counterparts. Use the workbench's Palette selector, or `createTheme('soft', 'light', 'cobalt')`. `applyPalette(theme, 'forest')` replaces only colours; `getPalette(theme)` identifies a matching built-in palette or returns undefined for custom colours. `paletteOptions` provides IDs and display names for consumers. Stored theme JSON remains version 1, and palette recognition survives import, save/restore and Undo.
+Every style supports Forest, Plum, Clay, Cobalt, Ink & cream, Ocean, Rose and Amber: 112 combinations with light/dark counterparts. Use the workbench's Palette selector, or `createTheme('soft', 'light', 'cobalt')`. `applyPalette(theme, 'forest')` replaces only colours; `getPalette(theme)` identifies a matching built-in palette or returns undefined for custom colours. `paletteOptions` provides IDs and display names for consumers. Stored theme JSON remains version 1, and palette recognition survives import, save/restore and Undo.
 
 ### Ready-made authentication
 
 Open **Authentication** in the workbench to try sign-in, registration, recovery, password reset, email verification and two-step verification. Shared forms include password visibility, remember preference, pending/error/success states and translation hooks. See [integration examples](docs/AUTHENTICATION.md). The demo performs no network authentication or credential storage.
+
+Featured choices are Workspace, Bloom, Clay, Neumorphic and Glass. `featuredPresets` drives new theme pickers; `presets` retains all saved-theme IDs for compatibility. Selecting a complete direction can load `recommendedPalettes[preset]`; users may then customize colours independently.

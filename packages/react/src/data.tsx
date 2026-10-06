@@ -163,6 +163,7 @@ export interface DataColumn<T> {
   value: (row: T) => string | number;
   render?: (row: T) => ReactNode;
   sortable?: boolean;
+  width?: 'compact';
 }
 export function DataTable<T>({
   caption,
@@ -171,6 +172,7 @@ export function DataTable<T>({
   rowId,
   pageSize = 5,
   selectedIds,
+  activeRowId,
   onSelectionChange,
   emptyLabel,
 }: {
@@ -180,6 +182,7 @@ export function DataTable<T>({
   rowId: (row: T) => string;
   pageSize?: number;
   selectedIds?: string[];
+  activeRowId?: string;
   onSelectionChange?: (ids: string[]) => void;
   emptyLabel?: string;
 }) {
@@ -214,6 +217,7 @@ export function DataTable<T>({
               {columns.map((c) => (
                 <th
                   key={c.key}
+                  data-width={c.width}
                   scope="col"
                   aria-sort={
                     sort?.key === c.key
@@ -251,7 +255,11 @@ export function DataTable<T>({
           </thead>
           <tbody>
             {shown.map((row) => (
-              <tr key={rowId(row)} data-selected={selectedIds?.includes(rowId(row)) ?? false}>
+              <tr
+                key={rowId(row)}
+                data-active={activeRowId === rowId(row) || undefined}
+                data-selected={selectedIds?.includes(rowId(row)) ?? false}
+              >
                 {onSelectionChange && (
                   <td>
                     <Checkbox
@@ -270,11 +278,13 @@ export function DataTable<T>({
                 )}
                 {columns.map((c, i) =>
                   i === 0 ? (
-                    <th scope="row" key={c.key}>
+                    <th scope="row" key={c.key} data-width={c.width}>
                       {c.render?.(row) ?? c.value(row)}
                     </th>
                   ) : (
-                    <td key={c.key}>{c.render?.(row) ?? c.value(row)}</td>
+                    <td key={c.key} data-width={c.width}>
+                      {c.render?.(row) ?? c.value(row)}
+                    </td>
                   ),
                 )}
               </tr>

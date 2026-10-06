@@ -106,7 +106,7 @@ export function Grid({
   gap = 4,
   children,
   ...props
-}: DivProps & { columns?: 1 | 2 | 3 | 4 | 5; gap?: Space }) {
+}: DivProps & { columns?: 1 | 2 | 3 | 4 | 5 | 'auto'; gap?: Space }) {
   return (
     <div {...props} className="g-grid" data-columns={columns} style={{ gap: spacing[gap] }}>
       {children}
@@ -132,10 +132,23 @@ export function Container({
     </div>
   );
 }
-export function Card({ children, padding = 5, ...props }: DivProps & { padding?: Space }) {
+export function Card({
+  children,
+  padding = 5,
+  footer,
+  ...props
+}: DivProps & { padding?: Space; footer?: ReactNode }) {
   return (
-    <div {...props} className="g-card" style={{ padding: spacing[padding] }}>
+    <div
+      {...props}
+      className="g-card"
+      data-footer={footer != null || undefined}
+      style={{
+        padding: padding === 0 ? 0 : `max(${spacing[padding]}, var(--g-card-min-padding, 0px))`,
+      }}
+    >
       {children}
+      {footer != null && <div className="g-card-footer">{footer}</div>}
     </div>
   );
 }
@@ -262,9 +275,9 @@ export const Button = forwardRef<
 export const IconButton = forwardRef<
   HTMLButtonElement,
   Omit<React.ComponentProps<typeof Button>, 'children'> & { label: string; children: ReactNode }
->(function IconButton({ label, children, ...props }, ref) {
+>(function IconButton({ label, title = label, children, ...props }, ref) {
   return (
-    <Button {...props} ref={ref} aria-label={label}>
+    <Button {...props} ref={ref} aria-label={label} title={title} data-icon-only>
       {children}
     </Button>
   );
@@ -282,12 +295,20 @@ export function Code({ children }: { children: ReactNode }) {
 export function CodeBlock({
   children,
   label = 'Code example',
+  wrap = false,
 }: {
   children: string;
   label?: string;
+  wrap?: boolean;
 }) {
   return (
-    <pre className="g-code-block" tabIndex={0} role="region" aria-label={label}>
+    <pre
+      className="g-code-block"
+      data-wrap={wrap || undefined}
+      tabIndex={0}
+      role="region"
+      aria-label={label}
+    >
       <code>{children}</code>
     </pre>
   );
@@ -310,7 +331,9 @@ export type IconName =
   | 'code'
   | 'external'
   | 'chevron'
-  | 'plus';
+  | 'plus'
+  | 'edit'
+  | 'save';
 const paths: Record<IconName, ReactNode> = {
   grid: (
     <>
@@ -363,6 +386,18 @@ const paths: Record<IconName, ReactNode> = {
   external: <path d="M14 3h7v7m0-7-11 11M10 3H3v18h18v-7" />,
   chevron: <path d="m8 4 8 8-8 8" />,
   plus: <path d="M12 4v16M4 12h16" />,
+  edit: (
+    <>
+      <path d="m16 3 5 5-12 12-6 1 1-6Z" />
+      <path d="m14 5 5 5" />
+    </>
+  ),
+  save: (
+    <>
+      <path d="M5 3h12l4 4v14H3V3Z" />
+      <path d="M7 3v6h10V3M7 21v-8h10v8" />
+    </>
+  ),
 };
 export function Icon({ name }: { name: IconName }) {
   return (
@@ -755,6 +790,7 @@ export function Tabs({
   );
 }
 interface OverlayProps {
+  size?: 'medium' | 'large';
   trigger: ReactNode;
   title: string;
   description: string;
@@ -772,6 +808,7 @@ function Overlay({
   open,
   onOpenChange,
   presentation = 'dialog',
+  size = 'medium',
 }: OverlayProps & { presentation?: 'dialog' | 'drawer' | 'fullscreen' }) {
   const { messages } = useLocale();
   return (
@@ -780,7 +817,11 @@ function Overlay({
       <DialogPrimitive.Portal>
         <PortalFrame>
           <DialogPrimitive.Overlay className="g-backdrop" />
-          <DialogPrimitive.Content className="g-dialog" data-presentation={presentation}>
+          <DialogPrimitive.Content
+            className="g-dialog"
+            data-presentation={presentation}
+            data-size={size}
+          >
             <div className="g-dialog-header">
               <Stack gap={2}>
                 <DialogPrimitive.Title className="g-dialog-title">{title}</DialogPrimitive.Title>
@@ -1080,6 +1121,7 @@ export function PresetOption({
   onClick,
   preset,
   mode = 'light',
+  palette,
 }: {
   name: string;
   description: string;
@@ -1087,8 +1129,9 @@ export function PresetOption({
   onClick: () => void;
   preset: Theme['preset'];
   mode?: Theme['mode'];
+  palette?: import('@gregui/tokens').Palette;
 }) {
-  const sample = createTheme(preset, mode);
+  const sample = createTheme(preset, mode, palette);
   return (
     <button className="g-preset-option" aria-pressed={selected} onClick={onClick} type="button">
       <span
@@ -1098,18 +1141,37 @@ export function PresetOption({
         style={themeVariables(sample) as CSSProperties}
         aria-hidden="true"
       >
-        <span className="g-mini-card">
-          <span className="g-mini-heading">
-            Studio / 01
-            <span className="g-mini-dot" />
+        <span className="g-mini-app">
+          <span className="g-mini-rail">
+            <span />
+            <span />
+            <span />
+            <span />
           </span>
-          <span className="g-mini-input">
-            Your workspace
-            <Icon name="chevron" />
-          </span>
-          <span className="g-mini-footer">
-            <span className="g-mini-toggle" />
-            <span className="g-mini-button">Continue ↗</span>
+          <span className="g-mini-card">
+            <span className="g-mini-heading">
+              Your day <span className="g-mini-dot" />
+            </span>
+            <span className="g-mini-metrics">
+              <span>
+                24<small>Ready</small>
+              </span>
+              <span>
+                8<small>In review</small>
+              </span>
+              <span>
+                96%<small>Complete</small>
+              </span>
+            </span>
+            <span className="g-mini-input">
+              Search workspace <Icon name="chevron" />
+            </span>
+            <span className="g-mini-footer">
+              <span className="g-mini-toggle" />
+              <span className="g-mini-button">
+                Let's go <Icon name="chevron" />
+              </span>
+            </span>
           </span>
         </span>
       </span>
@@ -1160,13 +1222,21 @@ export function Swatch({ label, color }: { label: string; color: string }) {
     </div>
   );
 }
-export function Metric({ value, label }: { value: string; label: string }) {
+export function Metric({
+  value,
+  label,
+  compact = false,
+}: {
+  value: string;
+  label: string;
+  compact?: boolean;
+}) {
   return (
-    <div className="g-metric">
+    <div className="g-metric" data-compact={compact || undefined}>
       <Text size="eyebrow" tone="muted">
         {label}
       </Text>
-      <Heading level={3} size="page">
+      <Heading level={3} size={compact ? 'card' : 'page'}>
         {value}
       </Heading>
     </div>
@@ -1306,3 +1376,11 @@ export function ChipLink({
     </a>
   );
 }
+
+export { FieldEditorItem, TagInput } from './field-editor';
+
+export { HighlightedTextarea } from './highlighted-textarea';
+
+export { ThemeSelector, type ThemeSelection } from './theme-selector';
+
+export { ThumbnailChoice } from './thumbnail-choice';

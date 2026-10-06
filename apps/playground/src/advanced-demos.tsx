@@ -1,6 +1,17 @@
 import { useState, type ReactNode } from 'react';
 import {
   ActionMenu,
+  ThemeSelector,
+  ThemeProvider,
+  createTheme,
+  type ThemeSelection,
+  FieldEditorItem,
+  TagInput,
+  ThumbnailChoice,
+  HighlightedTextarea,
+  TextField,
+  Select,
+  Field,
   Alert,
   ApprovalPanel,
   Badge,
@@ -77,6 +88,30 @@ export function useAdvancedExamples(): CatalogEntry[] {
   const [region, setRegion] = useState<ImageRegionValue | null>(null);
   const [selected, setSelected] = useState('');
   const [choice, setChoice] = useState('uk');
+  const [fieldOpen, setFieldOpen] = useState(true);
+  const [instructions, setInstructions] = useState(
+    'Describe the damage in description. Set urgency to Routine, Urgent or Emergency. Return {"description": "...", "urgency": "Routine"}.',
+  );
+  const [fieldName, setFieldName] = useState('issue_type');
+  const [fieldTags, setFieldTags] = useState([
+    'Appliances',
+    'Decorating',
+    'Electrical',
+    'Plumbing',
+    'Kitchen',
+    'Other',
+    'Bathroom',
+    'Flooring',
+    'Doors',
+    'Windows',
+    'Leaks',
+    'Fire',
+    'Infestation',
+    'Gas',
+    'Stairs',
+    'Heating',
+    'Mould',
+  ]);
   const [query, setQuery] = useState(''),
     [status, setStatus] = useState('all');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -140,6 +175,13 @@ export function useAdvancedExamples(): CatalogEntry[] {
     { id: 'unavailable', label: 'Export (unavailable)', disabled: true, onAction: () => {} },
   ];
   return [
+    entry(
+      'Theme Selector',
+      'Forms',
+      'Five styles and palettes with light/dark modes. Labels and persistence belong to the consumer.',
+      '<ThemeSelector value={selection} onChange={setSelection} labels={labels} />',
+      <ThemeSelectorDemo />,
+    ),
     entry(
       'Tree View',
       'Navigation',
@@ -212,6 +254,22 @@ export function useAdvancedExamples(): CatalogEntry[] {
       </Stack>,
     ),
     entry(
+      'Compact image preview',
+      'Media',
+      'Read-only image preview without cropping.',
+      '<ImageRegion src={url} alt="Reference" compact />',
+      <ImageRegion
+        compact
+        alt="Portrait reference"
+        src={
+          'data:image/svg+xml,' +
+          encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="180" height="640"><rect width="180" height="640" fill="#53667d"/></svg>',
+          )
+        }
+      />,
+    ),
+    entry(
       'Image region',
       'Media',
       'Responsive reference image with one editable region.',
@@ -240,6 +298,72 @@ export function useAdvancedExamples(): CatalogEntry[] {
           <Text>A readable form stays bounded on wide displays and fits narrow screens.</Text>
         </Card>
       </Container>,
+    ),
+    entry(
+      'Highlighted text',
+      'Forms',
+      'Plain-text editing with exact field-name emphasis, native selection and undo.',
+      '<HighlightedTextarea label="Instructions" value={value} onValueChange={setValue} highlights={["description", "urgency"]} />',
+      <HighlightedTextarea
+        label="Instructions"
+        value={instructions}
+        onValueChange={setInstructions}
+        highlights={['description', 'urgency']}
+      />,
+    ),
+    entry(
+      'Thumbnail choice',
+      'Forms',
+      'Image or text selection with a native checkbox.',
+      '<ThumbnailChoice label="Sample" checked={checked} onChange={setChecked} />',
+      <ThumbnailChoice
+        label="Sample"
+        preview="Text preview"
+        checked={fieldOpen}
+        onChange={setFieldOpen}
+      />,
+    ),
+    entry(
+      'Field editor',
+      'Forms',
+      'Aligned field controls and integrated removable tags, including long wrapping values.',
+      '<FieldEditorItem …><TagInput … /></FieldEditorItem>',
+      <FieldEditorItem
+        name={fieldName}
+        typeLabel="Category"
+        summary={fieldTags.slice(0, 3).join(' · ')}
+        expanded={fieldOpen}
+        onExpandedChange={setFieldOpen}
+        editLabel="Edit"
+        closeLabel="Close"
+        nameField={
+          <TextField
+            label="Field name"
+            value={fieldName}
+            onChange={(e) => setFieldName(e.target.value)}
+          />
+        }
+        typeField={
+          <Field label="Answer type">
+            {(props) => (
+              <Select {...props}>
+                <option>Category</option>
+              </Select>
+            )}
+          </Field>
+        }
+        hint="Use a short field name for answers and exports."
+      >
+        <TagInput
+          size="small"
+          label="Choices"
+          inputLabel="New choice"
+          addLabel="Add choice"
+          removeLabel={(tag) => `Remove choice ${tag}`}
+          value={fieldTags}
+          onChange={setFieldTags}
+        />
+      </FieldEditorItem>,
     ),
     entry(
       'Combobox',
@@ -592,4 +716,35 @@ export function useAdvancedExamples(): CatalogEntry[] {
       </Stack>,
     ),
   ];
+}
+
+function ThemeSelectorDemo() {
+  const [selection, setSelection] = useState<ThemeSelection>({
+    preset: 'flat',
+    palette: 'forest',
+    mode: 'light',
+  });
+  return (
+    <Stack>
+      <ThemeSelector
+        value={selection}
+        onChange={setSelection}
+        labels={{
+          style: 'Visual style',
+          palette: 'Colour palette',
+          mode: 'Colour mode',
+          light: 'Light',
+          dark: 'Dark',
+        }}
+      />
+      <ThemeProvider theme={createTheme(selection.preset, selection.mode, selection.palette)}>
+        <Card>
+          <Stack>
+            <Text>Preview your appearance preferences.</Text>
+            <Button>Example action</Button>
+          </Stack>
+        </Card>
+      </ThemeProvider>
+    </Stack>
+  );
 }

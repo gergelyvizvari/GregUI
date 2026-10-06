@@ -26,9 +26,7 @@ export function Accordion({
         >
           <summary>
             {item.title}
-            <span aria-hidden="true" className="g-disclosure-mark">
-              +
-            </span>
+            <span aria-hidden="true" className="g-disclosure-mark" />
           </summary>
           <div className="g-disclosure-content">{item.content}</div>
         </details>

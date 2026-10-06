@@ -107,3 +107,75 @@ Added immersive FeaturePanel, EditorialLead, SignalCard, ChipLink and AccentLink
 Dashboard sidebars now stay within 100dvh and scroll independently, including wheel containment. Dashboard navigation uses density padding and retains 44px minimum targets. No public API change. CityLink consumes the built package through a new local tarball; no package was published.
 
 Verification: npm run check passed (82 tests, type/style checks, package/workbench/consumer builds). Chromium workbench default-view accessibility and five-preset light/dark checks passed (2 tests). CityLink's HU/EN regression covers a 1366×600 viewport, reaching and activating bottom navigation by keyboard without moving the document, control alignment, and 390px reflow; broader admin tests cover mobile drawer Escape/focus and axe. A live local CityLink admin was visually inspected. This is not cross-browser certification or manual screen-reader acceptance.
+
+### Field editor components — 2026-10-06
+
+Added FieldEditorItem and TagInput with a workbench example. `npm run check` passed (84 tests, types, consumer styling boundary, package/workbench/consumer builds); `npm run format:check` passed. Analise Lab consumes the rebuilt local tarball; its 66 tests and production build passed. Fixture-only Chromium integration checked 17 choices, an unbroken long token, attached removal controls, input alignment in compact/comfortable density, 390px containment, keyboard add/remove focus, preview focus return, and unchanged reference metadata. Desktop/mobile screenshots were visually inspected. Mobile viewport emulation is not a physical-device test; no new Firefox/WebKit or assistive-technology coverage is claimed.
+
+### HighlightedTextarea — 2026-10-06
+
+Added a native plain-text editor with decorative whole-word emphasis and a workbench example. `npm run check` passed (86 tests, types, style boundary and all builds). Analise Lab passed 69 tests, typecheck and production build. Fixture-only Chromium checks passed for exact field-name matching, reactive field renames, literal text preservation, paste cleanup with native undo, synchronized scrolling, resizing and 390px containment. Desktop/mobile and dark-mode screenshots were visually inspected. No saved prompt data was changed during browser verification. No new Firefox/WebKit, physical-device or screen-reader verification is claimed.
+
+## Theme selector — 6 October 2026
+
+Added the controlled ThemeSelector with all five styles/palettes, light/dark mode, consumer-owned translated labels and a workbench preview. `npm run check` passed (88 tests, type checking, consumer style boundary and package/workbench/consumer builds); `npm run format:check` passed. The Analise consumer passed its type check, production build and 71 unit tests, including all 50 stored appearance combinations and invalid-value recovery. Its isolated Chromium Settings workflow passed admin, runner, tester and local fixtures at desktop and 390px mobile widths, exercising all choices, mode changes, Tab focus, persistence across reload, density retention and tab navigation. Desktop/mobile Glass + Plum dark screenshots were visually inspected. No new Firefox/WebKit, real-device or assistive-technology claims are made.
+
+### Large workflow dialog — 2026-10-06
+
+Added opt-in Dialog size="large" with a bounded desktop surface, scrolling content and fixed header/footer; existing default dialogs remain unchanged. Package check passed (88 tests, types, style boundary and builds). Analise Lab check passed (72 tests and build). Live Chromium verified four-step run setup navigation, preserved selections, disabled start with incomplete selections and focus return after closing. No paid runs were started. Mobile and cross-browser coverage were not rerun.
+
+### ThumbnailChoice — 2026-10-06
+
+Added native checkbox selection cards with contain-fit image previews and text fallback, plus a catalog example and interaction test for whole-card/keyboard selection. Package check passed (89 tests, types, boundaries, builds); Analise Lab passed 72 tests and build. Uses existing authenticated asset retrieval with object-URL cleanup. Desktop Chromium preview checked in the run setup; no paid runs started. Physical touch-device and cross-browser checks were not rerun.
+
+ThumbnailChoice visual refinement: larger contain-fit previews, corner checkboxes, softer selected borders and stronger captions. Live desktop Chromium gallery visually checked; shared interaction tests remain passing (89), and consumer tests/build passed (72). No mobile or cross-browser verification added.
+
+2026-10-06: Added compact read-only ImageRegion preview and a portrait catalog example. Consumer desktop verification covers the Playground preview; annotation mode remains at natural geometry.
+
+### Extended appearance catalogue — 2026-10-06
+
+Added Editorial, Porcelain, Aurora, Studio and Canvas; Ocean, Rose and Amber palettes; and palette-aware PresetOption previews. All 160 preset/palette/mode combinations pass declared contrast checks and import/export/mode-switch tests. `npm run check` passed with 155 tests, types, consumer style boundaries and all builds. Analise consumer passed 85 tests and its production build, including account preference validation, ordered saves and account-switch isolation. Desktop Chromium appearance picker visually inspected. No new Firefox/WebKit or assistive-technology verification claimed.
+
+### Material styles — 2026-10-06
+
+Added Joyful, Professional, Clay and Neumorphic with component-wide material treatment and new catalogue previews. All 224 style/palette/mode combinations pass declared contrast and round-trip tests; `npm run check` passes with 195 tests and all builds. Analise passes 85 tests and production build; final material refinements also pass consumer type checking and appearance tests. Live desktop Chromium inspected Clay light, Neumorphic light/dark and Joyful light. Preserved focus outlines; no horizontal overflow in the inspected desktop viewport. Mobile and other browser engines were not rerun.
+
+### Contemporary directions — 2026-10-06
+
+Redesigned Workspace (professional) and Bloom (joyful) as complete contemporary shells, with Iris/Lagoon palettes, sidebar treatments, navigation icons in the Analise consumer, lighter controls, rounded typography and full-workspace preview cards. Five featured styles replace the expanded picker; legacy IDs remain importable. Shared checks cover all 280 preset/palette/mode combinations (223 tests overall). Desktop Chromium inspected both complete directions. Physical devices and other engines were not rerun.
+
+## 2026-10-06 — responsive previews and restrained material depth
+
+Restored Flat as the sixth featured choice. The picker uses the shared width-aware auto grid; miniature previews hide their decorative rail in narrow cards. Clay and Neumorphic controls and nested cards use restrained shadows. Glass outer cards are translucent over a coloured workspace background; inputs remain opaque. `npm run check` passed (223 tests and all builds); the Analise consumer passed 85 tests, types and production build. Browser screenshots of isolated shared-component fixtures were inspected in desktop light/dark Glass and in 320px dark Clay and 390px light Glass iframe viewports. This is viewport verification, not a physical-device or cross-engine claim.
+
+## 2026-10-06 — panel grouping and table separators
+
+Tables now use the subtle line colour for the outer border and row dividers, with a lightly tinted header. Interactive control/focus borders are unchanged. Analise groups previously bare library filters/table, run selectors, saved responses, prompt list and tester search into Cards. Shared checks passed (223 tests and builds); consumer checks passed (85 tests, types and build). The live Test cases page was visually inspected in dark Forest, including the filter panel alongside the case editor. Other browser engines were not rerun.
+
+## 2026-10-06 — card action alignment
+
+Added optional Card footer composition and applied it to Analise's three home actions. Shared checks passed (223 tests and builds); consumer checks passed (85 tests, types and build). A Chromium fixture using the actual shared components showed all three 52px buttons at y=131.3984375 despite the middle card having no description. No fixed card height or filler text is used.
+
+## 2026-10-06 — compact selection column
+
+DataColumn supports `width: 'compact'`; the forced 34rem DataTable minimum has been removed so natural column sizes determine scrolling. Analise's selection header is `#`. Live Chromium inspection measured the selection column at 60px and the whole table at 452.67px within its 453px container, with all three action icons visible. Shared check passed (223 tests/builds), consumer check passed (85 tests/build).
+
+## 2026-10-06 — themed accordions
+
+Accordion border, radius, fill, shadow and blur now follow panel material variables; internal dividers use the subtle line colour. Expandable field-editor rows also use themed corners and restrained nested shadows. Shared check passed (223 tests/builds) and Analise check passed (85 tests/build). The final field-editor CSS refinement was package-built and visually inspected in live Chromium. Workspace-theme Comparison accordions were opened and closed with Enter; focus remained visible, open corners measured 12px, and nested rule rows were visually checked. Other engines were not rerun.
+
+## 2026-10-06 — quieter page hierarchy
+
+Added compact Metric composition, restrained nested card/accordion/editor borders and shadows, and reduced DataTable cell padding without shrinking controls. Analise uses compact library summaries, ghost row actions, and a full-width list when no case editor is selected. Shared checks passed (223 tests/builds) and consumer checks passed (85 tests/build). Live Chromium inspection covered the summary strip, denser table and case editor side by side in Workspace. The user's open editor was preserved; the no-selection full-width branch was code/type checked rather than exercised in that live session.
+
+## 2026-10-06 — quiet visual guidance
+
+Workspace fields use a lightly tinted opaque surface. Shared field labels/card headings and code-block corners follow a quieter hierarchy. DataTable activeRowId links an open detail panel to its row independently of bulk selection; selected and hovered rows receive restrained palette-derived tints. Buttons no longer translate on hover/press, and row transitions respect reduced motion. Shared check passed (223 tests/builds); Analise check passed (90 tests/build). Live Chromium Workspace inspection confirmed the open 128.jpg row marked active while remaining unchecked, alongside the editor. Other themes/engines were not manually rechecked in this pass.
+
+### Clay card spacing (2026-10-06)
+
+Clay cards now reserve 24px around content while preserving larger padding and explicit zero-padding surfaces. `npm run check` passed (223 tests, types, consumer style boundary and builds). The packaged Analise consumer passed typechecking and its tester-preview browser flow; desktop (1440px) and mobile (390px) Playground screenshots were inspected with the Rose/Clay light theme, including the empty results and test-case cards. No horizontal overflow was detected. Other browser engines and dark-mode visual review were not run for this change.
+
+### Accordion header spacing (2026-10-06)
+
+`npm run check` passed (223 tests, typecheck, style boundary and builds), as did `npm run format:check` and the Analise consumer typecheck. Chromium screenshots were inspected for Workspace and Clay light themes, expanded/collapsed headers and mobile layout. Single-line headers measured 56px high with 16px vertical padding; horizontal insets measured 20px for Workspace and 24px for Clay. Enter/Space toggling and mobile overflow checks passed. Dark mode and other browser engines were not visually checked.

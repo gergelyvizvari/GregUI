@@ -8,6 +8,7 @@ export function ImageRegion({
   onChange,
   label,
   help,
+  compact = false,
 }: {
   src: string;
   alt: string;
@@ -15,6 +16,8 @@ export function ImageRegion({
   onChange?: (region: ImageRegionValue | null) => void;
   label?: string;
   help?: string;
+  /** Bound an unannotated, read-only image without cropping. */
+  compact?: boolean;
 }) {
   const id = useId();
   const start = useRef<{ x: number; y: number } | null>(null);
@@ -38,7 +41,7 @@ export function ImageRegion({
     };
   }
   return (
-    <figure className="g-image-region">
+    <figure className="g-image-region" data-compact={compact && !onChange && !box}>
       <div
         className="g-image-region-stage"
         data-editable={!!onChange}

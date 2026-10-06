@@ -79,18 +79,13 @@ import {
   exportTheme,
   colorRoles,
   presets,
+  featuredPresets,
+  presetInfo,
   type Theme,
   type Preset,
 } from '@gregui/tokens';
 import '@gregui/react/styles.css';
 
-const presetInfo: Record<Preset, { name: string; description: string }> = {
-  flat: { name: 'Flat', description: 'Forest / precision' },
-  glass: { name: 'Glass', description: 'Prism / luminous' },
-  soft: { name: 'Soft', description: 'Clay / tactile' },
-  elevated: { name: 'Elevated', description: 'Air / layered' },
-  outline: { name: 'Outline', description: 'Ink / graphic' },
-};
 // The editing workspace keeps a stable paper/ink palette while the specimens change.
 const workbenchTheme: Theme = {
   ...createTheme(),
@@ -426,8 +421,8 @@ function App() {
     </Inline>
   );
   const presetCards = (
-    <Grid columns={5} gap={3}>
-      {presets.map((p) => (
+    <Grid columns="auto" gap={3}>
+      {featuredPresets.map((p) => (
         <PresetOption
           key={p}
           preset={p}
@@ -662,6 +657,7 @@ function App() {
                     Open a focused view. The same visual language follows you.
                   </Text>
                   <Dialog
+                    size="large"
                     trigger={<Button variant="secondary">Open dialog</Button>}
                     title="A focused conversation"
                     description="This dialog uses the preview’s theme, language and direction."
@@ -752,7 +748,7 @@ function App() {
                     <ThemeArtwork />
                   </ThemeProvider>
                 }
-                title="Five styles. One foundation."
+                title="Five directions. One foundation."
                 description="A considered collection of surfaces, shapes and interactions. Built to feel like you."
                 actions={themeActions}
               />
@@ -912,7 +908,7 @@ function App() {
                         value={theme.preset}
                         onChange={(e) => changePreset(e.target.value as Preset)}
                       >
-                        {presets.map((preset) => (
+                        {featuredPresets.map((preset) => (
                           <option key={preset} value={preset}>
                             {presetInfo[preset].name}
                           </option>
@@ -986,7 +982,7 @@ function App() {
                   <Section title="Behavior first">
                     <Alert title="A style never changes the interaction">
                       Keyboard controls, names, validation and focus behavior stay consistent across
-                      all five presets.
+                      all fourteen presets.
                     </Alert>
                     <Text size="small" tone="muted">
                       Reduced motion and forced colors are supported independently of the visual
@@ -1057,7 +1053,7 @@ function App() {
                         value={theme.preset}
                         onChange={(e) => changePreset(e.target.value as Preset)}
                       >
-                        {presets.map((preset) => (
+                        {featuredPresets.map((preset) => (
                           <option key={preset} value={preset}>
                             {presetInfo[preset].name}
                           </option>
@@ -1608,7 +1604,9 @@ function ComponentCatalog({ theme, search }: { theme: Theme; search: string }) {
                 <Text size="small" tone="muted">
                   {e.description}
                 </Text>
-                <CodeBlock label={`${e.name} usage`}>{e.api}</CodeBlock>
+                <CodeBlock wrap label={`${e.name} usage`}>
+                  {e.api}
+                </CodeBlock>
               </Stack>
             </Card>
           ))}

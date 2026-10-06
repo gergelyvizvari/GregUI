@@ -1,4 +1,20 @@
-export const presets = ['flat', 'glass', 'soft', 'elevated', 'outline'] as const;
+export const presets = [
+  'joyful',
+  'professional',
+  'clay',
+  'neumorphic',
+
+  'flat',
+  'glass',
+  'soft',
+  'elevated',
+  'outline',
+  'editorial',
+  'porcelain',
+  'aurora',
+  'studio',
+  'canvas',
+] as const;
 export type Preset = (typeof presets)[number];
 export type Mode = 'light' | 'dark';
 export type Density = 'comfortable' | 'compact';
@@ -28,7 +44,7 @@ export interface Theme {
   colors: Record<ColorRole, string>;
 }
 // Presets supply an art-directed starting palette; imported/custom colors remain editable.
-const palettes: Record<Preset, Record<Mode, Theme['colors']>> = {
+const basePalettes = {
   flat: {
     light: {
       background: '#eef2eb',
@@ -170,18 +186,221 @@ const palettes: Record<Preset, Record<Mode, Theme['colors']>> = {
     },
   },
 };
+// Every palette keeps essential content opaque in both modes.
+const ocean: Record<Mode, Theme['colors']> = {
+  light: {
+    background: '#eaf3f4',
+    surface: '#f8fdfd',
+    text: '#18363d',
+    muted: '#4c6870',
+    border: '#718e96',
+    primary: '#126575',
+    onPrimary: '#ffffff',
+    focus: '#075767',
+    success: '#25623d',
+    warning: '#7a510c',
+    danger: '#ae2b37',
+  },
+  dark: {
+    background: '#101f26',
+    surface: '#192f38',
+    text: '#e8f7fa',
+    muted: '#abcbd3',
+    border: '#749ba6',
+    primary: '#83d4e2',
+    onPrimary: '#10343d',
+    focus: '#a5e9f2',
+    success: '#9bd6ac',
+    warning: '#edcb8d',
+    danger: '#ffabb1',
+  },
+};
+const rose: Record<Mode, Theme['colors']> = {
+  light: {
+    background: '#f6edf0',
+    surface: '#fffafb',
+    text: '#422633',
+    muted: '#745763',
+    border: '#a07e8c',
+    primary: '#a13763',
+    onPrimary: '#ffffff',
+    focus: '#85204e',
+    success: '#25623d',
+    warning: '#7a510c',
+    danger: '#ae2b37',
+  },
+  dark: {
+    background: '#261820',
+    surface: '#38232e',
+    text: '#fceff5',
+    muted: '#d8b9c8',
+    border: '#ae8398',
+    primary: '#f2a8c9',
+    onPrimary: '#471b31',
+    focus: '#ffc1dd',
+    success: '#9bd6ac',
+    warning: '#edcb8d',
+    danger: '#ffabb1',
+  },
+};
+const amber: Record<Mode, Theme['colors']> = {
+  light: {
+    background: '#f5f0e5',
+    surface: '#fffcf5',
+    text: '#3d3020',
+    muted: '#716149',
+    border: '#98876a',
+    primary: '#865600',
+    onPrimary: '#ffffff',
+    focus: '#744800',
+    success: '#25623d',
+    warning: '#7a510c',
+    danger: '#ae2b37',
+  },
+  dark: {
+    background: '#241e14',
+    surface: '#352c1d',
+    text: '#fbf2df',
+    muted: '#d4c2a2',
+    border: '#ab9268',
+    primary: '#f2c66d',
+    onPrimary: '#3b2909',
+    focus: '#ffdb96',
+    success: '#9bd6ac',
+    warning: '#edcb8d',
+    danger: '#ffabb1',
+  },
+};
+const iris: Record<Mode, Theme['colors']> = {
+  light: {
+    background: '#f5f6fb',
+    surface: '#ffffff',
+    text: '#25283d',
+    muted: '#62667e',
+    border: '#878ca6',
+    primary: '#5353d5',
+    onPrimary: '#ffffff',
+    focus: '#4645bf',
+    success: '#21734e',
+    warning: '#865700',
+    danger: '#bf3356',
+  },
+  dark: {
+    background: '#181b2b',
+    surface: '#24283c',
+    text: '#f3f4fc',
+    muted: '#bec3dc',
+    border: '#8a92b4',
+    primary: '#b8b8ff',
+    onPrimary: '#222252',
+    focus: '#ceccff',
+    success: '#8ee0b4',
+    warning: '#f5ce80',
+    danger: '#ffa5be',
+  },
+};
+const lagoon: Record<Mode, Theme['colors']> = {
+  light: {
+    background: '#eaf8f6',
+    surface: '#ffffff',
+    text: '#153d43',
+    muted: '#496b70',
+    border: '#759296',
+    primary: '#007c80',
+    onPrimary: '#ffffff',
+    focus: '#006469',
+    success: '#257345',
+    warning: '#805800',
+    danger: '#b73955',
+  },
+  dark: {
+    background: '#102c31',
+    surface: '#1b3c42',
+    text: '#edfcf9',
+    muted: '#b0d3d4',
+    border: '#81a6ac',
+    primary: '#7be2d4',
+    onPrimary: '#123e3e',
+    focus: '#a4f4e6',
+    success: '#91dfaf',
+    warning: '#ffdb87',
+    danger: '#ffafc2',
+  },
+};
+const palettes: Record<Preset, Record<Mode, Theme['colors']>> = {
+  ...basePalettes,
+  editorial: amber,
+  porcelain: rose,
+  aurora: ocean,
+  studio: basePalettes.elevated,
+  canvas: basePalettes.flat,
+  joyful: lagoon,
+  professional: iris,
+  clay: amber,
+  neumorphic: basePalettes.soft,
+};
+export const presetInfo: Record<Preset, { name: string; description: string }> = {
+  joyful: { name: 'Bloom', description: 'Fresh colour, a little sunshine' },
+  professional: { name: 'Workspace', description: 'Clear thinking, colourful details' },
+  clay: { name: 'Clay', description: 'Puffy forms, sculpted edges' },
+  neumorphic: { name: 'Neumorphic', description: 'Raised surfaces, recessed controls' },
+  flat: { name: 'Flat', description: 'Clean and simple' },
+  glass: { name: 'Glass', description: 'Layered glass' },
+  soft: { name: 'Soft', description: 'Soft surfaces' },
+  elevated: { name: 'Elevated', description: 'Depth and shadows' },
+  outline: { name: 'Outline', description: 'Defined borders' },
+  editorial: { name: 'Editorial', description: 'Serif detail, fine rules' },
+  porcelain: { name: 'Porcelain', description: 'Polished curves, satin light' },
+  aurora: { name: 'Aurora', description: 'Luminous edges, flowing colour' },
+  studio: { name: 'Studio', description: 'Precise lines, quiet depth' },
+  canvas: { name: 'Canvas', description: 'Tactile paper, playful shapes' },
+};
 export const paletteOptions = [
+  { id: 'iris', name: 'Iris', preset: 'professional' },
+  { id: 'lagoon', name: 'Lagoon', preset: 'joyful' },
   { id: 'forest', name: 'Forest', preset: 'flat' },
   { id: 'plum', name: 'Plum', preset: 'glass' },
   { id: 'clay', name: 'Clay', preset: 'soft' },
   { id: 'cobalt', name: 'Cobalt', preset: 'elevated' },
   { id: 'ink', name: 'Ink & cream', preset: 'outline' },
+  { id: 'ocean', name: 'Ocean', preset: 'aurora' },
+  { id: 'rose', name: 'Rose', preset: 'porcelain' },
+  { id: 'amber', name: 'Amber', preset: 'editorial' },
 ] as const;
 export type Palette = (typeof paletteOptions)[number]['id'];
+/** Curated choices; legacy IDs stay readable for saved user themes. */
+export const featuredPresets = [
+  'professional',
+  'joyful',
+  'clay',
+  'neumorphic',
+  'glass',
+  'flat',
+] as const;
+export const recommendedPalettes: Record<Preset, Palette> = {
+  professional: 'iris',
+  joyful: 'lagoon',
+  clay: 'rose',
+  neumorphic: 'clay',
+  glass: 'plum',
+  flat: 'forest',
+  soft: 'clay',
+  elevated: 'cobalt',
+  outline: 'ink',
+  editorial: 'amber',
+  porcelain: 'rose',
+  aurora: 'ocean',
+  studio: 'cobalt',
+  canvas: 'forest',
+};
 function paletteColors(palette: Palette, mode: Mode): Theme['colors'] {
   const option = paletteOptions.find((option) => option.id === palette);
   if (!option) throw new Error('Unknown palette.');
   return { ...palettes[option.preset][mode] };
+}
+function materialColors(preset: Preset, colors: Theme['colors']): Theme['colors'] {
+  // A single material plane is essential for true raised/inset neumorphic depth.
+  return preset === 'neumorphic' ? { ...colors, surface: colors.background } : { ...colors };
 }
 /** Recognizes stored colours without adding metadata to version 1 theme documents. */
 export function getPalette(theme: Theme): Palette | undefined {
@@ -189,12 +408,12 @@ export function getPalette(theme: Theme): Palette | undefined {
     colorRoles.every(
       (role) =>
         theme.colors[role].toLowerCase() ===
-        palettes[option.preset][theme.mode][role].toLowerCase(),
+        materialColors(theme.preset, palettes[option.preset][theme.mode])[role].toLowerCase(),
     ),
   )?.id;
 }
 export function applyPalette(theme: Theme, palette: Palette): Theme {
-  return { ...theme, colors: paletteColors(palette, theme.mode) };
+  return { ...theme, colors: materialColors(theme.preset, paletteColors(palette, theme.mode)) };
 }
 export function createTheme(
   preset: Preset = 'flat',
@@ -207,10 +426,12 @@ export function createTheme(
     preset,
     mode,
     density: 'comfortable',
-    radius: preset === 'outline' ? 'square' : 'rounded',
-    font: 'system',
+    radius: ['outline', 'editorial', 'studio', 'professional'].includes(preset)
+      ? 'square'
+      : 'rounded',
+    font: preset === 'joyful' || preset === 'clay' ? 'humanist' : 'system',
     motion: 'standard',
-    colors: palette ? paletteColors(palette, mode) : { ...palettes[preset][mode] },
+    colors: materialColors(preset, palette ? paletteColors(palette, mode) : palettes[preset][mode]),
   };
 }
 export function switchMode(theme: Theme, mode: Mode): Theme {
@@ -218,7 +439,10 @@ export function switchMode(theme: Theme, mode: Mode): Theme {
   return {
     ...theme,
     mode,
-    colors: palette ? paletteColors(palette, mode) : { ...palettes[theme.preset][mode] },
+    colors: materialColors(
+      theme.preset,
+      palette ? paletteColors(palette, mode) : palettes[theme.preset][mode],
+    ),
   };
 }
 export const spacing = {
@@ -258,7 +482,7 @@ export function themeVariables(theme: Theme): Record<string, string> {
   vars['--g-font'] = {
     system:
       'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-    humanist: '"Trebuchet MS", "Segoe UI", sans-serif',
+    humanist: 'ui-rounded, "SF Pro Rounded", "Avenir Next", system-ui, sans-serif',
     mono: 'ui-monospace, "SFMono-Regular", Consolas, monospace',
   }[theme.font];
   const rhythms = {
@@ -267,16 +491,28 @@ export function themeVariables(theme: Theme): Record<string, string> {
     soft: [260, 400],
     elevated: [200, 320],
     outline: [120, 220],
+    editorial: [180, 280],
+    porcelain: [240, 360],
+    aurora: [260, 400],
+    studio: [140, 220],
+    canvas: [180, 280],
+    joyful: [180, 300],
+    professional: [120, 200],
+    clay: [240, 340],
+    neumorphic: [200, 280],
   };
   vars['--g-display-font'] =
-    theme.font === 'system' && theme.preset === 'soft'
+    theme.font === 'system' && ['soft', 'editorial'].includes(theme.preset)
       ? 'Georgia, "Times New Roman", serif'
       : 'var(--g-font)';
   vars['--g-art-spread'] = theme.motion === 'reduced' ? '17px' : '23px';
   vars['--g-icon-shift'] = theme.motion === 'reduced' ? '0px' : '2px';
   vars['--g-art-lift'] = theme.motion === 'reduced' ? '10px' : '15px';
-  vars['--g-display-weight'] =
-    theme.preset === 'soft' ? '400' : theme.preset === 'outline' ? '750' : '550';
+  vars['--g-display-weight'] = ['soft', 'editorial'].includes(theme.preset)
+    ? '400'
+    : theme.preset === 'outline'
+      ? '750'
+      : '550';
   vars['--g-duration'] = theme.motion === 'reduced' ? '0ms' : `${rhythms[theme.preset][0]}ms`;
   vars['--g-duration-fast'] = theme.motion === 'reduced' ? '0ms' : '120ms';
   vars['--g-duration-enter'] = theme.motion === 'reduced' ? '0ms' : `${rhythms[theme.preset][1]}ms`;

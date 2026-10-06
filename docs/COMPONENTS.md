@@ -6,8 +6,9 @@ All public exports are typed in `packages/react/src/index.tsx`; generated declar
 
 - `ThemeProvider`: scopes variables and the selected preset/mode. Nested providers inherit the current theme unless explicitly overridden. Portal components copy theme and locale into their portal root.
 - `LocaleProvider`: locale, direction, time zone and replaceable package-owned messages. Supply translated application labels/content yourself. `useFormat` formats numbers/dates and selects plural categories; applications supply plural message forms.
-- `Stack`, `Inline`, `Grid`: token-based gaps 0–8. Grid accepts 1–5 columns and collapses on small viewports. `Inline` wraps; do not depend on fixed text lengths.
+- `Stack`, `Inline`, `Grid`: token-based gaps 0–8. Grid accepts 1–5 columns or `columns="auto"` (width-aware cards with a 15rem minimum) and collapses on small viewports. `Inline` wraps; do not depend on fixed text lengths.
 - `Split`, `Container`, `Card`, `Section`, `PageHeader`, `AppShell`: shared responsive composition. AppShell renders a skip link, desktop navigation and a modal navigation drawer on small screens. It does not own routing.
+- `Card` accepts an optional `footer` for actions anchored to the bottom of equal-height grid cards.
 - `Text`, `Heading`: explicit semantic heading levels and separate visual sizes. Application authors must choose logical heading order.
 
 ## Forms and actions
@@ -33,13 +34,13 @@ All public exports are typed in `packages/react/src/index.tsx`; generated declar
 - `Progress` has a visible label; `Spinner` and `Skeleton` have accessible loading names and honor reduced motion. Skeleton is static.
 - `Badge` always includes text; status meaning is not color-only.
 - `Table` includes caption, column headers and first-column row headers inside a named scroll region. It deliberately has no sorting, pagination or virtualization.
-- `DescriptionList`, `EmptyState`, `CodeBlock`, `Divider` provide content structure without application styling.
+- `DescriptionList`, `EmptyState`, `CodeBlock`, `Divider` provide content structure without application styling. `CodeBlock wrap` preserves whitespace while wrapping long lines and unbroken strings to the available width; the default retains horizontal scrolling.
 
 ## Theme editing
 
 `ColorControl`, `Swatch`, `PresetOption`, `PreviewStage` and `Metric` support preview/documentation interfaces. They belong to the shared package so workbench apps need no custom CSS. Keep the editor controls under a stable provider; put only the edited preview under the draft theme.
 
-`PresetOption` accepts a light/dark `mode` and displays a decorative specimen using that preset's default tokens. `PreviewComposition` stacks children by default and creates two columns when its container is at least 600px wide. `PreviewStage showcase` adds a stronger decorative backdrop: place all text and controls inside opaque Cards or Alerts when using it. Use the default stage for uncontained content.
+`PresetOption` accepts a light/dark `mode` and displays a decorative specimen using that preset's default tokens. Optional `palette` previews the consumer’s selected palette without changing its other preferences. `PreviewComposition` stacks children by default and creates two columns when its container is at least 600px wide. `PreviewStage showcase` adds a stronger decorative backdrop: place all text and controls inside opaque Cards or Alerts when using it. Use the default stage for uncontained content.
 
 All theme colors are six-digit hex values. Theme import rejects unknown fields, unsupported versions and malformed values. Schema-valid drafts may have contrast failures; JSON/CSS exports are blocked until checked pairs pass. CSS export is a token snapshot for adapters or generated stylesheets. React consumers should import the JSON into ThemeProvider; its inline variables take precedence over a separately imported CSS snapshot. No schema migrations exist yet because only version 1 exists.
 
@@ -73,3 +74,41 @@ AppShell accepts opt-in `appearance="editorial"` (horizontal desktop masthead) o
 FeaturePanel `variant="immersive"` places an opaque theme-text-colored copy panel inside a full photographic frame; the default split variant is unchanged. EditorialLead pairs a feature with supporting content and collapses responsively. SignalCard marks concise updates; ChipLink supports native links and active state. AccentLink accepts a `palette: {background, text}` six-digit hex pair and rejects contrast below 4.5:1; it is an explicit action palette, separate from the theme primary role used for text links. No arbitrary styles are accepted.
 
 Dashboard sidebars stay within the dynamic viewport and scroll independently when navigation is long. Navigation items respect density padding while retaining a 44px minimum target. Compose compact navigation groups with Stack gaps; a labelled field beside an action uses Inline align="end" when there is no hint/error beneath the control.
+
+## Field editing
+
+`FieldEditorItem` is a controlled disclosure for schema builders. It keeps the edit action at the edge, with name/type control slots in two columns (one on mobile). Put shared help in `hint`, below both controls, rather than above one input. Consumers own field data, validation, translated labels and footer actions. Inactive editor content unmounts: hoist persisted drafts.
+
+`TagInput` takes controlled `value: string[]` and `onChange`, plus consumer-owned `label`, `inputLabel`, `addLabel`, and `removeLabel(value)`. Enter or Add trims and adds one unique value; comma-containing values remain intact. Removal is part of each pill, supports keyboard focus continuity, and never detaches on wrap. Long labels wrap; coarse-pointer removal targets are at least 44px. `disabled` disables both addition and removal.
+
+`TagInput size="small"` uses compact 12px tokens with 24px removal buttons on desktop; the default `medium` preserves the original sizing. Both retain 44px removal targets on coarse pointers. Size affects tokens, not entry fields.
+
+`HighlightedTextarea` provides native plain-text selection, paste, undo and resizing with a decorative bold layer for exact, case-sensitive whole-word `highlights`. Props include `label`, controlled `value`, `onValueChange`, `highlights`, `hint`, `error` and native textarea props (without class/style). It uses monospace text so bold emphasis preserves glyph alignment. The mirror is hidden from assistive technology; forced-colors mode uses native text. Domain-specific transformations belong in the consumer.
+
+## Appearance preferences
+
+`ThemeSelector` accepts a controlled `ThemeSelection` (`preset`, `palette`, `mode`), `onChange`, required consumer-translated `labels` (`style`, `palette`, `mode`, `light`, `dark`), and optional `disabled`. It exposes all fourteen built-in styles and eight palettes with light/dark mode through labelled native selects; changing one preference preserves the other two. The three-column layout collapses on mobile. Style and palette names are gregUI identifiers/display names. Consumers apply the selection with `createTheme(preset, mode, palette)` and own persistence, density and validation of stored values. The Components catalog includes an isolated live preview. This is an additive API; existing consumers need no migration.
+
+`Dialog size="large"` provides a bounded 1040px desktop workflow surface, scrolling body and fixed header/footer. The default medium size is unchanged.
+
+`ThumbnailChoice` is a whole-card native checkbox with an optional image `src`, text `preview`, `label` and `detail`. Consumers own image fetching and checked state. Images use contain-fit to preserve the full image.
+
+`ImageRegion compact` bounds read-only, unannotated previews to 200px high without cropping. Editable or annotated images retain their natural geometry.
+
+Disclosure controls use + when collapsed and − when expanded. `FieldEditorItem` retains `editLabel` and `closeLabel` for accessible button names.
+
+Action icons: `Icon` supports `edit`, `save` and `plus`. `IconButton` uses its required accessible label as the default hover title; retain text for actions whose scope needs explanation.
+
+Joyful, Professional, Clay and Neumorphic provide distinct material treatments across cards, controls, tabs and navigation. Neumorphic uses a single shared background/surface plane, opposing raised shadows and inset input/pressed-control shadows; palette recognition and light/dark switching preserve that material. Essential text remains on opaque surfaces, and keyboard focus outlines are retained.
+
+The appearance catalogue now features Workspace, Bloom, Clay, Neumorphic and Glass (`featuredPresets`). Legacy preset IDs remain valid for saved themes, but are omitted from new-choice cards. `recommendedPalettes` provides coordinated defaults; consumers can use these when selecting a complete visual direction. Workspace uses an ink navigation rail and restrained Iris surfaces; Bloom uses a warm navigation rail and Lagoon surfaces. ThemeSelector retains a saved legacy value as an explicit option.
+
+DataTable columns accept `width: "compact"` for narrow selection/action cells. Tables size from their content and scroll only when their natural minimum requires it.
+
+`Metric compact` places a smaller value beside its label for low-emphasis summary strips. Nested panel surfaces use subtle separators; table rows retain accessible control sizes while reducing surrounding padding.
+
+`DataTable activeRowId` subtly marks the row currently open in a detail panel. It is independent of `selectedIds` (bulk selection).
+
+Clay cards reserve at least 24px of padding for their rounded corners and inset shading. Larger requested spacing is preserved; explicit `padding={0}` remains edge-to-edge. Other presets keep their requested spacing.
+
+Accordion headers reserve at least 16px of vertical padding. Header and body horizontal insets match, including the Clay card minimum, in both collapsed and expanded states.
