@@ -179,3 +179,15 @@ Clay cards now reserve 24px around content while preserving larger padding and e
 ### Accordion header spacing (2026-10-06)
 
 `npm run check` passed (223 tests, typecheck, style boundary and builds), as did `npm run format:check` and the Analise consumer typecheck. Chromium screenshots were inspected for Workspace and Clay light themes, expanded/collapsed headers and mobile layout. Single-line headers measured 56px high with 16px vertical padding; horizontal insets measured 20px for Workspace and 24px for Clay. Enter/Space toggling and mobile overflow checks passed. Dark mode and other browser engines were not visually checked.
+
+## File upload adoption — 7 October 2026
+
+The existing FileUpload now includes an upload icon, themed native selector button and visible container focus, plus optional directory selection and consumer hint. Directory drops are deliberately ignored; native directory selection preserves relative paths. The workbench includes a folder example. `npm run check` passed (224 tests, style boundary, types and all builds); `npm run format:check` passed. The targeted file-clearing browser workflow passed in Chromium and mobile Chromium emulation. In analisePrompt, the local tarball was installed and all six native upload fields were replaced; image selection, filename display, clearing, focus, directory attribute and narrow containment passed browser checks, and desktop/mobile screenshots were inspected. The consumer's 98 tests and production build passed. No real upload requests were made during browser checks; directory-picker interaction, Firefox/WebKit and real mobile devices were not exercised in this change.
+
+## Compact instruction editor — 7 October 2026
+
+Added opt-in HighlightedTextarea small size: 14px on wide, fine-pointer screens with matching mirror typography; narrow/touch screens retain 16px. `npm run check` passed (224 tests and all builds). The analisePrompt consumer typecheck passed; Chromium checks verified both sizes, matching highlight layers, text editing, paste cleanup, native undo and narrow containment. Desktop screenshot inspected. No new browser-support claims.
+
+## Shared instruction font — 7 October 2026
+
+HighlightedTextarea now offers opt-in body typography with same-width emphasis to preserve native caret/wrapping alignment. The default monospace variant remains unchanged. Library check passed (224 tests and all builds); consumer typecheck and Chromium desktop/mobile checks passed for shared font family, matching mirror typography, scroll synchronization, paste, undo and text editing. Desktop screenshot inspected.

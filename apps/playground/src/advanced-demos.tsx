@@ -405,6 +405,13 @@ export function useAdvancedExamples(): CatalogEntry[] {
         <Text>
           PDF or TXT, up to 5 MB per file. Selected: {fileNames || 'None'}. No upload occurs.
         </Text>
+        <FileUpload
+          label="Demo folder"
+          directory
+          multiple
+          hint="Choose a folder using the file picker."
+          onFiles={() => {}}
+        />
       </Stack>,
     ),
     entry(

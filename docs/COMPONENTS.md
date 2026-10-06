@@ -112,3 +112,9 @@ DataTable columns accept `width: "compact"` for narrow selection/action cells. T
 Clay cards reserve at least 24px of padding for their rounded corners and inset shading. Larger requested spacing is preserved; explicit `padding={0}` remains edge-to-edge. Other presets keep their requested spacing.
 
 Accordion headers reserve at least 16px of vertical padding. Header and body horizontal insets match, including the Clay card minimum, in both collapsed and expanded states.
+
+`FileUpload` provides a themed native picker and drop target with selected filenames, clear action, accept/size validation and disabled state (see Expanded components). Optional `directory` enables native folder selection; folder drag-and-drop is not supported. Optional `hint` supplies consumer guidance. Applications filter folder contents and own uploading/progress.
+
+`HighlightedTextarea size="small"` uses 14px text and a matching emphasis layer on desktop with a fine pointer. Mobile/touch retains 16px. The default medium size stays unchanged.
+
+`HighlightedTextarea font="body"` uses the shared theme font. Its emphasis uses a same-width visual stroke so the native caret and mirror wrapping stay aligned with proportional letters. The default `mono` font is unchanged.

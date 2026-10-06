@@ -414,3 +414,27 @@ it('freezes privacy choices while saving and confirms success', async () => {
   resolve();
   await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Saved successfully.'));
 });
+
+it('supports native folder selection and does not accept a directory drop as a file selection', () => {
+  const onFiles = vi.fn();
+  render(
+    <FileUpload
+      label="Folder"
+      directory
+      multiple
+      hint="Choose an image folder"
+      onFiles={onFiles}
+    />,
+  );
+  const input = screen.getByLabelText('Folder');
+  expect(input).toHaveAttribute('webkitdirectory');
+  expect(input).toHaveAccessibleDescription('Choose an image folder');
+  fireEvent.drop(input, {
+    dataTransfer: { files: [new File(['a'], 'image.png', { type: 'image/png' })] },
+  });
+  expect(onFiles).not.toHaveBeenCalled();
+  fireEvent.change(input, {
+    target: { files: [new File(['a'], 'image.png', { type: 'image/png' })] },
+  });
+  expect(onFiles).toHaveBeenCalledTimes(1);
+});

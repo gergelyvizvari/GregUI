@@ -2,7 +2,7 @@
 import { Close as PopoverClose } from '@radix-ui/react-popover';
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { useLocale } from '@gregui/localization';
-import { Button, Dialog, Field, Inline, Input, Popover, Stack, Text } from './index';
+import { Button, Dialog, Field, Icon, Inline, Input, Popover, Stack, Text } from './index';
 
 export interface Choice {
   value: string;
@@ -186,6 +186,8 @@ export function FileUpload({
   accept,
   multiple = false,
   maxBytes,
+  directory = false,
+  hint,
   disabled = false,
 }: {
   label: string;
@@ -193,6 +195,8 @@ export function FileUpload({
   accept?: string;
   multiple?: boolean;
   maxBytes?: number;
+  directory?: boolean;
+  hint?: string;
   disabled?: boolean;
 }) {
   const { messages } = useLocale();
@@ -219,7 +223,7 @@ export function FileUpload({
       return;
     }
     setError(false);
-    setNames(files.map((file) => file.name));
+    setNames(files.map((file) => file.webkitRelativePath || file.name));
     onFiles(files);
   }
   return (
@@ -229,13 +233,16 @@ export function FileUpload({
       onDragOver={(event) => event.preventDefault()}
       onDrop={(event) => {
         event.preventDefault();
-        if (!disabled) select(Array.from(event.dataTransfer.files));
+        if (!disabled && !directory) select(Array.from(event.dataTransfer.files));
       }}
     >
       <Stack>
+        <span className="g-upload-icon" aria-hidden="true">
+          <Icon name="upload" />
+        </span>
         <Field
           label={label}
-          hint={messages.dropFiles}
+          hint={hint ?? (directory ? undefined : messages.dropFiles)}
           error={error ? messages.fileError : undefined}
         >
           {(p) => (
@@ -243,6 +250,7 @@ export function FileUpload({
               {...p}
               ref={input}
               type="file"
+              {...(directory ? { webkitdirectory: '' } : {})}
               accept={accept}
               multiple={multiple}
               disabled={disabled}

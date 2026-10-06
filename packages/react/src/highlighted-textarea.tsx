@@ -10,6 +10,8 @@ type Props = Omit<
   value: string;
   onValueChange: (value: string) => void;
   highlights: string[];
+  size?: 'small' | 'medium';
+  font?: 'mono' | 'body';
   hint?: string;
   error?: string;
 };
@@ -40,6 +42,8 @@ export function HighlightedTextarea({
   hint,
   error,
   rows = 9,
+  size = 'medium',
+  font = 'mono',
   onScroll,
   ...props
 }: Props) {
@@ -66,7 +70,7 @@ export function HighlightedTextarea({
   return (
     <Field label={label} hint={hint} error={error}>
       {(field) => (
-        <div className="g-highlighted-editor">
+        <div className="g-highlighted-editor" data-size={size} data-font={font}>
           <div ref={mirror} className="g-highlighted-mirror" aria-hidden="true">
             {highlightText(value, highlights).map((part, index) =>
               part.highlighted ? <strong key={index}>{part.text}</strong> : part.text,
