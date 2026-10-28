@@ -11,6 +11,8 @@ Applications own domain data, copy, validation and event handlers. gregUI owns p
 
 Packages are `@gregui/tokens`, `@gregui/localization` and `@gregui/react`. Consumer apps resolve built exports: rebuild packages after library changes. Keep public declarations, package exports and consumer examples aligned.
 
+Resolve palette colours through `createTheme` or `applyPalette`; `paletteOptions[].preset` is only a suggested material and does not identify the palette colours. Use the exported preset and palette lists for choices.
+
 Themes use version 1 JSON with strict role/value validation. Parse external themes before applying them. A schema-valid draft may fail contrast; exported themes must pass the declared pair checks. Color checks are not a certification. Preserve theme and locale through portals; check dark mode and RTL when changing overlays. Avoid translucent essential surfaces whose contrast depends on an unknown backdrop.
 
 Before completing changes, run the checks relevant to the changed behavior. `npm run check` covers types, the consumer style boundary, unit/interaction/SSR tests and builds. `npm run test:e2e` covers browser workflows; use specific test/project filters for narrow changes. The compatibility document distinguishes intended historic versions from browsers actually tested: preserve this distinction in claims.

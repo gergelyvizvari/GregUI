@@ -1,4 +1,6 @@
-import { useState, type ReactNode } from 'react';
+import { samplePhoto, PhotoCredit } from './sample-media';
+import { TypographyDemo, PageCompositionDemo } from './content-demo';
+import { useEffect, useState, type ReactNode } from 'react';
 import {
   ActionMenu,
   ThemeSelector,
@@ -19,10 +21,13 @@ import {
   Card,
   Container,
   Combobox,
+  type Choice,
   CommandPalette,
+  ConfirmDialog,
   CommentsPanel,
   Dashboard,
   DataTable,
+  type DataTableSort,
   DateRangePicker,
   FileUpload,
   ImageRegion,
@@ -35,6 +40,7 @@ import {
   SearchFilterBar,
   SecuritySettings,
   Stack,
+  Status,
   TeamMembers,
   Text,
   Timeline,
@@ -83,6 +89,195 @@ const projects = [
   { id: '3', name: 'Help centre', status: 'Active', members: 12 },
   { id: '4', name: 'Mobile app', status: 'Draft', members: 5 },
 ];
+
+// A local stand-in for an application-owned service. No network requests are made.
+function RemoteRecordsDemo() {
+  const [page, setPage] = useState(1);
+  const [sort, setSort] = useState<DataTableSort | null>(null);
+  const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState<string[]>([]);
+  const [fail, setFail] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const [result, setResult] = useState({ rows: projects.slice(0, 2), total: projects.length });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>();
+  useEffect(() => {
+    setLoading(true);
+    setError(undefined);
+    const timer = window.setTimeout(() => {
+      if (fail) setError('The demo service could not load records. Try again.');
+      else {
+        const filtered = projects.filter((row) =>
+          row.name.toLowerCase().includes(query.toLowerCase()),
+        );
+        if (sort)
+          filtered.sort((a, b) => a.name.localeCompare(b.name) * (sort.descending ? -1 : 1));
+        setResult({ rows: filtered.slice((page - 1) * 2, page * 2), total: filtered.length });
+      }
+      setLoading(false);
+    }, 500);
+    // Cancel superseded requests so older results cannot overwrite the current query.
+    return () => window.clearTimeout(timer);
+  }, [page, sort, query, fail, attempt]);
+  return (
+    <Stack>
+      <Text>
+        Local service simulation: page data arrives after a short delay. No requests leave this
+        browser.
+      </Text>
+      <TextField
+        label="Filter remote records"
+        value={query}
+        onChange={(event) => {
+          setQuery(event.target.value);
+          setPage(1);
+        }}
+      />
+      <Button variant="secondary" disabled={loading} onClick={() => setFail(true)}>
+        Simulate service failure
+      </Button>
+      <DataTable
+        caption="Remote records"
+        mode="server"
+        rows={result.rows}
+        totalRows={result.total}
+        rowId={(row) => row.id}
+        pageSize={2}
+        page={page}
+        onPageChange={setPage}
+        sort={sort}
+        onSortChange={setSort}
+        selectedIds={selected}
+        onSelectionChange={setSelected}
+        loading={loading}
+        error={error}
+        onRetry={() => {
+          setFail(false);
+          setAttempt((value) => value + 1);
+        }}
+        columns={[
+          { key: 'name', label: 'Record', value: (row) => row.name, sortable: true },
+          { key: 'members', label: 'People', value: (row) => row.members },
+        ]}
+      />
+      <Text>{selected.length} records selected across pages</Text>
+    </Stack>
+  );
+}
+
+const directoryCountries = [
+  { value: 'uk', label: 'United Kingdom', aliases: ['uk', 'britain', 'london'] },
+  { value: 'fr', label: 'France', aliases: ['fr', 'paris'] },
+  { value: 'de', label: 'Germany', aliases: ['de', 'berlin'] },
+  { value: 'fi', label: 'Finland', aliases: ['fi', 'helsinki', 'slow'], disabled: true },
+];
+
+function RemoteChoicesDemo() {
+  const [query, setQuery] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Choice>(directoryCountries[1]);
+  const [options, setOptions] = useState<Choice[]>(directoryCountries);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string>();
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    setLoading(true);
+    setLoadError(undefined);
+    const search = (query ?? '').toLowerCase();
+    const timer = window.setTimeout(
+      () => {
+        if (search === 'error' && attempt === 0) {
+          setLoadError('The demo directory could not load countries. Try again.');
+        } else {
+          // Aliases are application data: external results may not contain the query in their labels.
+          setOptions(
+            directoryCountries.filter(
+              (country) =>
+                search === 'error' ||
+                [country.label, ...country.aliases].some((term) =>
+                  term.toLowerCase().includes(search),
+                ),
+            ),
+          );
+        }
+        setLoading(false);
+      },
+      search === 'slow' ? 1000 : 400,
+    );
+    // A superseded search must never replace results for the current query.
+    return () => window.clearTimeout(timer);
+  }, [query, attempt]);
+  return (
+    <Stack>
+      <Combobox
+        label="Search the country directory"
+        hint="Try uk for an alias, error for failure/retry, or missing for no matches. Results are simulated locally."
+        filterMode="external"
+        query={query}
+        onQueryChange={(next) => {
+          if (next === query) return;
+          setQuery(next);
+          setAttempt(0);
+          setLoading(true);
+        }}
+        options={options}
+        value={selected.value}
+        selectedLabel={selected.label}
+        onChange={(value) => {
+          const country = options.find((option) => option.value === value);
+          if (country) setSelected(country);
+        }}
+        loading={loading}
+        loadError={loadError}
+        onRetry={() => {
+          setLoading(true);
+          setAttempt((value) => value + 1);
+        }}
+      />
+      <Text>Selected country: {selected.label}</Text>
+      <Button variant="secondary">Continue with selected country</Button>
+    </Stack>
+  );
+}
+
+function AsyncConfirmationDemo() {
+  const [attempts, setAttempts] = useState(0);
+  const [archived, setArchived] = useState(false);
+  return (
+    <Stack>
+      <Text>
+        Local simulation: the first archive attempt fails; retry succeeds. No project data is
+        changed.
+      </Text>
+      <ConfirmDialog
+        trigger={<Button variant="danger">Archive sample project</Button>}
+        title="Archive this project?"
+        description="The project will move out of the active list. Keep this window open while the simulated request completes."
+        confirmLabel="Archive project"
+        cancelLabel="Keep project"
+        errorMessage="The demo service could not archive this project. Please try again."
+        onConfirm={async () => {
+          setAttempts((value) => value + 1);
+          await new Promise<void>((resolve) => window.setTimeout(resolve, 1000));
+          if (attempts === 0) throw new Error('Simulated service failure');
+          setArchived(true);
+        }}
+      />
+      <Text>Archive requests: {attempts}</Text>
+      <Status>{archived ? 'Sample project archived locally.' : ''}</Status>
+      {archived && (
+        <Button
+          variant="secondary"
+          onClick={() => {
+            setAttempts(0);
+            setArchived(false);
+          }}
+        >
+          Reset archive demo
+        </Button>
+      )}
+    </Stack>
+  );
+}
 
 export function useAdvancedExamples(): CatalogEntry[] {
   const [region, setRegion] = useState<ImageRegionValue | null>(null);
@@ -176,6 +371,20 @@ export function useAdvancedExamples(): CatalogEntry[] {
   ];
   return [
     entry(
+      'Typography & content',
+      'Foundations',
+      'Shared text roles, all six heading levels and readable native content.',
+      '<Prose><h2>Section</h2><p>Readable content.</p></Prose>',
+      <TypographyDemo />,
+    ),
+    entry(
+      'Page foundations',
+      'Layout',
+      'Compact page introductions with breadcrumbs, metadata, actions and nested sections.',
+      '<PageHeader size="compact" title="Page title" breadcrumbs={breadcrumbs} meta={metadata} actions={actions} />',
+      <PageCompositionDemo />,
+    ),
+    entry(
       'Theme Selector',
       'Forms',
       'Five styles and palettes with light/dark modes. Labels and persistence belong to the consumer.',
@@ -254,39 +463,38 @@ export function useAdvancedExamples(): CatalogEntry[] {
       </Stack>,
     ),
     entry(
+      'Remote records',
+      'Data display',
+      'Application-controlled server mode, loading feedback, failure and retry. Selection survives page changes.',
+      '<DataTable mode="server" rows={pageRows} totalRows={total} page={page} onPageChange={setPage} sort={sort} onSortChange={setSort} columns={columns} rowId={row=>row.id} />',
+      <RemoteRecordsDemo />,
+    ),
+    entry(
       'Compact image preview',
       'Media',
       'Read-only image preview without cropping.',
       '<ImageRegion src={url} alt="Reference" compact />',
-      <ImageRegion
-        compact
-        alt="Portrait reference"
-        src={
-          'data:image/svg+xml,' +
-          encodeURIComponent(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="180" height="640"><rect width="180" height="640" fill="#53667d"/></svg>',
-          )
-        }
-      />,
+      <Stack>
+        <ImageRegion compact alt={samplePhoto.alt} src={samplePhoto.src} />
+        <PhotoCredit />
+      </Stack>,
     ),
     entry(
       'Image region',
       'Media',
       'Responsive reference image with one editable region.',
       '<ImageRegion src={url} alt="Reference" value={region} onChange={setRegion} />',
-      <ImageRegion
-        src={
-          'data:image/svg+xml,' +
-          encodeURIComponent(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="320"><rect width="640" height="320" fill="#e8edf1"/><rect x="80" y="80" width="480" height="160" fill="#53667d"/><text x="100" y="160" fill="white" font-size="24">Mark part of this reference</text></svg>',
-          )
-        }
-        alt="Example reference panel"
-        value={region}
-        onChange={setRegion}
-        label="Mark reference region"
-        help="Drag to mark; Enter to start; arrows to move; Shift + arrows to resize; Delete to clear."
-      />,
+      <Stack>
+        <ImageRegion
+          src={samplePhoto.src}
+          alt={samplePhoto.alt}
+          value={region}
+          onChange={setRegion}
+          label="Mark reference region"
+          help="Drag to mark; Enter to start; arrows to move; Shift + arrows to resize; Delete to clear."
+        />
+        <PhotoCredit />
+      </Stack>,
     ),
     entry(
       'Form container',
@@ -315,13 +523,17 @@ export function useAdvancedExamples(): CatalogEntry[] {
       'Thumbnail choice',
       'Forms',
       'Image or text selection with a native checkbox.',
-      '<ThumbnailChoice label="Sample" checked={checked} onChange={setChecked} />',
-      <ThumbnailChoice
-        label="Sample"
-        preview="Text preview"
-        checked={fieldOpen}
-        onChange={setFieldOpen}
-      />,
+      '<ThumbnailChoice label="Alpine lake" src={url} checked={checked} onChange={setChecked} />',
+      <Stack>
+        <ThumbnailChoice
+          label="Alpine lake"
+          src={samplePhoto.src}
+          detail="Select this landscape for your collection"
+          checked={fieldOpen}
+          onChange={setFieldOpen}
+        />
+        <PhotoCredit />
+      </Stack>,
     ),
     entry(
       'Field editor',
@@ -381,6 +593,20 @@ export function useAdvancedExamples(): CatalogEntry[] {
         value={choice}
         onChange={setChoice}
       />,
+    ),
+    entry(
+      'Async confirmation',
+      'Overlays',
+      'Await a confirmation, prevent repeated actions, retain failures for retry and return focus after success.',
+      '<ConfirmDialog trigger={button} title="Archive?" description="…" confirmLabel="Archive" cancelLabel="Keep" onConfirm={asyncArchive} />',
+      <AsyncConfirmationDemo />,
+    ),
+    entry(
+      'Remote choices',
+      'Forms',
+      'Application-controlled directory search with aliases, delayed results, error recovery and a persistent selected label.',
+      '<Combobox filterMode="external" query={query} onQueryChange={setQuery} options={results} value={value} selectedLabel={label} onChange={select} loading={loading} loadError={error} onRetry={retry} label="Country" />',
+      <RemoteChoicesDemo />,
     ),
     entry(
       'Date Range Picker',

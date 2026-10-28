@@ -1,6 +1,10 @@
 # gregUI
 
-A reusable React UI foundation with six featured visual directions and backwards-compatible legacy presets, typed design tokens, localization, accessible interaction primitives and a theme workbench. Built for the owner's future applications.
+A reusable React UI foundation with seven featured visual directions and backwards-compatible legacy presets, typed design tokens, localization, accessible interaction primitives and a theme workbench. Built for the owner's future applications.
+
+## AI development guide
+
+Start with [the AI guide](docs/AI-GUIDE.md) for source locations, implemented capabilities, integration boundaries and verification commands. [Component development candidates](docs/COMPONENT-ROADMAP.md) records proposed next steps separately from shipped APIs.
 
 ## Run locally
 
@@ -12,7 +16,7 @@ npm run build
 npm run dev
 ```
 
-Open the URL printed by Vite. The workbench includes a component catalog, theme editor, foundations, example patterns and an accessibility/support page. It has no backend, analytics or external fonts. Save draft explicitly stores a theme in this browser; Delete saved draft removes it.
+Open the URL printed by Vite. The workbench includes a component catalog, theme editor, foundations, example patterns and an accessibility/support page. Use the floating **Edit theme** button on Components, Typography & pages, Patterns, Authentication or Foundations to adjust previews live; it opens a non-modal desktop inspector or a modal mobile drawer with the same theme/history as Theme studio. It has no backend, analytics or external fonts. Save draft explicitly stores a theme in this browser; Delete saved draft removes it.
 
 ```sh
 npm run check           # types, consumer style boundary, unit/interaction tests, builds
@@ -27,21 +31,21 @@ If Playwright browsers are missing, run `npx playwright install chromium firefox
 
 ## Repository
 
-| Location                    | Purpose                                                                           |
-| --------------------------- | --------------------------------------------------------------------------------- |
-| `packages/tokens`           | Versioned theme schema, presets, semantic roles, contrast checks, JSON/CSS export |
-| `packages/react`            | Components, layout/pattern primitives, shared stylesheet, themed portals          |
-| `packages/localization`     | Locale/direction/messages provider and number/date/plural formatters              |
-| `apps/playground`           | Workbench using the same public packages as consuming apps                        |
-| `examples/consumer`         | Separate application importing built package exports without local styles         |
-| `tests`                     | Theme, interaction, SSR/hydration and browser checks                              |
-| `skills/gregui-development` | Portable source for the reusable development skill                                |
+| Location                    | Purpose                                                                                 |
+| --------------------------- | --------------------------------------------------------------------------------------- |
+| `packages/tokens`           | Versioned themes, presets, semantic colour/type roles, contrast checks, JSON/CSS export |
+| `packages/react`            | Components, layout/pattern primitives, shared stylesheet, themed portals                |
+| `packages/localization`     | Locale/direction/messages provider and number/date/plural formatters                    |
+| `apps/playground`           | Workbench using the same public packages as consuming apps                              |
+| `examples/consumer`         | Separate application importing built package exports without local styles               |
+| `tests`                     | Theme, interaction, SSR/hydration and browser checks                                    |
+| `skills/gregui-development` | Portable source for the reusable development skill                                      |
 
 The application bundlers resolve built package exports, not source aliases. After changing a library package, run `npm run build:packages` and reload the workbench. Unit tests resolve source directly.
 
 ## Application kit
 
-The searchable Components catalog now includes Tree View, Timeline, sortable Data Table, advanced inputs and ready-made profile, security, team, notification, privacy, pricing, discussion and approval panels. See [expanded component contracts](docs/EXPANDED-COMPONENTS.md) for APIs and supported scope. Every example is local and uses the public package.
+The searchable Components catalog now includes Tree View, Timeline, sortable Data Table, advanced inputs and ready-made profile, security, team, notification, privacy, pricing, discussion and approval panels. See [expanded component contracts](docs/EXPANDED-COMPONENTS.md) for APIs and supported scope. Every example is local and uses the public package. ConfirmDialog also supports awaited actions with pending locking and failure/retry feedback.
 
 ## Use the library
 
@@ -79,20 +83,26 @@ Each preset has its own default palette and component treatment: forest Flat, pl
 
 Apps own domain content, state, routing, validation rules and data processing. gregUI owns styling and shared interaction behavior. Compose Stack, Inline, Grid, Split, Container, Card and page/overlay primitives; extend the package for missing variants. No application CSS, arbitrary style props or class overrides. `npm run check:styles` enforces common violations in this workspace; replicate the policy in each consuming repository.
 
+## Typography and page foundations
+
+Open **Typography & pages** in the main navigation: **Text styles**, **Reading content**, **Page elements**, and **Type scale** are separate tabs. The page can be opened directly with `?page=typography`. Components has category/search filters and an index that opens one focused example; its address includes a stable component ID for bookmarking.
+
+Use Heading levels h1–h6 independently from visual sizes, Text lead/caption roles, and Prose for readable native content. Container reading width, nested Section levels and compact PageHeader breadcrumbs/metadata compose common pages without app CSS. Foundations and the catalog include live typography/content and page-composition examples. See [contracts](docs/COMPONENTS.md#typography-and-page-foundations).
+
 ## Current scope and limits
 
 This is the first working foundation, not a production certification. The initial catalog includes buttons/links, labeled fields, select/textarea, checkbox/radio/switch, layouts, dialogs/drawers/full-screen flows, confirmation, tooltip/popover, tabs/navigation, alerts/status/progress/skeletons, tables and empty states. Fourteen presets work in light/dark modes. Glass uses translucent cards with a blurred backdrop; inputs and overlays retain opaque surfaces. Verify card text against the actual backdrop.
 
-Date pickers, comboboxes, advanced tables, charts, upload orchestration, consent integrations and native mobile components remain future additions. Apps must complete their own accessibility, privacy and sector-specific checks. The 24-month browser policy is documented; historical devices and manual assistive-technology testing remain unverified.
+Combobox with local or application-controlled remote results, native DateRangePicker and DataTable with client or application-controlled server mode are implemented. Custom calendars, charts, upload orchestration, consent integrations and native mobile components remain future additions. Apps must complete their own accessibility, privacy and sector-specific checks. The 24-month browser policy is documented; historical devices and manual assistive-technology testing remain unverified.
 
 See [component contracts](docs/COMPONENTS.md), [compatibility and verification](docs/COMPATIBILITY.md), [contributing](docs/CONTRIBUTING.md), and the original [product brief](UI-SYSTEM-BRIEF.md).
 
 ### Palette choices
 
-Every style supports Forest, Plum, Clay, Cobalt, Ink & cream, Ocean, Rose and Amber: 112 combinations with light/dark counterparts. Use the workbench's Palette selector, or `createTheme('soft', 'light', 'cobalt')`. `applyPalette(theme, 'forest')` replaces only colours; `getPalette(theme)` identifies a matching built-in palette or returns undefined for custom colours. `paletteOptions` provides IDs and display names for consumers. Stored theme JSON remains version 1, and palette recognition survives import, save/restore and Undo.
+Every style supports Iris, Lagoon, Forest, Plum, Clay, Cobalt, Ink & cream, Ocean, Rose and Amber: 140 preset/palette combinations, or 280 including light/dark modes. Use the workbench's Palette selector, or `createTheme('soft', 'light', 'cobalt')`. `applyPalette(theme, 'forest')` replaces only colours; `getPalette(theme)` identifies a matching built-in palette or returns undefined for custom colours. `paletteOptions` provides IDs and display names for consumers. Stored theme JSON remains version 1, and palette recognition survives import, save/restore and Undo.
 
 ### Ready-made authentication
 
 Open **Authentication** in the workbench to try sign-in, registration, recovery, password reset, email verification and two-step verification. Shared forms include password visibility, remember preference, pending/error/success states and translation hooks. See [integration examples](docs/AUTHENTICATION.md). The demo performs no network authentication or credential storage.
 
-Featured choices are Workspace, Bloom, Clay, Neumorphic and Glass. `featuredPresets` drives new theme pickers; `presets` retains all saved-theme IDs for compatibility. Selecting a complete direction can load `recommendedPalettes[preset]`; users may then customize colours independently.
+Featured choices are Workspace, Bloom, Clay, Neumorphic, Glass and Flat. `featuredPresets` drives new theme pickers; `presets` retains all saved-theme IDs for compatibility. Selecting a complete direction can load `recommendedPalettes[preset]`; users may then customize colours independently.

@@ -8,7 +8,7 @@ async function navigate(page: Page, name: string) {
 test('default view is accessible and fits narrow screens', async ({ page }, testInfo) => {
   await page.goto('/');
   await expect(
-    page.getByRole('heading', { name: 'Five directions. One foundation.' }),
+    page.getByRole('heading', { name: 'Seven directions. One foundation.' }),
   ).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   const results = await new AxeBuilder({ page })
@@ -24,7 +24,7 @@ test('featured presets and dark mode preserve accessible rendered content', asyn
   page,
 }, testInfo) => {
   await page.goto('/');
-  for (const name of ['Workspace', 'Bloom', 'Clay', 'Neumorphic', 'Glass']) {
+  for (const name of ['Paper', 'Workspace', 'Bloom', 'Clay', 'Neumorphic', 'Glass', 'Flat']) {
     await page.getByRole('button', { name: new RegExp(`^${name} `) }).click();
     for (const dark of [false, true]) {
       await page.getByRole('switch', { name: 'Dark mode' }).setChecked(dark);
@@ -33,6 +33,25 @@ test('featured presets and dark mode preserve accessible rendered content', asyn
         .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
         .analyze();
       expect(results.violations, `${name} ${dark ? 'dark' : 'light'}`).toEqual([]);
+      if (name === 'Paper') {
+        const preview = page.locator('[aria-label="Component preview"]');
+        const input = preview.getByRole('textbox').first();
+        await expect(input).toHaveCSS('border-top-width', '0px');
+        await expect(input).toHaveCSS('border-bottom-width', '1px');
+        await input.fill('Updated workspace');
+        await expect(input).toHaveValue('Updated workspace');
+        await expect(preview.locator('.g-card').first()).toHaveCSS('border-top-width', '0px');
+        const button = preview.getByRole('button').first();
+        await expect(button).toHaveCSS('box-shadow', 'none');
+        await button.hover();
+        await expect(button).toHaveCSS('box-shadow', 'none');
+        await expect(button).toHaveCSS('transform', 'none');
+        await button.focus();
+        await page.keyboard.press('Tab');
+        await button.focus();
+        await expect(button).toBeFocused();
+        await expect(button).not.toHaveCSS('outline-style', 'none');
+      }
       if (testInfo.project.name === 'chromium')
         await page.locator('[aria-label="Component preview"]').screenshot({
           path: `test-results/preset-${name.toLowerCase()}-${dark ? 'dark' : 'light'}.png`,
@@ -652,4 +671,47 @@ test('selection cues, action dismissal and file clearing are usable in the catal
   await expect(
     page.getByText('PDF or TXT, up to 5 MB per file. Selected: None. No upload occurs.'),
   ).toBeVisible();
+});
+
+test('refreshed palettes stay readable on Paper in both modes', async ({ page }, testInfo) => {
+  test.setTimeout(120000);
+  await page.goto('/');
+  await page.getByRole('button', { name: /^Paper / }).click();
+  const palette = page.getByLabel('Palette', { exact: true });
+  const ids = await palette
+    .locator('option')
+    .evaluateAll((options) =>
+      options.map((option) => (option as HTMLOptionElement).value).filter((id) => id !== 'custom'),
+    );
+  expect(ids).toHaveLength(16);
+  const preview = page.locator('[aria-label="Component preview"]');
+  for (const id of ids) {
+    await palette.selectOption(id);
+    for (const dark of [false, true]) {
+      await page.getByRole('switch', { name: 'Dark mode' }).setChecked(dark);
+      expect(
+        (
+          await new AxeBuilder({ page })
+            .include('[aria-label="Component preview"]')
+            .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+            .analyze()
+        ).violations,
+        id,
+      ).toEqual([]);
+      if (id === 'paper' && !dark) {
+        await expect(preview.getByRole('textbox').first()).toHaveCSS(
+          'background-color',
+          'rgb(255, 255, 255)',
+        );
+      }
+      if (
+        testInfo.project.name === 'chromium' &&
+        ['paper', 'coral', 'mint', 'citrus', 'violet'].includes(id)
+      ) {
+        await preview.screenshot({
+          path: `test-results/palette-${id}-${dark ? 'dark' : 'light'}.png`,
+        });
+      }
+    }
+  }
 });

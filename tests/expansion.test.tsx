@@ -438,3 +438,35 @@ it('supports native folder selection and does not accept a directory drop as a f
   });
   expect(onFiles).toHaveBeenCalledTimes(1);
 });
+
+it('keeps a failed member role draft available for retry and clears its error when the choice changes', async () => {
+  const user = userEvent.setup();
+  const role = vi
+    .fn()
+    .mockRejectedValueOnce(new Error('Private provider details'))
+    .mockResolvedValueOnce(undefined);
+  render(
+    <TeamMembers
+      title="Team"
+      members={[{ id: 'a', name: 'Alex', email: 'alex@example.com', role: 'member' }]}
+      roles={[
+        { value: 'member', label: 'Member' },
+        { value: 'viewer', label: 'Viewer' },
+      ]}
+      onInvite={() => {}}
+      onRoleChange={role}
+    />,
+  );
+  await user.selectOptions(screen.getByLabelText('Role: Alex'), 'viewer');
+  await user.click(screen.getByRole('button', { name: 'Save changes' }));
+  expect(screen.getByRole('alert')).toHaveTextContent('Could not continue. Please try again.');
+  expect(screen.queryByText('Private provider details')).not.toBeInTheDocument();
+  expect(screen.getByLabelText('Role: Alex')).toHaveValue('viewer');
+  expect(screen.getByRole('button', { name: 'Save changes' })).toBeEnabled();
+  await user.selectOptions(screen.getByLabelText('Role: Alex'), 'member');
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  await user.selectOptions(screen.getByLabelText('Role: Alex'), 'viewer');
+  await user.click(screen.getByRole('button', { name: 'Save changes' }));
+  expect(role).toHaveBeenCalledTimes(2);
+  expect(screen.getByText('Saved successfully.')).toBeInTheDocument();
+});

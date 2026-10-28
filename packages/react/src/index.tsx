@@ -3,6 +3,10 @@ import React, {
   createContext,
   useContext,
   useId,
+  useState,
+  useRef,
+  useEffect,
+  useSyncExternalStore,
   forwardRef,
   type CSSProperties,
   type ReactNode,
@@ -125,7 +129,7 @@ export function Container({
   size = 'page',
   inset = true,
   ...props
-}: DivProps & { size?: 'page' | 'form'; inset?: boolean }) {
+}: DivProps & { size?: 'page' | 'form' | 'reading'; inset?: boolean }) {
   return (
     <div {...props} className="g-container" data-size={size} data-inset={inset}>
       {children}
@@ -157,18 +161,20 @@ export function Section({
   description,
   children,
   action,
+  level = 2,
 }: {
   title: string;
   description?: string;
   children: ReactNode;
   action?: ReactNode;
+  level?: 2 | 3 | 4 | 5 | 6;
 }) {
   const id = useId();
   return (
     <section className="g-section" aria-labelledby={id}>
       <Inline justify="between">
         <Stack gap={1}>
-          <Heading level={2} size="section" id={id}>
+          <Heading level={level} size="section" id={id}>
             {title}
           </Heading>
           {description && (
@@ -192,7 +198,7 @@ export function Text({
   ...props
 }: Clean<ComponentPropsWithoutRef<'p'>> & {
   as?: 'p' | 'span';
-  size?: 'small' | 'body' | 'large' | 'eyebrow';
+  size?: 'small' | 'body' | 'large' | 'eyebrow' | 'lead' | 'caption';
   tone?: 'default' | 'muted' | 'primary' | 'danger';
   weight?: 'normal' | 'strong';
 }) {
@@ -208,16 +214,29 @@ export function Heading({
   children,
   ...props
 }: Clean<ComponentPropsWithoutRef<'h2'>> & {
-  level?: 1 | 2 | 3 | 4;
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
   size?: 'hero' | 'page' | 'section' | 'card';
 }) {
-  const Tag = `h${level}` as 'h1';
+  const Tag = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   return (
     <Tag {...props} className="g-heading" data-size={size}>
       {children}
     </Tag>
   );
 }
+/** Typography for trusted React/HTML content; applications own parsing and sanitisation. */
+export function Prose({
+  children,
+  measure = 'reading',
+  ...props
+}: DivProps & { measure?: 'reading' | 'full' }) {
+  return (
+    <div {...props} className="g-prose" data-measure={measure}>
+      {children}
+    </div>
+  );
+}
+
 export function Divider() {
   return <hr className="g-divider" />;
 }
@@ -855,6 +874,108 @@ export function FullscreenDialog(props: OverlayProps) {
 export function DialogClose({ children }: { children: ReactNode }) {
   return <DialogPrimitive.Close asChild>{children}</DialogPrimitive.Close>;
 }
+function subscribeToPanelViewport(change: () => void) {
+  if (typeof window.matchMedia !== 'function') return () => {};
+  const query = window.matchMedia('(max-width: 760px)');
+  query.addEventListener('change', change);
+  return () => query.removeEventListener('change', change);
+}
+function isCompactPanelViewport() {
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(max-width: 760px)').matches
+    : false;
+}
+
+export interface FloatingPanelProps {
+  trigger: ReactNode;
+  title: string;
+  description: string;
+  children: ReactNode;
+  footer?: ReactNode;
+  closeLabel?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+/** Non-modal desktop inspector; a modal drawer on narrow viewports. */
+export function FloatingPanel({
+  trigger,
+  title,
+  description,
+  children,
+  footer,
+  closeLabel,
+  open: controlledOpen,
+  onOpenChange,
+}: FloatingPanelProps) {
+  const { messages } = useLocale();
+  const compact = useSyncExternalStore(
+    subscribeToPanelViewport,
+    isCompactPanelViewport,
+    () => false,
+  );
+  const [localOpen, setLocalOpen] = useState(false);
+  const open = controlledOpen ?? localOpen;
+  return (
+    <DialogPrimitive.Root
+      open={open}
+      modal={compact}
+      onOpenChange={(next) => {
+        if (controlledOpen === undefined) setLocalOpen(next);
+        onOpenChange?.(next);
+      }}
+    >
+      <DialogPrimitive.Portal forceMount>
+        <PortalFrame>
+          <div className="g-floating-launcher" hidden={open}>
+            <DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger>
+          </div>
+        </PortalFrame>
+      </DialogPrimitive.Portal>
+      <DialogPrimitive.Portal>
+        <PortalFrame>
+          {compact && <DialogPrimitive.Overlay className="g-backdrop" />}
+          <DialogPrimitive.Content
+            className="g-floating-panel"
+            aria-modal={compact || undefined}
+            data-modal={compact}
+            onInteractOutside={(event) => {
+              if (!compact) event.preventDefault();
+            }}
+          >
+            <div className="g-dialog-header">
+              <Stack gap={2}>
+                <DialogPrimitive.Title className="g-dialog-title">{title}</DialogPrimitive.Title>
+                <DialogPrimitive.Description className="g-hint">
+                  {description}
+                </DialogPrimitive.Description>
+              </Stack>
+              <DialogPrimitive.Close asChild>
+                <IconButton variant="ghost" label={closeLabel ?? messages.close} tabIndex={0}>
+                  <Icon name="close" />
+                </IconButton>
+              </DialogPrimitive.Close>
+            </div>
+            <div className="g-dialog-body">{children}</div>
+            {footer && <div className="g-dialog-footer">{footer}</div>}
+          </DialogPrimitive.Content>
+        </PortalFrame>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  );
+}
+
+export interface ConfirmDialogProps {
+  trigger: ReactNode;
+  title: string;
+  description: string;
+  confirmLabel: string;
+  cancelLabel: string;
+  /** Returned promises are awaited; synchronous and resolved values are ignored. */
+  onConfirm: () => unknown;
+  errorMessage?: string;
+}
+
 export function ConfirmDialog({
   trigger,
   title,
@@ -862,21 +983,62 @@ export function ConfirmDialog({
   confirmLabel,
   cancelLabel,
   onConfirm,
-}: {
-  trigger: ReactNode;
-  title: string;
-  description: string;
-  confirmLabel: string;
-  cancelLabel: string;
-  onConfirm: () => void;
-}) {
+  errorMessage,
+}: ConfirmDialogProps) {
+  const { messages } = useLocale();
+  const [open, setOpen] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const locked = useRef(false);
+  const mounted = useRef(true);
+  const content = useRef<HTMLDivElement>(null);
+  const action = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  useEffect(() => {
+    if (open && failed && !pending) action.current?.focus();
+  }, [open, failed, pending]);
+  async function confirm() {
+    if (locked.current) return;
+    locked.current = true;
+    setPending(true);
+    setFailed(false);
+    // Keep focus in the modal while both actions are disabled.
+    content.current?.focus();
+    try {
+      await onConfirm();
+      if (mounted.current) setOpen(false);
+    } catch {
+      if (mounted.current) setFailed(true);
+    } finally {
+      locked.current = false;
+      if (mounted.current) setPending(false);
+    }
+  }
   return (
-    <AlertPrimitive.Root>
+    <AlertPrimitive.Root
+      open={open}
+      onOpenChange={(next) => {
+        if (locked.current) return;
+        setOpen(next);
+        setFailed(false);
+      }}
+    >
       <AlertPrimitive.Trigger asChild>{trigger}</AlertPrimitive.Trigger>
       <AlertPrimitive.Portal>
         <PortalFrame>
           <AlertPrimitive.Overlay className="g-backdrop" />
-          <AlertPrimitive.Content className="g-dialog">
+          <AlertPrimitive.Content
+            ref={content}
+            className="g-dialog"
+            onEscapeKeyDown={(event) => {
+              if (locked.current) event.preventDefault();
+            }}
+          >
             <div className="g-dialog-header">
               <Stack gap={2}>
                 <AlertPrimitive.Title className="g-dialog-title">{title}</AlertPrimitive.Title>
@@ -885,14 +1047,31 @@ export function ConfirmDialog({
                 </AlertPrimitive.Description>
               </Stack>
             </div>
-            <div className="g-dialog-footer">
+            <div className={pending || failed ? 'g-dialog-body' : undefined}>
+              <div role="status" aria-live="polite" className={pending ? 'g-status' : 'g-sr-only'}>
+                {pending ? messages.loading : ''}
+              </div>
+              {failed && <Alert title={errorMessage ?? messages.confirmError} tone="danger" live />}
+            </div>
+            <div className="g-dialog-footer" aria-busy={pending}>
               <Inline justify="end">
                 <AlertPrimitive.Cancel asChild>
-                  <Button variant="secondary">{cancelLabel}</Button>
+                  <Button variant="secondary" disabled={pending} tabIndex={0}>
+                    {cancelLabel}
+                  </Button>
                 </AlertPrimitive.Cancel>
                 <AlertPrimitive.Action asChild>
-                  <Button variant="danger" onClick={onConfirm}>
-                    {confirmLabel}
+                  <Button
+                    ref={action}
+                    variant="danger"
+                    loading={pending}
+                    tabIndex={0}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      void confirm();
+                    }}
+                  >
+                    {failed ? `${messages.retry}: ${confirmLabel}` : confirmLabel}
                   </Button>
                 </AlertPrimitive.Action>
               </Inline>
@@ -955,16 +1134,23 @@ export function PageHeader({
   description,
   actions,
   artwork,
+  breadcrumbs,
+  meta,
+  size = 'default',
 }: {
   artwork?: ReactNode;
+  breadcrumbs?: ReactNode;
+  meta?: ReactNode;
+  size?: 'default' | 'compact';
   eyebrow?: string;
   title: string;
   description?: string;
   actions?: ReactNode;
 }) {
   return (
-    <header className="g-page-header" data-editorial={Boolean(artwork)}>
+    <header className="g-page-header" data-editorial={Boolean(artwork)} data-size={size}>
       <Stack gap={3}>
+        {breadcrumbs}
         {eyebrow && (
           <Text size="eyebrow" tone="primary">
             {eyebrow}
@@ -978,6 +1164,7 @@ export function PageHeader({
             {description}
           </Text>
         )}
+        {meta && <Inline gap={2}>{meta}</Inline>}
       </Stack>
       {actions && <Inline>{actions}</Inline>}
       {artwork && <div className="g-page-artwork">{artwork}</div>}

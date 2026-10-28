@@ -28,12 +28,14 @@ function AsyncAction({
   danger = false,
   disabled = false,
   onBusyChange,
+  onErrorChange,
 }: {
   children: ReactNode;
   onAction: () => void | Promise<void>;
   danger?: boolean;
   disabled?: boolean;
   onBusyChange?: (busy: boolean) => void;
+  onErrorChange?: (error: boolean) => void;
 }) {
   const { messages } = useLocale();
   const [busy, setBusy] = useState(false),
@@ -51,10 +53,12 @@ function AsyncAction({
           setBusy(true);
           onBusyChange?.(true);
           setError(false);
+          onErrorChange?.(false);
           try {
             await onAction();
           } catch {
             setError(true);
+            onErrorChange?.(true);
           } finally {
             lock.current = false;
             setBusy(false);
@@ -64,7 +68,7 @@ function AsyncAction({
       >
         {children}
       </Button>
-      {error && <Alert title={messages.workflowError} tone="danger" live />}
+      {error && !onErrorChange && <Alert title={messages.workflowError} tone="danger" live />}
     </Stack>
   );
 }
@@ -391,7 +395,7 @@ export function TeamMembers({
             }
           }}
         >
-          <Inline>
+          <Inline align="end">
             <TextField
               label={messages.inviteEmail}
               type="email"
@@ -430,12 +434,13 @@ function MemberRow({
   const [draft, setDraft] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState(false);
   return (
     <div className="g-notification">
       <Stack gap={2}>
         <Text weight="strong">{member.name}</Text>
         <Text tone="muted">{member.email}</Text>
-        <Inline>
+        <Inline align="end">
           <Field label={`${messages.role}: ${member.name}`}>
             {(p) => (
               <Select
@@ -444,6 +449,7 @@ function MemberRow({
                 value={draft ?? member.role}
                 onChange={(e) => {
                   setSaved(false);
+                  setError(false);
                   setDraft(e.target.value);
                 }}
               >
@@ -457,6 +463,7 @@ function MemberRow({
           </Field>
           <AsyncAction
             onBusyChange={setBusy}
+            onErrorChange={setError}
             disabled={draft === null || draft === member.role}
             onAction={async () => {
               await onSave(member.id, draft ?? member.role);
@@ -467,6 +474,7 @@ function MemberRow({
             {messages.saveChanges}
           </AsyncAction>
         </Inline>
+        {error && <Alert title={messages.workflowError} tone="danger" live />}
         <Status>{saved ? messages.saved : ''}</Status>
       </Stack>
     </div>

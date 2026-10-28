@@ -1,21 +1,21 @@
 # Application components and patterns
 
-All exports below ship from `@gregui/react`. Import the shared stylesheet once. Each inherits its nearest ThemeProvider and LocaleProvider, supports all five materials and keeps presentation inside the shared package. Application callbacks own network calls, storage, authorisation and navigation. Playground data is fictional and stays in memory.
+All exports below ship from `@gregui/react`. Import the shared stylesheet once. Each inherits its nearest ThemeProvider and LocaleProvider, uses the shared preset and light/dark theme system and keeps presentation inside the shared package. Application callbacks own network calls, storage, authorisation and navigation. Playground data is fictional and stays in memory.
 
 ## Data, navigation and inputs
 
-| Export            | Contract and supported behaviour                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `TreeView`        | Unique stable node IDs, text labels and optional nested children. Single controlled selection through `selectedId`/`onSelect`; expansion is internal with `defaultExpanded`. Up/Down, Home/End, direction-aware Left/Right, Enter/Space and first-letter navigation. Clicking a branch selects and toggles it. No drag/drop, multiselect, virtualisation or lazy fetching in this version. Replace/remount the tree for a different dataset.            |
-| `Timeline`        | `items` supply ID, title, machine-readable `dateTime`, localized `dateLabel`, optional content and complete/current/upcoming status. Vertical by default; horizontal mode scrolls within its container. The app orders items and supplies explicit status wording where it matters.                                                                                                                                                                     |
-| `DataTable<T>`    | Typed columns provide stable keys, labels and primitive `value(row)` accessors; optional `render` controls cells. `sortable` uses locale-aware text or numeric sorting. `rowId` must be stable and unique. Internal page state with `pageSize`; optional controlled `selectedIds`/`onSelectionChange` selects rows across pages. Apps filter rows and prune stale selection. Client-side only: no virtualisation, server pagination or column resizing. |
-| `Combobox`        | Controlled single value and text-labelled options, disabled options, local case-insensitive filtering, arrow/Enter and Home/End selection, a checkmark for the selected value, scrolling keyboard focus into view, and Escape to restore the selected label. An uncommitted query is discarded on blur. Values must be unique. No free-text submission, multi-selection or remote loading in this version.                                              |
-| `DateRangePicker` | Controlled ISO date strings (`YYYY-MM-DD` or empty) with native date inputs, optional min/max bounds, disabled state and linked range-error feedback. Browser/OS determines the calendar and date display. Applications must validate the complete range before saving.                                                                                                                                                                                 |
-| `FileUpload`      | Native chooser plus drop target. `accept` supports extensions, MIME types and MIME wildcards; optional `multiple` and `maxBytes` validate before `onFiles`. Callback receives File objects. Clear selected files resets the native chooser and calls `onFiles([])`. Files are not read, uploaded or persisted by the component. Client checks are UX only; servers must validate uploads. Apps supply progress, cancellation and storage.               |
-| `ActionMenu`      | A labelled action popover with disabled/danger actions. Uses ordinary button/Tab semantics rather than ARIA menu semantics; Escape and Close return focus. Actions run synchronously; choosing an enabled action closes the popover and returns focus. Apps own async action state and confirmation where needed.                                                                                                                                       |
-| `CommandPalette`  | Searchable modal dialog built on the existing Dialog focus contract. Controlled internally through its trigger; selecting a command closes the dialog. Apps supply commands and wire any global shortcut. Tab navigates results; no global keyboard listener is installed.                                                                                                                                                                              |
-| `SearchFilterBar` | Controlled query and filter selections, with explicit Clear filters callback. `filters` supply keys, labels, values and options. Applications own result filtering, result announcements and URL state.                                                                                                                                                                                                                                                 |
-| `ListDetail`      | Controlled selection list with labels/descriptions and a detail-content slot. Side-by-side on desktop, stacked on narrow screens. No routing or automatic detail fetching. Apps decide whether mobile detail needs a separate route.                                                                                                                                                                                                                    |
+| Export            | Contract and supported behaviour                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TreeView`        | Unique stable node IDs, text labels and optional nested children. Single controlled selection through `selectedId`/`onSelect`; expansion is internal with `defaultExpanded`. Up/Down, Home/End, direction-aware Left/Right, Enter/Space and first-letter navigation. Clicking a branch selects and toggles it. No drag/drop, multiselect, virtualisation or lazy fetching in this version. Replace/remount the tree for a different dataset. |
+| `Timeline`        | `items` supply ID, title, machine-readable `dateTime`, localized `dateLabel`, optional content and complete/current/upcoming status. Vertical by default; horizontal mode scrolls within its container. The app orders items and supplies explicit status wording where it matters.                                                                                                                                                          |
+| `DataTable<T>`    | Typed columns, locale-aware client sorting, optional controlled page/sort, and controlled cross-page selection. `mode="server"` renders supplied page rows unchanged using `totalRows` for pagination. Loading/error/retry feedback is supported; apps own fetching, cancellation, filters and selection pruning. No virtualisation or column resizing.                                                                                      |
+| `Combobox`        | Controlled single value, optional controlled query and external result filtering, selected-label fallback, loading/error/retry feedback, and linked field hint/validation. Keyboard selection skips disabled options; active choice follows stable IDs as results change. Apps own remote requests and cancellation. No free-text submission or multi-selection.                                                                             |
+| `DateRangePicker` | Controlled ISO date strings (`YYYY-MM-DD` or empty) with native date inputs, optional min/max bounds, disabled state and linked range-error feedback. Browser/OS determines the calendar and date display. Applications must validate the complete range before saving.                                                                                                                                                                      |
+| `FileUpload`      | Native chooser plus drop target. `accept` supports extensions, MIME types and MIME wildcards; optional `multiple` and `maxBytes` validate before `onFiles`. Callback receives File objects. Clear selected files resets the native chooser and calls `onFiles([])`. Files are not read, uploaded or persisted by the component. Client checks are UX only; servers must validate uploads. Apps supply progress, cancellation and storage.    |
+| `ActionMenu`      | A labelled action popover with disabled/danger actions. Uses ordinary button/Tab semantics rather than ARIA menu semantics; Escape and Close return focus. Actions run synchronously; choosing an enabled action closes the popover and returns focus. Apps own async action state and confirmation where needed.                                                                                                                            |
+| `CommandPalette`  | Searchable modal dialog built on the existing Dialog focus contract. Controlled internally through its trigger; selecting a command closes the dialog. Apps supply commands and wire any global shortcut. Tab navigates results; no global keyboard listener is installed.                                                                                                                                                                   |
+| `SearchFilterBar` | Controlled query and filter selections, with explicit Clear filters callback. `filters` supply keys, labels, values and options. Applications own result filtering, result announcements and URL state.                                                                                                                                                                                                                                      |
+| `ListDetail`      | Controlled selection list with labels/descriptions and a detail-content slot. Side-by-side on desktop, stacked on narrow screens. No routing or automatic detail fetching. Apps decide whether mobile detail needs a separate route.                                                                                                                                                                                                         |
 
 ## Composed patterns
 
@@ -57,3 +57,77 @@ The Components catalog includes every export as a searchable, interactive exampl
 ## ImageRegion
 
 Responsive image with one optional rectangular annotation. Pass `src`, meaningful `alt`, percentage `value` (`x`, `y`, `width`, `height`), and `onChange` for editing. Without `onChange` it is read-only. Provide localized `label` and `help` in editing mode. Drag to draw; Enter starts a centered region, arrows move it, Shift+arrows resize, Delete clears. Application owns upload, authorization, captions and persistence. No image pixels are modified.
+
+## Controlled and server-driven tables
+
+Existing DataTable usage remains client-side by default, with internal sort/page state and `pageSize={5}`. Client mode optionally accepts `page` with `onPageChange`, and independently `sort` with `onSortChange`. Each controlled value requires its callback. Keep a table consistently controlled or uncontrolled for its lifetime.
+
+`DataTableSort` is `{ key: string; descending: boolean }`; `sort={null}` means unsorted. Keys refer to stable column keys; use sortable columns for sort state. Sorting emits the new sort and a page-one request. Controlled values change only when the consumer updates props. Page numbers are one-based.
+
+Server mode requires `mode="server"`, `totalRows`, `page`, `onPageChange`, `sort` and `onSortChange`. Supply only the rows returned for the current page; DataTable never sorts or slices them. `pageSize` describes the service page size and `totalRows` is the complete filtered result count. Bounds are clamped for display without emitting callbacks; the app must reconcile an invalid page after totals change. Invalid/non-finite page sizes fall back to a positive size, and invalid totals render as zero.
+
+```tsx
+const [page, setPage] = useState(1);
+const [sort, setSort] = useState<DataTableSort | null>(null);
+
+<DataTable
+  caption="Projects"
+  mode="server"
+  rows={result.rows}
+  totalRows={result.total}
+  pageSize={20}
+  page={page}
+  onPageChange={setPage}
+  sort={sort}
+  onSortChange={setSort}
+  columns={columns}
+  rowId={(row) => row.id}
+  loading={loading}
+  error={safeErrorMessage}
+  onRetry={retryRequest}
+/>;
+```
+
+The consumer requests data from its chosen service when page/sort/filter state changes, resets page to one when filters or page size change, and cancels or ignores obsolete responses. Batch sort and page updates rather than issuing a request directly from each callback. No service SDK, credentials or network transport is included. See the workbench's **Remote records** example for a local delayed service simulation with cancellation and failure/retry.
+
+`loading` marks the scroll region busy, announces the translated `loading` message and disables sort buttons, row-selection checkboxes and pagination. Supplied rows remain visible during loading and error states; the consumer chooses whether to retain or clear them. An `error` string is safe consumer-owned display text; it appears as a live danger alert, optionally with `onRetry` and the translated `retry` label. Loading takes precedence over error; neither state shows a misleading empty message. Empty feedback appears only after a successful, non-loading result with no visible rows. Custom rendered cell controls remain consumer-owned and must receive their own pending/error guards.
+
+Selection preserves IDs from other pages and filters; the table cannot determine whether unseen IDs were deleted. Apps decide when to clear/prune selections and enforce permissions when applying bulk actions. `activeRowId` continues to highlight detail context independently of checked rows.
+
+These props are additive; existing callers need no migration. Applications that provide a complete `Messages` object should include the new `retry` message; `LocaleProvider.messages` partial overrides retain its English default.
+
+## Remote and controlled choices
+
+Combobox keeps its local single-selection behaviour by default. `filterMode="local"` filters option labels case-insensitively using the provider locale; existing callers require no migration. Local mode can also accept a controlled `query`/`onQueryChange` pair. New exported `ComboboxProps` describes both modes.
+
+`filterMode="external"` requires `query: string | null` and `onQueryChange`. In this mode, `options` are displayed in their supplied order without additional filtering: services may match aliases, identifiers or other fields absent from display labels. Values must be unique and stable. This mode does not initiate requests or depend on a service SDK.
+
+- `query={null}` displays the selected label; `query=""` is an actively empty search. Typing emits the string. Choosing an option, Escape or leaving the entire control emits `null`. The consumer must apply controlled updates; do not switch between controlled and uncontrolled query during a mounted lifetime.
+- `selectedLabel` supplies the current selection's display text when its option is absent from the current result set. Keep it aligned with `value`; without it, the component looks up the label in `options`. Selection remains independent of the search text, and uncommitted text is discarded on Escape/blur.
+- `loading` leaves the input editable, marks it and its list busy, announces the package `loading` message and hides stale options from selection. `loadError` shows a safe consumer-owned request error and optional `onRetry` action; loading takes precedence. The package `retry` label is translated through LocaleProvider. No-results feedback appears only for a completed, error-free search.
+- `hint` and `error` use the shared Field association contract. `error` describes field validation; `loadError` describes a failed lookup and is separately linked to the input while visible. The retry button is outside the listbox, accessible through Tab, and returns focus to the input without clearing the query. Tab out of the complete control discards the draft query.
+- Arrow keys, Home/End and Enter select enabled results. The active choice follows its stable value after reordering; removal or disabling falls back to the first enabled result. Loading/error/empty states have no stale active descendant. Enter during IME composition does not commit a choice. Escape closes the popup first and leaves a surrounding dialog open; a subsequent Escape can reach that dialog.
+
+```tsx
+const [query, setQuery] = useState<string | null>(null);
+const [selected, setSelected] = useState<Choice | null>(null);
+
+<Combobox
+  label="Country"
+  filterMode="external"
+  query={query}
+  onQueryChange={setQuery}
+  options={result.options}
+  value={selected?.value ?? ''}
+  selectedLabel={selected?.label ?? ''}
+  onChange={(value) => {
+    const option = result.options.find((item) => item.value === value);
+    if (option) setSelected(option);
+  }}
+  loading={loading}
+  loadError={safeLookupError}
+  onRetry={retryLookup}
+/>;
+```
+
+Applications own fetching, debouncing, minimum-query rules, caching, permissions and cancellation/response ordering. Mark a new query as loading immediately while older results remain in props, and cancel or ignore obsolete responses. `null` is a display/reset signal, not an instruction to a backend; the application decides whether it fetches initial suggestions. Retry callbacks should start the app's loading/error lifecycle and handle service failures there. The workbench's **Remote choices** example demonstrates alias matching, a slower superseded search, a simulated failure/retry, empty results and a selection that survives result replacement. All data stays local.

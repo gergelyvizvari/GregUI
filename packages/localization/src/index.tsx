@@ -5,6 +5,8 @@ export const english = {
   selection: 'Selection',
   selectRow: 'Select row',
   noResults: 'No results found.',
+  retry: 'Try again',
+  confirmError: 'Could not complete the action. Please try again.',
   search: 'Search',
   clearFilters: 'Clear filters',
   startDate: 'Start date',

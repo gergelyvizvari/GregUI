@@ -13,6 +13,8 @@ import {
   TreeView,
   Combobox,
   DataTable,
+  FloatingPanel,
+  Button,
 } from '@gregui/react';
 it('hydrates server-rendered themed fields without ID or markup mismatches', async () => {
   const tree = (
@@ -40,6 +42,13 @@ it('hydrates server-rendered themed fields without ID or markup mismatches', asy
           value="uk"
           onChange={() => {}}
         />
+        <FloatingPanel
+          trigger={<Button>Inspect theme</Button>}
+          title="Inspector"
+          description="Inspect this preview."
+        >
+          <TextField label="Inspector setting" />
+        </FloatingPanel>
         <DataTable
           caption="Projects"
           rows={[{ id: 'one', name: 'One' }]}

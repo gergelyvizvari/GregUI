@@ -9,21 +9,25 @@ All public exports are typed in `packages/react/src/index.tsx`; generated declar
 - `Stack`, `Inline`, `Grid`: token-based gaps 0–8. Grid accepts 1–5 columns or `columns="auto"` (width-aware cards with a 15rem minimum) and collapses on small viewports. `Inline` wraps; do not depend on fixed text lengths.
 - `Split`, `Container`, `Card`, `Section`, `PageHeader`, `AppShell`: shared responsive composition. AppShell renders a skip link, desktop navigation and a modal navigation drawer on small screens. It does not own routing.
 - `Card` accepts an optional `footer` for actions anchored to the bottom of equal-height grid cards.
-- `Text`, `Heading`: explicit semantic heading levels and separate visual sizes. Application authors must choose logical heading order.
+- `Text`, `Heading`: explicit semantic heading levels (h1–h6) and separate visual sizes. Text adds opt-in `lead` and `caption` roles. Application authors must choose logical heading order.
+- `Prose`: opt-in reading flow for native headings, paragraphs, lists, quotes, figures/captions, links, code and simple tables; defaults to a 65ch reading measure. `measure="full"` removes that cap.
+- `Section level` chooses h2–h6 for correctly nested named sections; the default remains h2. PageHeader adds optional breadcrumbs/meta slots and `size="compact"`. See [typography and page foundations](#typography-and-page-foundations).
 
 ## Forms and actions
 
 - `Button`: primary/secondary/ghost/danger, small/medium/large. Default type is `button`; use `type="submit"` in forms. `loading` sets `aria-busy` and disables repeated actions. `IconButton` requires `label`.
 - `TextField`: label, hint, error and generated stable IDs. Native input props remain available. Use `Field`'s render callback with `Input`, `Textarea` or `Select` for other labeled controls.
 - `Checkbox`, `Switch`: native checkbox state/events; Checkbox optionally accepts `hideLabel` for compact table selection while retaining its accessible name; Switch exposes switch semantics. `RadioGroup` requires controlled value/onChange and options.
+- `Combobox` supports local filtering or app-owned remote results through a controlled query, with loading/retry feedback and a persistent selection label. See [expanded contracts](EXPANDED-COMPONENTS.md#remote-and-controlled-choices) for query reset, error and focus behaviour.
 - Form validation remains in the application. `ErrorSummary` links errors to field IDs. On failed submission, move focus to the summary or first invalid field; on success use `Status`.
 - Compact density uses 36px standard controls; comfortable uses 52px, with coordinated vertical padding, button widths and label spacing. Small buttons use 32/44px and large buttons use 44/60px. Touch-capable devices keep a 44px minimum target. Textarea minimum heights are 80/112px. Input text remains 16px; label hit areas for checkbox/radio/switch remain at least 44px. Do not shrink controls with app overrides.
 
 ## Overlays and navigation
 
 - `Dialog`, `Drawer`, `FullscreenDialog` require a trigger, title and description. Trigger must be one focusable element/component forwarding its ref, such as Button. Optional controlled open/onOpenChange, content and footer. All three are modal: focus is contained, background interaction is blocked, Escape closes, and focus returns to the trigger. Drawer is not a persistent non-modal sidebar.
+- `FloatingPanel`: floating inspector with a fixed launcher, a non-modal desktop panel and a modal drawer at viewport widths up to 760px. Outside interactions leave the desktop panel open. Close or Escape collapses it and restores launcher focus; theme/locale follow the nearest providers. See [floating inspectors](#floating-inspectors).
 - `DialogClose` wraps a single ref-forwarding control. On narrow screens Dialog takes a full-screen presentation.
-- `ConfirmDialog` focuses Cancel first and invokes onConfirm only for the explicit action. It does not handle asynchronous destructive operations, failed mutations or rollback automatically.
+- `ConfirmDialog` focuses Cancel first and invokes `onConfirm` only for the explicit action. It awaits returned promises, locks actions/dismissal while pending, closes on success and retains failures for retry. Applications own the mutation and rollback; see [async confirmation](#async-confirmation) for the callback and focus contracts.
 - `Tooltip` supplements an already named trigger. `Popover` accepts interactive content and a label; Escape closes and restores focus. Never put essential instructions only in a tooltip.
 - `Tabs`: items have stable value/label/content; supports controlled state and direction-aware arrow-key navigation. Inactive panels unmount: hoist state if it must survive tab changes.
 - `Breadcrumbs`, `NavItem`, `Link`: apps supply navigation destinations or callbacks. No router dependency.
@@ -65,7 +69,7 @@ Package-owned navigation, progress and error labels can be replaced through `Loc
 
 Tree View, Timeline, Data Table, advanced inputs and ten composed application patterns are documented in [Expanded components](EXPANDED-COMPONENTS.md), including current feature boundaries and integration responsibilities.
 
-Container supports `size="page"` (default, 1200px) or `size="form"` (42rem) and `inset={false}` for an already padded parent. The original default padding and page size remain unchanged. Use form width for single-column forms and page width for tables; neither forces a minimum viewport width.
+Container supports `size="page"` (default, 1200px), `size="form"` (42rem) or `size="reading"` (72ch) and `inset={false}` for an already padded parent. The original default padding and page size remain unchanged. Use form width for single-column forms and page width for tables; neither forces a minimum viewport width.
 
 ## Editorial application surfaces
 
@@ -87,7 +91,7 @@ Dashboard sidebars stay within the dynamic viewport and scroll independently whe
 
 ## Appearance preferences
 
-`ThemeSelector` accepts a controlled `ThemeSelection` (`preset`, `palette`, `mode`), `onChange`, required consumer-translated `labels` (`style`, `palette`, `mode`, `light`, `dark`), and optional `disabled`. It exposes all fourteen built-in styles and eight palettes with light/dark mode through labelled native selects; changing one preference preserves the other two. The three-column layout collapses on mobile. Style and palette names are gregUI identifiers/display names. Consumers apply the selection with `createTheme(preset, mode, palette)` and own persistence, density and validation of stored values. The Components catalog includes an isolated live preview. This is an additive API; existing consumers need no migration.
+`ThemeSelector` accepts a controlled `ThemeSelection` (`preset`, `palette`, `mode`), `onChange`, required consumer-translated `labels` (`style`, `palette`, `mode`, `light`, `dark`), and optional `disabled`. It exposes all fifteen built-in styles and sixteen palettes with light/dark mode through labelled native selects; changing one preference preserves the other two. The three-column layout collapses on mobile. Style and palette names are gregUI identifiers/display names. Consumers apply the selection with `createTheme(preset, mode, palette)` and own persistence, density and validation of stored values. The Components catalog includes an isolated live preview. This is an additive API; existing consumers need no migration.
 
 `Dialog size="large"` provides a bounded 1040px desktop workflow surface, scrolling body and fixed header/footer. The default medium size is unchanged.
 
@@ -101,7 +105,7 @@ Action icons: `Icon` supports `edit`, `save` and `plus`. `IconButton` uses its r
 
 Joyful, Professional, Clay and Neumorphic provide distinct material treatments across cards, controls, tabs and navigation. Neumorphic uses a single shared background/surface plane, opposing raised shadows and inset input/pressed-control shadows; palette recognition and light/dark switching preserve that material. Essential text remains on opaque surfaces, and keyboard focus outlines are retained.
 
-The appearance catalogue now features Workspace, Bloom, Clay, Neumorphic and Glass (`featuredPresets`). Legacy preset IDs remain valid for saved themes, but are omitted from new-choice cards. `recommendedPalettes` provides coordinated defaults; consumers can use these when selecting a complete visual direction. Workspace uses an ink navigation rail and restrained Iris surfaces; Bloom uses a warm navigation rail and Lagoon surfaces. ThemeSelector retains a saved legacy value as an explicit option.
+The appearance catalogue now features Paper, Workspace, Bloom, Clay, Neumorphic, Glass and Flat (`featuredPresets`). Legacy preset IDs remain valid for saved themes, but are omitted from new-choice cards. `recommendedPalettes` provides coordinated defaults; consumers can use these when selecting a complete visual direction. Workspace uses an ink navigation rail and restrained Iris surfaces; Bloom uses a warm navigation rail and Lagoon surfaces. ThemeSelector retains a saved legacy value as an explicit option.
 
 DataTable columns accept `width: "compact"` for narrow selection/action cells. Tables size from their content and scroll only when their natural minimum requires it.
 
@@ -132,3 +136,104 @@ AppShell accepts `stickyToolbar` to keep its toolbar visible at the top of the v
 EditorLayout keeps the main document before its optional named aside ({label, content}); it uses a wider editor column and stacks at 1100px. FormSection groups fields with a named heading (level 2–4), optional description and decorative number. FormActions is an opaque, in-flow sticky action surface; it becomes static in viewports at most 550px high. Keep the footer compact. Applications own forms, state, labels, save/error handling and validation. Native inputs remain mounted; there is no wizard or automatic saving. All three use shared theme roles and logical spacing, with no application CSS needed.
 
 `BrandPreview` renders a scoped landing-page specimen with consumer-provided `label`, `name`, optional `logo`, decorative `cover`, `title`, `description`, content `language` and children. `compact` constrains the preview to 390px without horizontal overflow; it is a width preview, not an iframe/device emulator. Place it inside ThemeProvider. Media validation, URLs, translations and persistence remain consumer responsibilities.
+
+## Async confirmation
+
+`ConfirmDialog` exports `ConfirmDialogProps` and supports both synchronous callbacks and returned promises. Return the actual service promise, or await it inside an async callback. Resolve only after the app considers the action successful; throw/reject on failure. Synchronous and resolved return values are ignored, including `false`; a return value does not veto confirmation. Existing synchronous usage remains supported.
+
+```tsx
+<ConfirmDialog
+  trigger={<Button variant="danger">Archive project</Button>}
+  title="Archive this project?"
+  description="The project will move out of your active list."
+  confirmLabel="Archive project"
+  cancelLabel="Keep project"
+  onConfirm={async () => {
+    await projects.archive(projectId);
+    refreshProjects();
+  }}
+/>
+```
+
+The dialog owns its open/pending/error state. Cancel receives initial focus. During a request, the callback cannot run again, both action buttons are disabled, and Cancel/Escape cannot dismiss the dialog. Outside interaction remains blocked by the alert-dialog contract. Focus moves to the dialog while actions are disabled, and the shared `loading` message is announced outside the busy action area. There is no automatic timeout or request cancellation: the application owns service deadlines and abort behaviour.
+
+Success closes the dialog and returns focus to the trigger if it remains available. Keep the trigger mounted when relying on focus return; applications that remove or navigate away from the triggering content must arrange their destination focus. Unmounting the component does not cancel the service operation, and subsequent settlement does not update the unmounted UI.
+
+A thrown/rejected operation leaves the dialog open, shows a live danger alert and enables both actions. Focus moves to retry, labelled with the package `retry` message followed by the original confirm label. Cancel or Escape can then close it. A new attempt clears the old error; cancelling and reopening starts with a clean state and Cancel focus. Raw exception details are never displayed. Set optional `errorMessage` to safe, translated application copy, or override the package `confirmError` message in LocaleProvider. Applications providing a complete `Messages` object must add `confirmError`; partial overrides retain the English default.
+
+Use the workbench's **Async confirmation** example to try a delayed first-attempt failure, retry success, success feedback and reset without real data changes. Backend permissions, idempotency, data updates, auditing and rollback remain application responsibilities. For application-controlled dismissal or abort-specific flows, compose the existing controlled Dialog.
+
+## Floating inspectors
+
+`FloatingPanel` exports `FloatingPanelProps` with required `trigger`, `title`, `description` and `children`. The trigger must be a single focusable ref-forwarding control, such as Button. Optional `footer` stays visible beneath the independently scrolling body, and `closeLabel` replaces the package Close label. `open`/`onOpenChange` provide controlled state; omitting `open` lets the component manage collapse/expand locally. The launcher is hidden while the panel is open.
+
+```tsx
+<FloatingPanel
+  trigger={<Button>Edit appearance</Button>}
+  title="Appearance"
+  description="Adjust the current preview."
+  footer={<Button onClick={savePreferences}>Save preferences</Button>}
+>
+  <ThemeSelector value={appearance} onChange={setAppearance} labels={labels} />
+</FloatingPanel>
+```
+
+The panel and launcher are portaled with theme and locale inheritance. They anchor to the logical end of the viewport, including RTL. On desktop it is a non-modal dialog: the page remains interactive and clicking/focusing outside does not dismiss the panel. Escape or the close control collapses it. At widths up to 760px, it becomes a full-height modal drawer with a backdrop, contained focus and blocked background interaction. Header and footer remain visible while long body content scrolls. Other dialogs opened from inside the panel retain their own focus/close behaviour; Escape closes the topmost modal first.
+
+Use one floating inspector per view to avoid overlapping launchers. Collapsing or changing between desktop/modal presentation can unmount body content; hoist drafts that must survive those changes. The component does not own editor data or persistence. Existing Dialog/Drawer semantics are unchanged.
+
+The workbench uses this component for **Edit theme** on Components, Typography & pages, Patterns, Authentication and Foundations. The inspector shares controls, import/export, contrast guards, current theme and Undo history with Theme studio. It offers all fifteen styles, sixteen palettes, modes, density, corners, typography, motion and eleven semantic colours, plus an expandable contrast report. Editor surfaces retain the stable workbench theme while previews update live. Closing keeps changes in the session; Save draft explicitly writes local browser storage. Navigation closes the inspector and keeps the edited theme. Theme studio and Overview retain their inline editors.
+
+## Typography and page foundations
+
+The token package exports `typography` and `TypographyRole` for body, small, caption, large, lead, eyebrow, hero, page, section and card roles. Each role defines font size, line height and tracking. `themeVariables` and CSS exports include `--g-type-<role>-size`, `--g-type-<role>-line-height` and `--g-type-<role>-tracking`. Existing role sizes remain the defaults; new lead/caption styles are opt-in. Presets continue to select their font family and display weight, and explicit system/humanist/mono preferences remain effective. No theme JSON fields or version changed.
+
+Use Heading `level` for document structure and `size` for appearance: an h6 may use a page/hero size when the surrounding hierarchy requires it. PageHeader remains the page's h1. `Section level={3}` creates a named section with an h3; its label stays linked through the generated ID. Text `size="lead"` introduces a topic; `size="caption"` suits short nonessential source/figure metadata. Existing small/body/large/eyebrow roles remain available. Keep essential labels and instructions at an appropriate reading size.
+
+`Prose` accepts React children and clean native div attributes, including lang, dir and accessible naming. It styles native content without parsing Markdown/HTML or injecting markup. Applications own any parsing/sanitisation needed before producing children. It uses a 65ch maximum measure, comfortable paragraph rhythm, logical list/quote insets, theme-aware links and code that scrolls within its column. `measure="full"` permits the full parent width. Explicit Heading/Text visual roles remain available inside it; native headings receive reading-oriented sizes. It is a content surface, not an editable rich-text component.
+
+```tsx
+<Container size="reading">
+  <PageHeader
+    size="compact"
+    title="Project guide"
+    breadcrumbs={<Breadcrumbs label="Guide location" items={locations} />}
+    meta={
+      <Text as="span" size="caption">
+        Updated today
+      </Text>
+    }
+    actions={<Button onClick={save}>Save</Button>}
+  />
+  <Section title="Getting started">
+    <Prose>
+      <p>Introduce the task in plain language.</p>
+      <ol>
+        <li>First step</li>
+        <li>Next step</li>
+      </ol>
+    </Prose>
+    <Section level={3} title="Further details">
+      <Text>Supporting content.</Text>
+    </Section>
+  </Section>
+</Container>
+```
+
+Container `size="reading"` caps the complete container at 72ch, including its existing insets; `inset={false}` is useful in already padded surfaces. PageHeader `breadcrumbs` renders above the eyebrow/title and `meta` below the description. Applications supply meaningful breadcrumb labels, metadata, translated copy and action behaviour. `size="compact"` opts into a smaller title/spacing; omitted props retain the existing layout.
+
+The main **Typography & pages** navigation destination (`?page=typography`) separates Text styles, Reading content, Page elements and Type scale into tabs. Foundations also renders its typography specimen under the draft theme, and includes a page-composition specimen. The catalog offers **Typography & content** and **Page foundations**. The floating theme editor updates these examples live. Authentication completion remains a deferred milestone in COMPONENT-ROADMAP.md.
+
+Paper is a featured preset (`createTheme('paper')`) with the Paper & ink palette, pure white light mode and graphite dark mode. It uses a shared background/surface colour, square corners by default, fine separators, neutral ink actions and semantic status colours. Cards, controls, navigation and overlays have no depth shadows; buttons remain stationary on hover and press, with colour feedback and keyboard focus retained. Other palettes, corners and fonts remain configurable. Existing preset IDs and version 1 theme JSON are unchanged.
+
+Paper removes ordinary card outlines and secondary-action frames, using spacing for grouping. Text inputs, selects and textareas use a single underline, including an error-coloured underline for invalid fields. Keyboard focus outlines and modal/popup edges remain visible. The redundant Mono style has been removed; imported version 1 themes with preset `mono` migrate to Paper while retaining their colours. Graphite remains a palette (`mono`), not a separate style. Paper defaults to Pure white (`paper`): white surfaces and neutral charcoal actions. Coral, Citrus, Mint and Violet add fresh accent choices; older Forest, Plum, Clay, Ink & cream, Ocean, Rose, Amber and Cobalt light palettes have cleaner grounds. All palettes have dark counterparts. Reapply a palette to refresh saved explicit colours; custom values are never silently recoloured. `paletteOptions[].preset` is a suggested material, not the palette's colour identity; use `applyPalette` or `createTheme` to resolve colours.
+
+## Browsing indexed content
+
+`ListDetail stickyNavigation` opts into a compact, sticky, independently scrollable navigation pane on desktop and a bounded navigation list above the detail on narrow viewports. Its default layout remains unchanged. Navigation-list styles are scoped to the actual nav items so buttons and lists inside arbitrary detail content keep their own presentation. Consumers still own selection and routing.
+
+The workbench Components page composes this mode with category/search filters, a focused preview and a collapsible usage example. Exact-name searches open that component; the index can choose another matching result. Page and component query parameters support direct entry, bookmarking and browser history. Category/search updates replace the current component address rather than creating a history entry for each typed character. Browser history restores the selected component with cleared filters.
+
+TeamMembers invite and role-save actions align with the bottom of their adjacent input/select. A role-save failure appears below the control row, preserves the selected draft and permits retry; changing the role clears that member's previous error.
+
+Palette review: Iris and Lagoon retain their existing clean, distinct accents. Forest moves from grey-green to fresher green; Plum and Rose gain clearer violet/raspberry accents; Ocean becomes a cleaner cyan-blue. Clay's beige ground becomes pale peach, Amber's muted tan becomes a lighter warm ground, and Ink & cream loses its yellow-green cast. Cobalt retains its blue accent with a lighter ground. Dark counterparts retain their readable established colours; the four new accents and Pure white include matching dark values. These choices are visual direction, not claims of user preference research.

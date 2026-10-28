@@ -72,3 +72,17 @@ describe('palette families', () => {
     expect(getPalette(createTheme('flat', 'light', 'plum'))).toBe('plum');
   });
 });
+
+it('migrates stored Mono material to Paper without recolouring saved data', () => {
+  const saved = { ...createTheme('paper', 'dark', 'mono'), preset: 'mono' };
+  expect(parseTheme(saved)).toEqual({ ...saved, preset: 'paper' });
+  expect(presets).not.toContain('mono');
+});
+it('keeps Pure white neutral and newly added accent palettes distinct', () => {
+  const white = createTheme('paper');
+  expect(white.colors.background).toBe('#ffffff');
+  expect(white.colors.surface).toBe('#ffffff');
+  expect(white.colors.primary).toBe('#303030');
+  const accents = ['coral', 'citrus', 'mint', 'violet'] as const;
+  expect(new Set(accents.map((id) => applyPalette(white, id).colors.primary)).size).toBe(4);
+});

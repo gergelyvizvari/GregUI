@@ -2,109 +2,175 @@
 import { Close as PopoverClose } from '@radix-ui/react-popover';
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { useLocale } from '@gregui/localization';
-import { Button, Dialog, Field, Icon, Inline, Input, Popover, Stack, Text } from './index';
+import { Alert, Button, Dialog, Field, Icon, Inline, Input, Popover, Stack, Text } from './index';
 
 export interface Choice {
   value: string;
   label: string;
   disabled?: boolean;
 }
+type ComboboxQueryControl =
+  | { query: string | null; onQueryChange: (query: string | null) => void }
+  | { query?: never; onQueryChange?: never };
+
+export type ComboboxProps = {
+  label: string;
+  options: Choice[];
+  value: string;
+  onChange: (value: string) => void;
+  selectedLabel?: string;
+  disabled?: boolean;
+  emptyLabel?: string;
+  hint?: string;
+  error?: string;
+  loading?: boolean;
+  loadError?: string;
+  onRetry?: () => void;
+} & (
+  | ({ filterMode?: 'local' } & ComboboxQueryControl)
+  | { filterMode: 'external'; query: string | null; onQueryChange: (query: string | null) => void }
+);
+
 export function Combobox({
   label,
   options,
   value,
   onChange,
+  selectedLabel,
   disabled = false,
   emptyLabel,
-}: {
-  label: string;
-  options: Choice[];
-  value: string;
-  onChange: (value: string) => void;
-  disabled?: boolean;
-  emptyLabel?: string;
-}) {
-  const { messages } = useLocale();
+  hint,
+  error,
+  filterMode = 'local',
+  query: controlledQuery,
+  onQueryChange,
+  loading = false,
+  loadError,
+  onRetry,
+}: ComboboxProps) {
+  const { messages, locale } = useLocale();
   const id = useId();
-  const [query, setQuery] = useState<string | null>(null);
+  const [localQuery, setQuery] = useState<string | null>(null);
+  const query = controlledQuery === undefined ? localQuery : controlledQuery;
+  const changeQuery = (next: string | null) => {
+    if (onQueryChange) onQueryChange(next);
+    else setQuery(next);
+  };
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(0);
-  const results = options.filter((option) =>
-    option.label.toLocaleLowerCase().includes((query ?? '').toLocaleLowerCase()),
-  );
-  const enabled = results.filter((option) => !option.disabled);
-  const current = enabled[Math.min(active, enabled.length - 1)];
+  const expanded = open && !disabled;
+  const [activeValue, setActiveValue] = useState<string | null>(null);
+  const results =
+    filterMode === 'external'
+      ? options
+      : options.filter((option) =>
+          option.label.toLocaleLowerCase(locale).includes((query ?? '').toLocaleLowerCase(locale)),
+        );
+  const available = loading || loadError ? [] : results;
+  const enabled = available.filter((option) => !option.disabled);
+  const current = enabled.find((option) => option.value === activeValue) ?? enabled[0];
+  const activeId = expanded && current ? `${id}-${options.indexOf(current)}` : undefined;
   const list = useRef<HTMLUListElement>(null);
+  const input = useRef<HTMLInputElement>(null);
   useEffect(() => {
     list.current
       ?.querySelector<HTMLElement>('[data-active="true"]')
       ?.scrollIntoView?.({ block: 'nearest' });
-  }, [active, query, open]);
+  }, [activeId]);
   const choose = (choice: Choice) => {
+    if (disabled || loading || loadError || choice.disabled) return;
     onChange(choice.value);
-    setQuery(null);
+    changeQuery(null);
     setOpen(false);
   };
+  const empty = !loading && !loadError && !results.length;
   return (
-    <div className="g-combobox">
-      <Field label={label}>
+    <div
+      className="g-combobox"
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setOpen(false);
+          changeQuery(null);
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape' && expanded) {
+          event.preventDefault();
+          event.stopPropagation();
+          input.current?.focus();
+          setOpen(false);
+          changeQuery(null);
+        }
+      }}
+    >
+      <Field id={id} label={label} hint={hint} error={error}>
         {(p) => (
           <Input
             {...p}
+            ref={input}
             role="combobox"
             autoComplete="off"
             disabled={disabled}
             aria-autocomplete="list"
-            aria-expanded={open}
-            aria-controls={open ? `${id}-list` : undefined}
-            aria-activedescendant={
-              open && current ? `${id}-${options.indexOf(current)}` : undefined
+            aria-expanded={expanded}
+            aria-busy={loading}
+            aria-controls={expanded ? `${id}-list` : undefined}
+            aria-activedescendant={activeId}
+            aria-describedby={
+              [p['aria-describedby'], expanded && !loading && loadError && `${id}-load-error`]
+                .filter(Boolean)
+                .join(' ') || undefined
             }
-            value={query ?? options.find((option) => option.value === value)?.label ?? ''}
+            value={
+              query ??
+              selectedLabel ??
+              options.find((option) => option.value === value)?.label ??
+              ''
+            }
             onFocus={() => {
               setOpen(true);
-              setActive(0);
-            }}
-            onBlur={() => {
-              setOpen(false);
-              setQuery(null);
+              setActiveValue(null);
             }}
             onChange={(e) => {
-              setQuery(e.target.value);
+              changeQuery(e.target.value);
               setOpen(true);
-              setActive(0);
+              setActiveValue(null);
             }}
             onKeyDown={(e) => {
+              if (e.nativeEvent.isComposing) return;
               if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                 e.preventDefault();
                 setOpen(true);
-                setActive((a) =>
-                  Math.max(0, Math.min(enabled.length - 1, a + (e.key === 'ArrowDown' ? 1 : -1))),
+                const index = enabled.findIndex((option) => option.value === current?.value);
+                const next = !expanded
+                  ? 0
+                  : Math.max(
+                      0,
+                      Math.min(enabled.length - 1, index + (e.key === 'ArrowDown' ? 1 : -1)),
+                    );
+                setActiveValue(enabled[next]?.value ?? null);
+              } else if (expanded && (e.key === 'Home' || e.key === 'End')) {
+                e.preventDefault();
+                setActiveValue(
+                  (e.key === 'Home' ? enabled[0] : enabled[enabled.length - 1])?.value ?? null,
                 );
-              } else if (open && (e.key === 'Home' || e.key === 'End')) {
+              } else if (e.key === 'Enter' && expanded) {
                 e.preventDefault();
-                setActive(e.key === 'Home' ? 0 : Math.max(0, enabled.length - 1));
-              } else if (e.key === 'Enter' && open && current) {
-                e.preventDefault();
-                choose(current);
-              } else if (e.key === 'Escape') {
-                e.preventDefault();
-                setOpen(false);
-                setQuery(null);
+                if (current) choose(current);
               }
             }}
           />
         )}
       </Field>
-      {open && (
+      <div className="g-choice-list" hidden={!expanded}>
         <ul
           ref={list}
           id={`${id}-list`}
           role="listbox"
           aria-label={label}
-          className="g-choice-list"
+          aria-busy={loading}
+          className="g-choice-options"
         >
-          {results.map((option) => (
+          {(expanded ? available : []).map((option) => (
             <li
               key={option.value}
               id={`${id}-${options.indexOf(option)}`}
@@ -113,17 +179,45 @@ export function Combobox({
               aria-disabled={option.disabled || undefined}
               data-active={current === option}
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => {
-                if (!option.disabled) choose(option);
-              }}
+              onClick={() => choose(option)}
             >
               {option.label}
               {value === option.value && <span aria-hidden="true"> ✓</span>}
             </li>
           ))}
-          {!results.length && <li role="presentation">{emptyLabel ?? messages.noResults}</li>}
         </ul>
-      )}
+        <div
+          role="status"
+          aria-live="polite"
+          className={expanded && (loading || empty) ? 'g-combobox-feedback' : 'g-sr-only'}
+        >
+          {expanded
+            ? loading
+              ? messages.loading
+              : empty
+                ? (emptyLabel ?? messages.noResults)
+                : ''
+            : ''}
+        </div>
+        {expanded && !loading && loadError && (
+          <div className="g-choice-error" id={`${id}-load-error`}>
+            <Alert title={loadError} tone="danger" live>
+              {onRetry && (
+                <Button
+                  tabIndex={0}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => {
+                    input.current?.focus();
+                    onRetry();
+                  }}
+                >
+                  {messages.retry}
+                </Button>
+              )}
+            </Alert>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

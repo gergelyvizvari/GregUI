@@ -1,4 +1,5 @@
 export const presets = [
+  'paper',
   'joyful',
   'professional',
   'clay',
@@ -47,12 +48,12 @@ export interface Theme {
 const basePalettes = {
   flat: {
     light: {
-      background: '#eef2eb',
-      surface: '#fbfcf8',
+      background: '#f2faf5',
+      surface: '#ffffff',
       text: '#1e3429',
       muted: '#536456',
       border: '#778575',
-      primary: '#245d43',
+      primary: '#157047',
       onPrimary: '#ffffff',
       focus: '#234d3b',
       success: '#25623d',
@@ -75,12 +76,12 @@ const basePalettes = {
   },
   glass: {
     light: {
-      background: '#ece9f5',
-      surface: '#fbf9ff',
+      background: '#f7f3ff',
+      surface: '#ffffff',
       text: '#302344',
       muted: '#685773',
       border: '#897496',
-      primary: '#7042ac',
+      primary: '#773bd1',
       onPrimary: '#ffffff',
       focus: '#5c3293',
       success: '#286341',
@@ -103,12 +104,12 @@ const basePalettes = {
   },
   soft: {
     light: {
-      background: '#e7e1d8',
-      surface: '#eee8df',
+      background: '#faf2ee',
+      surface: '#fffaf7',
       text: '#3d342b',
       muted: '#695c50',
       border: '#88796a',
-      primary: '#87512f',
+      primary: '#a3482b',
       onPrimary: '#ffffff',
       focus: '#784626',
       success: '#376340',
@@ -131,7 +132,7 @@ const basePalettes = {
   },
   elevated: {
     light: {
-      background: '#eaf0f8',
+      background: '#f2f6ff',
       surface: '#ffffff',
       text: '#182b47',
       muted: '#52647e',
@@ -159,13 +160,13 @@ const basePalettes = {
   },
   outline: {
     light: {
-      background: '#f3efdc',
-      surface: '#fffdf2',
+      background: '#faf9f6',
+      surface: '#ffffff',
       text: '#252820',
       muted: '#5f6254',
       border: '#777b69',
       primary: '#303625',
-      onPrimary: '#f1fa8c',
+      onPrimary: '#ffffff',
       focus: '#3e5424',
       success: '#35633c',
       warning: '#78500c',
@@ -189,12 +190,12 @@ const basePalettes = {
 // Every palette keeps essential content opaque in both modes.
 const ocean: Record<Mode, Theme['colors']> = {
   light: {
-    background: '#eaf3f4',
-    surface: '#f8fdfd',
+    background: '#f0faff',
+    surface: '#ffffff',
     text: '#18363d',
     muted: '#4c6870',
     border: '#718e96',
-    primary: '#126575',
+    primary: '#00728c',
     onPrimary: '#ffffff',
     focus: '#075767',
     success: '#25623d',
@@ -217,12 +218,12 @@ const ocean: Record<Mode, Theme['colors']> = {
 };
 const rose: Record<Mode, Theme['colors']> = {
   light: {
-    background: '#f6edf0',
-    surface: '#fffafb',
+    background: '#fff2f7',
+    surface: '#ffffff',
     text: '#422633',
     muted: '#745763',
     border: '#a07e8c',
-    primary: '#a13763',
+    primary: '#bf2864',
     onPrimary: '#ffffff',
     focus: '#85204e',
     success: '#25623d',
@@ -245,12 +246,12 @@ const rose: Record<Mode, Theme['colors']> = {
 };
 const amber: Record<Mode, Theme['colors']> = {
   light: {
-    background: '#f5f0e5',
-    surface: '#fffcf5',
+    background: '#fff8ed',
+    surface: '#ffffff',
     text: '#3d3020',
     muted: '#716149',
     border: '#98876a',
-    primary: '#865600',
+    primary: '#996000',
     onPrimary: '#ffffff',
     focus: '#744800',
     success: '#25623d',
@@ -327,8 +328,79 @@ const lagoon: Record<Mode, Theme['colors']> = {
     danger: '#ffafc2',
   },
 };
+const paper: Record<Mode, Theme['colors']> = {
+  light: {
+    background: '#ffffff',
+    surface: '#ffffff',
+    text: '#292929',
+    muted: '#646464',
+    border: '#858585',
+    primary: '#303030',
+    onPrimary: '#ffffff',
+    focus: '#303030',
+    success: '#426348',
+    warning: '#7c590f',
+    danger: '#a13f3f',
+  },
+  dark: {
+    background: '#242424',
+    surface: '#242424',
+    text: '#eeeeee',
+    muted: '#bdbdbd',
+    border: '#909090',
+    primary: '#e0e0e0',
+    onPrimary: '#242424',
+    focus: '#eeeeee',
+    success: '#adcfac',
+    warning: '#e3c383',
+    danger: '#edaaaa',
+  },
+};
+const mono: Record<Mode, Theme['colors']> = {
+  light: {
+    background: '#fafafa',
+    surface: '#fafafa',
+    text: '#242424',
+    muted: '#626262',
+    border: '#858585',
+    primary: '#393939',
+    onPrimary: '#ffffff',
+    focus: '#343434',
+    success: '#505050',
+    warning: '#595959',
+    danger: '#934949',
+  },
+  dark: {
+    background: '#202020',
+    surface: '#202020',
+    text: '#eeeeee',
+    muted: '#bdbdbd',
+    border: '#909090',
+    primary: '#dddddd',
+    onPrimary: '#242424',
+    focus: '#eeeeee',
+    success: '#c4c4c4',
+    warning: '#cdcdcd',
+    danger: '#e4aaaa',
+  },
+};
+// Accent families are independent of material presets.
+function freshPalette(light: string, dark: string, wash: string): Record<Mode, Theme['colors']> {
+  return {
+    light: { ...paper.light, background: wash, primary: light, focus: light },
+    dark: { ...paper.dark, primary: dark, focus: dark, onPrimary: '#242424' },
+  };
+}
+const extraPalettes = {
+  mono,
+  coral: freshPalette('#bc4039', '#ffada5', '#fff5f3'),
+  citrus: freshPalette('#806600', '#efd567', '#fffced'),
+  mint: freshPalette('#087858', '#7fe0ba', '#f0fcf6'),
+  violet: freshPalette('#7734ce', '#d0b0ff', '#f9f3ff'),
+};
 const palettes: Record<Preset, Record<Mode, Theme['colors']>> = {
   ...basePalettes,
+  paper,
   editorial: amber,
   porcelain: rose,
   aurora: ocean,
@@ -340,6 +412,7 @@ const palettes: Record<Preset, Record<Mode, Theme['colors']>> = {
   neumorphic: basePalettes.soft,
 };
 export const presetInfo: Record<Preset, { name: string; description: string }> = {
+  paper: { name: 'Paper', description: 'Quiet ink, colour on paper' },
   joyful: { name: 'Bloom', description: 'Fresh colour, a little sunshine' },
   professional: { name: 'Workspace', description: 'Clear thinking, colourful details' },
   clay: { name: 'Clay', description: 'Puffy forms, sculpted edges' },
@@ -356,6 +429,12 @@ export const presetInfo: Record<Preset, { name: string; description: string }> =
   canvas: { name: 'Canvas', description: 'Tactile paper, playful shapes' },
 };
 export const paletteOptions = [
+  { id: 'coral', name: 'Coral', preset: 'paper' },
+  { id: 'citrus', name: 'Citrus', preset: 'paper' },
+  { id: 'mint', name: 'Mint', preset: 'paper' },
+  { id: 'violet', name: 'Violet', preset: 'paper' },
+  { id: 'mono', name: 'Graphite', preset: 'paper' },
+  { id: 'paper', name: 'Pure white', preset: 'paper' },
   { id: 'iris', name: 'Iris', preset: 'professional' },
   { id: 'lagoon', name: 'Lagoon', preset: 'joyful' },
   { id: 'forest', name: 'Forest', preset: 'flat' },
@@ -370,6 +449,7 @@ export const paletteOptions = [
 export type Palette = (typeof paletteOptions)[number]['id'];
 /** Curated choices; legacy IDs stay readable for saved user themes. */
 export const featuredPresets = [
+  'paper',
   'professional',
   'joyful',
   'clay',
@@ -378,6 +458,7 @@ export const featuredPresets = [
   'flat',
 ] as const;
 export const recommendedPalettes: Record<Preset, Palette> = {
+  paper: 'paper',
   professional: 'iris',
   joyful: 'lagoon',
   clay: 'rose',
@@ -396,7 +477,8 @@ export const recommendedPalettes: Record<Preset, Palette> = {
 function paletteColors(palette: Palette, mode: Mode): Theme['colors'] {
   const option = paletteOptions.find((option) => option.id === palette);
   if (!option) throw new Error('Unknown palette.');
-  return { ...palettes[option.preset][mode] };
+  const extra = extraPalettes[palette as keyof typeof extraPalettes];
+  return { ...(extra ?? palettes[option.preset])[mode] };
 }
 function materialColors(preset: Preset, colors: Theme['colors']): Theme['colors'] {
   // A single material plane is essential for true raised/inset neumorphic depth.
@@ -408,7 +490,7 @@ export function getPalette(theme: Theme): Palette | undefined {
     colorRoles.every(
       (role) =>
         theme.colors[role].toLowerCase() ===
-        materialColors(theme.preset, palettes[option.preset][theme.mode])[role].toLowerCase(),
+        materialColors(theme.preset, paletteColors(option.id, theme.mode))[role].toLowerCase(),
     ),
   )?.id;
 }
@@ -426,7 +508,7 @@ export function createTheme(
     preset,
     mode,
     density: 'comfortable',
-    radius: ['outline', 'editorial', 'studio', 'professional'].includes(preset)
+    radius: ['paper', 'outline', 'editorial', 'studio', 'professional'].includes(preset)
       ? 'square'
       : 'rounded',
     font: preset === 'joyful' || preset === 'clay' ? 'humanist' : 'system',
@@ -457,8 +539,32 @@ export const spacing = {
   8: '4rem',
 } as const;
 export type Space = keyof typeof spacing;
+/** Shared text roles. Preset font families and display weights remain theme-owned. */
+export const typography = {
+  body: { fontSize: '1rem', lineHeight: '1.5', letterSpacing: 'normal' },
+  small: { fontSize: '0.8125rem', lineHeight: '1.55', letterSpacing: 'normal' },
+  caption: { fontSize: '0.75rem', lineHeight: '1.5', letterSpacing: 'normal' },
+  large: { fontSize: '1.05rem', lineHeight: '1.65', letterSpacing: 'normal' },
+  lead: {
+    fontSize: 'clamp(1.125rem, 1.5vw, 1.375rem)',
+    lineHeight: '1.6',
+    letterSpacing: '-0.01em',
+  },
+  eyebrow: { fontSize: '0.6875rem', lineHeight: '1.5', letterSpacing: '0.13em' },
+  hero: { fontSize: 'clamp(2.4rem, 4.4vw, 4.5rem)', lineHeight: '1.15', letterSpacing: '-0.055em' },
+  page: { fontSize: 'clamp(2rem, 3.4vw, 3.25rem)', lineHeight: '1.15', letterSpacing: '-0.035em' },
+  section: { fontSize: '1.125rem', lineHeight: '1.15', letterSpacing: '-0.02em' },
+  card: { fontSize: '1rem', lineHeight: '1.15', letterSpacing: '-0.01em' },
+} as const;
+export type TypographyRole = keyof typeof typography;
+
 export function themeVariables(theme: Theme): Record<string, string> {
   const vars: Record<string, string> = {};
+  for (const [role, spec] of Object.entries(typography)) {
+    vars[`--g-type-${role}-size`] = spec.fontSize;
+    vars[`--g-type-${role}-line-height`] = spec.lineHeight;
+    vars[`--g-type-${role}-tracking`] = spec.letterSpacing;
+  }
   for (const role of colorRoles) vars[`--g-${role}`] = theme.colors[role];
   const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ');
   const night = theme.mode === 'dark';
@@ -486,6 +592,7 @@ export function themeVariables(theme: Theme): Record<string, string> {
     mono: 'ui-monospace, "SFMono-Regular", Consolas, monospace',
   }[theme.font];
   const rhythms = {
+    paper: [120, 180],
     flat: [160, 240],
     glass: [240, 380],
     soft: [260, 400],
@@ -573,7 +680,9 @@ export function checkContrast(theme: Theme): ContrastCheck[] {
 export function parseTheme(input: unknown): Theme {
   if (!input || typeof input !== 'object' || Array.isArray(input))
     throw new Error('Theme must be a JSON object.');
-  const v = input as Record<string, unknown>;
+  const source = input as Record<string, unknown>;
+  // The short-lived Mono material is now Paper; preserve saved custom colours.
+  const v = source.preset === 'mono' ? { ...source, preset: 'paper' } : source;
   const exactKeys = [
     'version',
     'name',

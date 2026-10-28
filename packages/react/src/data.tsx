@@ -1,7 +1,7 @@
 'use client';
-import { useRef, useState, type ReactNode, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type ReactNode, type KeyboardEvent } from 'react';
 import { useLocale } from '@gregui/localization';
-import { Button, Checkbox, Field, Input, Pagination, Select, Stack, Text } from './index';
+import { Alert, Button, Checkbox, Field, Input, Pagination, Select, Stack, Text } from './index';
 
 export interface TreeNode {
   id: string;
@@ -165,6 +165,42 @@ export interface DataColumn<T> {
   sortable?: boolean;
   width?: 'compact';
 }
+export interface DataTableSort {
+  key: string;
+  descending: boolean;
+}
+
+type PageControl =
+  { page: number; onPageChange: (page: number) => void } | { page?: never; onPageChange?: never };
+type SortControl =
+  | { sort: DataTableSort | null; onSortChange: (sort: DataTableSort) => void }
+  | { sort?: never; onSortChange?: never };
+
+export type DataTableProps<T> = {
+  caption: string;
+  columns: DataColumn<T>[];
+  rows: T[];
+  rowId: (row: T) => string;
+  pageSize?: number;
+  selectedIds?: string[];
+  activeRowId?: string;
+  onSelectionChange?: (ids: string[]) => void;
+  emptyLabel?: string;
+  loading?: boolean;
+  error?: string;
+  onRetry?: () => void;
+} & (
+  | ({ mode?: 'client'; totalRows?: never } & PageControl & SortControl)
+  | {
+      mode: 'server';
+      totalRows: number;
+      page: number;
+      onPageChange: (page: number) => void;
+      sort: DataTableSort | null;
+      onSortChange: (sort: DataTableSort) => void;
+    }
+);
+
 export function DataTable<T>({
   caption,
   columns,
@@ -175,40 +211,56 @@ export function DataTable<T>({
   activeRowId,
   onSelectionChange,
   emptyLabel,
-}: {
-  caption: string;
-  columns: DataColumn<T>[];
-  rows: T[];
-  rowId: (row: T) => string;
-  pageSize?: number;
-  selectedIds?: string[];
-  activeRowId?: string;
-  onSelectionChange?: (ids: string[]) => void;
-  emptyLabel?: string;
-}) {
+  mode = 'client',
+  totalRows,
+  page: controlledPage,
+  onPageChange,
+  sort: controlledSort,
+  onSortChange,
+  loading = false,
+  error,
+  onRetry,
+}: DataTableProps<T>) {
   const { messages, locale } = useLocale();
-  const [sort, setSort] = useState<{ key: string; descending: boolean }>();
-  const [page, setPage] = useState(1);
+  const [localSort, setSort] = useState<DataTableSort | null>(null);
+  const [localPage, setPage] = useState(1);
+  const sort = controlledSort === undefined ? localSort : controlledSort;
+  const page = controlledPage ?? localPage;
+  const changePage = (next: number) => {
+    if (onPageChange) onPageChange(next);
+    else setPage(next);
+  };
   const count = Math.max(1, Math.floor(Number.isFinite(pageSize) ? pageSize : 5));
-  const column = columns.find((c) => c.key === sort?.key);
-  const ordered = column
-    ? [...rows].sort((a, b) => {
-        const av = column.value(a),
-          bv = column.value(b);
-        return (
-          (typeof av === 'number' && typeof bv === 'number'
-            ? av - bv
-            : String(av).localeCompare(String(bv), locale, { numeric: true })) *
-          (sort?.descending ? -1 : 1)
-        );
-      })
-    : rows;
-  const pages = Math.max(1, Math.ceil(rows.length / count));
-  const current = Math.min(page, pages);
-  const shown = ordered.slice((current - 1) * count, current * count);
+  const column = columns.find((c) => c.key === sort?.key && c.sortable);
+  const ordered =
+    mode === 'client' && column
+      ? [...rows].sort((a, b) => {
+          const av = column.value(a),
+            bv = column.value(b);
+          return (
+            (typeof av === 'number' && typeof bv === 'number'
+              ? av - bv
+              : String(av).localeCompare(String(bv), locale, { numeric: true })) *
+            (sort?.descending ? -1 : 1)
+          );
+        })
+      : rows;
+  const total =
+    mode === 'server'
+      ? Math.max(0, Number.isFinite(totalRows) ? (totalRows ?? 0) : 0)
+      : rows.length;
+  const pages = Math.max(1, Math.ceil(total / count));
+  const current = Math.min(pages, Math.max(1, Math.floor(Number.isFinite(page) ? page : 1)));
+  const shown = mode === 'server' ? rows : ordered.slice((current - 1) * count, current * count);
   return (
     <Stack>
-      <div className="g-table-scroll" tabIndex={0} role="region" aria-label={caption}>
+      <div
+        className="g-table-scroll"
+        tabIndex={0}
+        role="region"
+        aria-label={caption}
+        aria-busy={loading}
+      >
         <table className="g-table g-data-table">
           <caption>{caption}</caption>
           <thead>
@@ -233,12 +285,15 @@ export function DataTable<T>({
                     <Button
                       variant="ghost"
                       size="small"
+                      disabled={loading}
                       onClick={() => {
-                        setSort({
+                        const next = {
                           key: c.key,
                           descending: sort?.key === c.key ? !sort.descending : false,
-                        });
-                        setPage(1);
+                        };
+                        if (onSortChange) onSortChange(next);
+                        else setSort(next);
+                        changePage(1);
                       }}
                     >
                       {c.label}{' '}
@@ -264,6 +319,7 @@ export function DataTable<T>({
                   <td>
                     <Checkbox
                       hideLabel
+                      disabled={loading || !!error}
                       label={`${messages.selectRow} ${String(columns[0]?.value(row) ?? rowId(row))}`}
                       checked={selectedIds?.includes(rowId(row)) ?? false}
                       onChange={(e) =>
@@ -292,9 +348,17 @@ export function DataTable<T>({
           </tbody>
         </table>
       </div>
-      {!rows.length && <Text>{emptyLabel ?? messages.noResults}</Text>}
-      {rows.length > count && (
-        <Pagination page={current} pageCount={pages} onPageChange={setPage} />
+      <div role="status" aria-live="polite" className={loading ? 'g-status' : 'g-sr-only'}>
+        {loading ? messages.loading : ''}
+      </div>
+      {!loading && error && (
+        <Alert title={error} tone="danger" live>
+          {onRetry && <Button onClick={onRetry}>{messages.retry}</Button>}
+        </Alert>
+      )}
+      {!loading && !error && !shown.length && <Text>{emptyLabel ?? messages.noResults}</Text>}
+      {pages > 1 && (
+        <Pagination page={current} pageCount={pages} onPageChange={changePage} disabled={loading} />
       )}
     </Stack>
   );
@@ -364,21 +428,36 @@ export function ListDetail({
   selectedId,
   onSelect,
   children,
+  stickyNavigation = false,
 }: {
   label: string;
   items: { id: string; label: string; description?: string }[];
   selectedId?: string;
   onSelect: (id: string) => void;
   children: ReactNode;
+  stickyNavigation?: boolean;
 }) {
+  const navigation = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!stickyNavigation || !navigation.current) return;
+    const current = navigation.current.querySelector<HTMLElement>('[aria-current="true"]');
+    if (!current) return;
+    const pane = navigation.current.getBoundingClientRect();
+    const item = current.getBoundingClientRect();
+    const visibleBottom = Math.min(pane.bottom, window.innerHeight);
+    if (item.top < pane.top) navigation.current.scrollTop -= pane.top - item.top;
+    else if (item.bottom > visibleBottom)
+      navigation.current.scrollTop += item.bottom - visibleBottom;
+  }, [selectedId, stickyNavigation]);
   return (
-    <div className="g-list-detail">
-      <nav aria-label={label}>
+    <div className="g-list-detail" data-sticky-navigation={stickyNavigation || undefined}>
+      <nav ref={navigation} aria-label={label}>
         <ul>
           {items.map((item) => (
             <li key={item.id}>
               <button
                 type="button"
+                tabIndex={0}
                 aria-current={selectedId === item.id ? 'true' : undefined}
                 onClick={() => onSelect(item.id)}
               >

@@ -21,11 +21,11 @@ Build output conservatively targets Chrome/Edge 109, Firefox 115 and Safari 16.4
 
 ## Accessibility and privacy
 
-Engineering target: WCAG 2.2 AA. Automated axe checks cover default views and all five presets in both modes. Interaction tests cover focus return/containment, keyboard tabs, cancellation, loading buttons, field associations and error focus. Token tests verify declared contrast pairs independently of rendered checks.
+Engineering target: WCAG 2.2 AA. The browser suite includes axe checks for default views and featured presets in both modes; see the dated verification record for actual executions. Interaction tests cover focus return/containment, keyboard tabs, cancellation, loading buttons, field associations and error focus. Token tests verify declared contrast pairs independently of rendered checks.
 
 Still required before claiming production conformity: manual screen-reader runs (NVDA with Firefox/Chrome on Windows; VoiceOver with Safari on macOS/iOS), real target-device testing, page zoom and user text settings, application content and complete flows, procurement-specific EN 301 549 mapping, accessibility statements and any application-specific privacy obligations. No claim of GDPR certification or government approval.
 
-Forced colors and reduced-motion adaptations are included. Color calculations use opaque pairs; glass content surfaces remain opaque. Custom themes, content and third-party integrations must be rechecked.
+Forced colors and reduced-motion adaptations are included. Color calculations use opaque pairs. Glass cards are translucent and require checks against their actual backdrop; inputs and overlays retain opaque surfaces. Custom themes, content and third-party integrations must be rechecked.
 
 ## Execution evidence
 
