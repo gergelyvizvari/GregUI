@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Scoped Workspace and Bloom dashboard navigation colours to dashboard shells, preserving readable theme colours in editorial/public headers. No API change. Verified with CityLink public branding and Chromium accessibility tests.
+
 - Improved usability: explicit current-plan badges/outlines and shared pricing request locking, stronger row/list selection, combobox selection checks and keyboard scrolling, action-menu dismissal/focus return, file clearing, and locked role/privacy controls with save confirmation.
 
 - Added twenty application components and patterns: TreeView, Timeline, DataTable, Combobox, DateRangePicker, FileUpload, ActionMenu, CommandPalette, SearchFilterBar, ListDetail, ToastStack, Dashboard, ProfileSettings, SecuritySettings, TeamMembers, NotificationCentre, PrivacyPreferences, PricingCards, CommentsPanel and ApprovalPanel. All have interactive catalog examples and localized package labels.

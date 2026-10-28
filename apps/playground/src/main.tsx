@@ -5,6 +5,10 @@ import React, { useId, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   Accordion,
+  BrandPreview,
+  EditorLayout,
+  FormSection,
+  FormActions,
   Stepper,
   AppShell,
   FeaturePanel,
@@ -1066,6 +1070,51 @@ function App() {
               <Tabs
                 label="Pattern examples"
                 items={[
+                  {
+                    value: 'brand-preview',
+                    label: 'Brand preview',
+                    content: (
+                      <BrandPreview
+                        label="Local brand preview"
+                        name="Harbour Arts"
+                        title="At the harbour"
+                        description="Independent exhibitions and performances."
+                        compact
+                      >
+                        <Button>Explore</Button>
+                      </BrandPreview>
+                    ),
+                  },
+                  {
+                    value: 'editor',
+                    label: 'Document editor',
+                    content: (
+                      <EditorLayout
+                        aside={{
+                          label: 'Review',
+                          content: (
+                            <Card>
+                              <Text>Private draft</Text>
+                            </Card>
+                          ),
+                        }}
+                      >
+                        <form onSubmit={(e) => e.preventDefault()}>
+                          <Stack>
+                            <FormSection title="Details" number={1}>
+                              <TextField label="Title" />
+                            </FormSection>
+                            <FormSection title="Schedule" number={2}>
+                              <TextField label="Date" type="date" />
+                            </FormSection>
+                            <FormActions>
+                              <Button type="submit">Save draft</Button>
+                            </FormActions>
+                          </Stack>
+                        </form>
+                      </EditorLayout>
+                    ),
+                  },
                   {
                     value: 'onboarding',
                     label: 'Onboarding',

@@ -81,7 +81,7 @@ Apps own domain content, state, routing, validation rules and data processing. g
 
 ## Current scope and limits
 
-This is the first working foundation, not a production certification. The initial catalog includes buttons/links, labeled fields, select/textarea, checkbox/radio/switch, layouts, dialogs/drawers/full-screen flows, confirmation, tooltip/popover, tabs/navigation, alerts/status/progress/skeletons, tables and empty states. Fourteen presets work in light/dark modes. Glass uses decorative effects with opaque content surfaces so readability does not depend on an unknown backdrop.
+This is the first working foundation, not a production certification. The initial catalog includes buttons/links, labeled fields, select/textarea, checkbox/radio/switch, layouts, dialogs/drawers/full-screen flows, confirmation, tooltip/popover, tabs/navigation, alerts/status/progress/skeletons, tables and empty states. Fourteen presets work in light/dark modes. Glass uses translucent cards with a blurred backdrop; inputs and overlays retain opaque surfaces. Verify card text against the actual backdrop.
 
 Date pickers, comboboxes, advanced tables, charts, upload orchestration, consent integrations and native mobile components remain future additions. Apps must complete their own accessibility, privacy and sector-specific checks. The 24-month browser policy is documented; historical devices and manual assistive-technology testing remain unverified.
 

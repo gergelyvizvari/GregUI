@@ -191,3 +191,35 @@ Added opt-in HighlightedTextarea small size: 14px on wide, fine-pointer screens 
 ## Shared instruction font — 7 October 2026
 
 HighlightedTextarea now offers opt-in body typography with same-width emphasis to preserve native caret/wrapping alignment. The default monospace variant remains unchanged. Library check passed (224 tests and all builds); consumer typecheck and Chromium desktop/mobile checks passed for shared font family, matching mirror typography, scroll synchronization, paste, undo and text editing. Desktop screenshot inspected.
+
+## Glass scrolling backdrop — 7 October 2026
+
+The main-content decorative background is viewport-fixed so Glass gradients stay anchored while content scrolls. `npm run check` passed (224 tests, types, consumer style boundary and all builds). CityLink, using linked built exports, was checked in Chromium at 1440px and 390px: document scrolling reached 338px and 400px, both gradient layers resolved to fixed attachment, and no horizontal overflow occurred. Desktop before/after and mobile scrolled screenshots were visually inspected. The public page uses demo content. Authenticated admin, dark mode, Firefox/WebKit and physical mobile devices were not checked in this pass; this is not a full accessibility or browser-support certification.
+
+## More translucent Glass cards — 7 October 2026
+
+Card surface tint was reduced from 82% to 60%, with 24px backdrop blur and 1.25 saturation. Library `npm run check` passed (224 tests, types, style boundary and builds). The featured-preset light/dark accessibility workflow passed in Chromium and mobile Chromium emulation; Glass light/dark desktop screenshots were visually inspected. These checks cover the workbench backdrops, not arbitrary consumer backgrounds. Firefox, WebKit and physical devices were not checked in this pass.
+
+## Glass reflections and illuminated edges — 7 October 2026
+
+Glass now combines mode-specific 36%/46% surface tints, a diagonal reflection, illuminated inset edges, 18px blur, 1.65 saturation and three background light fields. Reduced transparency and missing backdrop-filter support fall back to solid surfaces. Library `npm run check` passed (224 tests and builds); the featured-preset light/dark accessibility workflow passed on Chromium and mobile Chromium emulation. The Analise Playground was previewed using intercepted fixture responses with no server writes; light/dark desktop and mobile views had no horizontal overflow, and desktop plus light mobile screenshots were inspected. Firefox, WebKit, physical mobile devices and arbitrary consumer backgrounds remain unverified.
+
+## Warm mist background — 7 October 2026
+
+Replaced the saturated Glass background spots with broad, low-chroma mist and warm diffused light, with separate dark-mode strengths. Preview and workspace backgrounds share the atmosphere; the workspace background now continues below short content. Library check passed (224 tests and builds), as did the Chromium/mobile Chromium featured-preset light/dark accessibility workflow. Analise check passed (106 tests and production build). Installed-package Playground screenshots were inspected in light/dark desktop and light mobile using mocked API responses; neither mode overflowed at 390px. No real data writes or provider calls were made. Other browser engines and physical devices remain unverified.
+
+### AppShell viewport fill (2026-10-07)
+
+The workspace now owns decorative backgrounds and uses a flex column so main content fills the remaining viewport height. Verified a short Glass dashboard rendered from the packaged components at 554×747 and 1920×1080 in the Codex browser: main/workspace bottom equals viewport height, with no horizontal overflow. The authenticated Analise screens were not inspected because the local app required sign-in. `npm run check` passed (224 tests and builds); the changed stylesheet passes Prettier.
+
+## Sticky toolbar — 2026-10-07
+
+Added opt-in AppShell `stickyToolbar`. `npm run check` passed (224 tests and package/consumer builds); `npm run format:check` passed. In the Analise consumer, Chromium with isolated local fixtures kept the toolbar at y=0 after scrolling 419px at 1440px width and 500px at 390px width. Consumer typecheck passed. Other browser engines and physical mobile devices were not tested for this change.
+
+## 2026-10-11 — long-form editor composition
+
+EditorLayout, FormSection and FormActions added for local CityLink integration. npm run check passed: 225 tests plus type/style boundaries, packages, workbench and independent consumer builds. Targeted Chromium/mobile Document editor tests passed (2/2), with light/dark axe and overflow checks. Changed source files pass Prettier. CityLink linked exports rebuilt; profile-to-event flows and save/focus/relationship checks passed in HU 390px and EN 1280px fixtures. No package publication or deployment. Firefox/WebKit, full browser suite, screen readers and physical devices were not revalidated for this addition.
+
+## 2026-10-12 — BrandPreview
+
+Added a shared, theme-scoped brand landing preview with decorative logo/cover, identity fallback, optional translated hero and 390px compact width. Workbench Patterns includes a specimen. `npm run check`: 226 passing tests and builds; `npm run format:check` passes. CityLink consumer browser checks cover HU/EN city and organisation editors, mobile/desktop width, light-to-dark theme change, media decoding, hero visibility, axe and overflow. This is simulated consumer data, not device certification or a full browser matrix.

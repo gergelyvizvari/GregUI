@@ -2,15 +2,15 @@
 
 The September 2026 redesign uses five deliberately different material treatments. Each has an independent light and dark palette; semantic roles keep the colour editor and exports consistent.
 
-| Preset   | Direction                        | Component treatment                                                            |
-| -------- | -------------------------------- | ------------------------------------------------------------------------------ |
-| Flat     | Forest, quiet precision          | Clean planes, restrained corners, fine borders, minimal elevation              |
-| Glass    | Plum, luminous depth             | Atmospheric backdrop, rounded opaque panels, inner highlights, layered shadows |
-| Soft     | Clay, tactile surfaces           | Warm tonal planes, opposing raised shadows, inset fields                       |
-| Elevated | Blue, layered clarity            | White or navy cards, floating elevation, polished action buttons               |
-| Outline  | Ink and cream, graphic structure | Hard borders, offset shadows, squared corners, uppercase actions               |
+| Preset   | Direction                        | Component treatment                                                                 |
+| -------- | -------------------------------- | ----------------------------------------------------------------------------------- |
+| Flat     | Forest, quiet precision          | Clean planes, restrained corners, fine borders, minimal elevation                   |
+| Glass    | Plum, luminous depth             | Atmospheric backdrop, rounded translucent panels, inner highlights, layered shadows |
+| Soft     | Clay, tactile surfaces           | Warm tonal planes, opposing raised shadows, inset fields                            |
+| Elevated | Blue, layered clarity            | White or navy cards, floating elevation, polished action buttons                    |
+| Outline  | Ink and cream, graphic structure | Hard borders, offset shadows, squared corners, uppercase actions                    |
 
-Glass keeps essential surfaces opaque. Decorative transparency must not make text contrast depend on whatever happens to sit behind it. Soft fields retain visible borders rather than relying on shadows to communicate their boundaries. Focus indicators, control sizing, labels and keyboard behaviour remain shared across styles.
+Glass cards use mode-specific translucent tints, diagonal reflections and illuminated edges over a blurred, saturated backdrop. Inputs and overlay content retain opaque surfaces; text itself stays fully opaque. Consumers should verify text contrast against their actual backdrop. Soft fields retain visible borders rather than relying on shadows to communicate their boundaries. Focus indicators, control sizing, labels and keyboard behaviour remain shared across styles.
 
 The workbench uses stable paper-and-ink framing so editing a theme does not change the inspector itself. Its specimen picker renders actual preset tokens, and the live preview combines a settings form, project summary and dialog example. Responsive composition and all styling live in the shared React/token packages.
 

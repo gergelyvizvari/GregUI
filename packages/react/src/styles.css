@@ -218,14 +218,16 @@ body {
   --g-art-fill: var(--g-primary);
 }
 .g-theme[data-preset='glass'] {
-  --g-card-fill: color-mix(in srgb, var(--g-surface) 82%, transparent);
+  --g-card-fill: color-mix(in srgb, var(--g-surface) 36%, transparent);
   --g-workspace-art:
+    radial-gradient(ellipse at 72% 8%, rgba(255, 239, 204, 0.55), transparent 72%),
+    radial-gradient(ellipse at 8% 48%, rgba(167, 198, 191, 0.2), transparent 78%),
     radial-gradient(
-      ellipse at 15% 15%,
-      color-mix(in srgb, var(--g-primary) 32%, transparent),
-      transparent 55%
+      ellipse at 85% 92%,
+      color-mix(in srgb, var(--g-primary) 8%, transparent),
+      transparent 76%
     ),
-    radial-gradient(ellipse at 85% 60%, rgba(77, 202, 207, 0.25), transparent 55%);
+    linear-gradient(160deg, rgba(255, 255, 255, 0.34), transparent 80%);
 
   --g-action-radius: calc(var(--g-radius) * 2.5);
   --g-art-radius: 30%;
@@ -243,25 +245,61 @@ body {
   --g-card-radius: calc(var(--g-radius) * 1.75);
   --g-control-radius: var(--g-radius);
   --g-card-shadow:
-    inset 0 1px 0 var(--g-highlight), 0 12px 32px -12px rgba(var(--g-shadow-color), 0.18),
-    0 0 0 1px rgba(var(--g-shadow-color), 0.04);
-  --g-card-blur: blur(20px);
+    inset 0 1px 0 rgba(255, 255, 255, 0.85), inset 1px 0 0 rgba(255, 255, 255, 0.38),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.24), 0 16px 36px -20px rgba(var(--g-shadow-color), 0.3);
+  --g-card-blur: blur(18px) saturate(1.25);
   --g-control-shadow: inset 0 2px 4px rgba(var(--g-shadow-color), 0.055);
   --g-primary-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 5px 12px rgba(var(--g-shadow-color), 0.18);
   --g-secondary-shadow:
     inset 0 1px 0 var(--g-highlight), 0 2px 5px rgba(var(--g-shadow-color), 0.08);
   --g-button-art: var(--g-primary-sheen);
-  --g-preview-art:
-    radial-gradient(circle at 20% 20%, rgba(160, 115, 230, 0.65), transparent 55%),
-    radial-gradient(circle at 85% 80%, rgba(68, 200, 213, 0.7), transparent 55%);
+  --g-preview-art: var(--g-workspace-art);
   --g-badge-fill: var(--g-surface);
   --g-badge-radius: 99px;
   --g-progress-radius: 99px;
+  --g-card-border-color: color-mix(in srgb, var(--g-surface) 72%, transparent);
+  --g-nested-card-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 8px 20px -16px rgba(var(--g-shadow-color), 0.24);
 }
 .g-theme[data-preset='glass'][data-mode='dark'] {
+  --g-workspace-art:
+    radial-gradient(ellipse at 72% 8%, rgba(255, 221, 163, 0.07), transparent 72%),
+    radial-gradient(ellipse at 8% 48%, rgba(167, 198, 191, 0.09), transparent 78%),
+    radial-gradient(
+      ellipse at 85% 92%,
+      color-mix(in srgb, var(--g-primary) 7%, transparent),
+      transparent 76%
+    );
   --g-showcase-surface: var(--g-background);
+  --g-card-fill: color-mix(in srgb, var(--g-surface) 46%, transparent);
+  --g-card-border-color: rgba(255, 255, 255, 0.18);
+  --g-card-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 1px 0 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06), 0 18px 40px -20px rgba(0, 0, 0, 0.55);
+  --g-nested-card-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 8px 20px -16px rgba(0, 0, 0, 0.4);
 }
+.g-theme[data-preset='glass'] :where(.g-card, .g-mini-card) {
+  background-image: linear-gradient(
+    125deg,
+    rgba(255, 255, 255, 0.34),
+    rgba(255, 255, 255, 0.04) 38%,
+    transparent 58%,
+    rgba(255, 255, 255, 0.12)
+  );
+  background-size: 100% 100%;
+}
+.g-theme[data-preset='glass'][data-mode='dark'] :where(.g-card, .g-mini-card) {
+  background-image: linear-gradient(
+    125deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.015) 38%,
+    transparent 58%,
+    rgba(255, 255, 255, 0.045)
+  );
+}
+
 .g-theme[data-preset='soft'] {
   --g-action-radius: calc(var(--g-radius) * 2);
   --g-art-radius: 50%;
@@ -1134,6 +1172,7 @@ body {
 .g-app-shell {
   display: flex;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 .g-sidebar {
   width: 196px;
@@ -1215,6 +1254,8 @@ body {
   padding: 0.5rem;
 }
 .g-workspace {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-width: 0;
 }
@@ -1228,7 +1269,14 @@ body {
   background: var(--g-background);
   padding: 0.8rem clamp(1rem, 3vw, 3rem);
 }
+.g-toolbar[data-sticky='true'] {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
 .g-main {
+  flex: 1;
+  width: 100%;
   padding: 2.5rem clamp(1rem, 3vw, 3rem) 4rem;
   max-width: 1740px;
   margin: 0 auto;
@@ -3171,29 +3219,50 @@ body {
   padding: 1.5rem 1rem;
   gap: 1.75rem;
 }
-.g-theme[data-preset='professional'] .g-sidebar .g-text[data-tone='muted'],
-.g-theme[data-preset='professional'] .g-sidebar .g-nav-item {
+.g-theme[data-preset='professional']
+  .g-app-shell[data-appearance='dashboard']
+  > .g-sidebar
+  .g-text[data-tone='muted'],
+.g-theme[data-preset='professional']
+  .g-app-shell[data-appearance='dashboard']
+  > .g-sidebar
+  .g-nav-item {
   color: #c5c9e7;
 }
-.g-theme[data-preset='professional'] .g-sidebar .g-nav-item:hover {
+.g-theme[data-preset='professional']
+  .g-app-shell[data-appearance='dashboard']
+  > .g-sidebar
+  .g-nav-item:hover {
   background: #30344f;
 }
-.g-theme[data-preset='professional'] .g-sidebar .g-nav-item[aria-current='page'] {
+.g-theme[data-preset='professional']
+  .g-app-shell[data-appearance='dashboard']
+  > .g-sidebar
+  .g-nav-item[aria-current='page'] {
   background: #41456a;
   color: #ffffff;
   border: 0;
 }
-.g-theme[data-preset='professional'] .g-sidebar .g-brand-mark {
+.g-theme[data-preset='professional']
+  .g-app-shell[data-appearance='dashboard']
+  > .g-sidebar
+  .g-brand-mark {
   background: #7878ed;
   color: #ffffff;
   border-radius: 12px;
 }
-.g-theme[data-preset='professional'] .g-sidebar .g-button {
+.g-theme[data-preset='professional']
+  .g-app-shell[data-appearance='dashboard']
+  > .g-sidebar
+  .g-button {
   background: #343852;
   border-color: #6d769b;
   color: #ffffff;
 }
-.g-theme[data-preset='professional'] .g-sidebar .g-badge {
+.g-theme[data-preset='professional']
+  .g-app-shell[data-appearance='dashboard']
+  > .g-sidebar
+  .g-badge {
   background: #343852;
   color: #c6e8da;
   border-color: transparent;
@@ -3205,29 +3274,41 @@ body {
   gap: 1.75rem;
   color: #24494b;
 }
-.g-theme[data-preset='joyful'] .g-sidebar .g-text[data-tone='muted'],
-.g-theme[data-preset='joyful'] .g-sidebar .g-nav-item {
+.g-theme[data-preset='joyful']
+  .g-app-shell[data-appearance='dashboard']
+  > .g-sidebar
+  .g-text[data-tone='muted'],
+.g-theme[data-preset='joyful'] .g-app-shell[data-appearance='dashboard'] > .g-sidebar .g-nav-item {
   color: #52615b;
 }
-.g-theme[data-preset='joyful'] .g-sidebar .g-nav-item:hover {
+.g-theme[data-preset='joyful']
+  .g-app-shell[data-appearance='dashboard']
+  > .g-sidebar
+  .g-nav-item:hover {
   background: #eeeacb;
 }
-.g-theme[data-preset='joyful'] .g-sidebar .g-nav-item[aria-current='page'] {
+.g-theme[data-preset='joyful']
+  .g-app-shell[data-appearance='dashboard']
+  > .g-sidebar
+  .g-nav-item[aria-current='page'] {
   background: #ccefe7;
   color: #16574f;
   border: 0;
 }
-.g-theme[data-preset='joyful'] .g-sidebar .g-brand-mark {
+.g-theme[data-preset='joyful']
+  .g-app-shell[data-appearance='dashboard']
+  > .g-sidebar
+  .g-brand-mark {
   background: #ffd56c;
   color: #35443a;
   border-radius: 14px;
 }
-.g-theme[data-preset='joyful'] .g-sidebar .g-button {
+.g-theme[data-preset='joyful'] .g-app-shell[data-appearance='dashboard'] > .g-sidebar .g-button {
   background: #ffffff;
   border-color: transparent;
   color: #24494b;
 }
-.g-theme[data-preset='joyful'] .g-sidebar .g-badge {
+.g-theme[data-preset='joyful'] .g-app-shell[data-appearance='dashboard'] > .g-sidebar .g-badge {
   background: #e0f2d9;
   color: #355d34;
   border-color: transparent;
@@ -3324,8 +3405,10 @@ body {
 .g-grid[data-columns='auto'] {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
 }
-.g-main {
+.g-workspace {
   background-image: var(--g-workspace-art);
+  /* Anchor decorative glass gradients to the viewport as content scrolls. */
+  background-attachment: fixed;
 }
 .g-card .g-card {
   box-shadow: var(--g-nested-card-shadow);
@@ -3478,4 +3561,161 @@ body {
   text-shadow:
     0.35px 0 currentColor,
     -0.35px 0 currentColor;
+}
+
+/* Keep the Glass content readable when transparency is unavailable or reduced. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .g-theme[data-preset='glass'][data-mode] {
+    --g-card-fill: var(--g-surface);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .g-theme[data-preset='glass'][data-mode] {
+    --g-card-fill: var(--g-surface);
+    --g-card-blur: none;
+  }
+}
+
+/* Long-form editing: opaque work surfaces, logical spacing, document-first reading order. */
+.g-editor-layout {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+  min-width: 0;
+  container-type: inline-size;
+}
+.g-editor-layout[data-aside='true'] {
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 19rem);
+}
+.g-editor-layout[data-aside='false'] {
+  max-width: 56rem;
+}
+.g-editor-main,
+.g-editor-aside {
+  min-width: 0;
+}
+.g-form-section {
+  background: var(--g-surface);
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-radius);
+  overflow-wrap: anywhere;
+  min-width: 0;
+  scroll-margin-block: 5rem 10rem;
+}
+.g-form-section-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 1.25rem 1.5rem;
+  border-block-end: 1px solid var(--g-line);
+}
+.g-form-section-heading > div {
+  min-width: 0;
+}
+.g-form-section-number {
+  color: var(--g-primary);
+  background: var(--g-background);
+  border: 1px solid var(--g-line);
+  border-radius: 50%;
+  min-width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex: none;
+}
+.g-form-section-heading .g-heading {
+  padding-block: 0.375rem;
+}
+.g-form-section-description {
+  margin: 0.375rem 0 0;
+  color: var(--g-muted);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+.g-form-section-body {
+  padding: 1.5rem;
+  min-width: 0;
+}
+.g-form-actions {
+  position: sticky;
+  bottom: 1rem;
+  z-index: 5;
+  padding: 1rem 1.25rem;
+  background: var(--g-surface);
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-radius);
+  box-shadow: 0 6px 24px rgba(var(--g-shadow-color), 0.12);
+}
+.g-editor-main :where(input, select, textarea, button, a) {
+  scroll-margin-block: 5rem 10rem;
+}
+@media (max-width: 1100px) {
+  .g-editor-layout[data-aside='true'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .g-form-section-heading,
+  .g-form-section-body {
+    padding: 1rem;
+  }
+  .g-form-actions {
+    padding: 0.875rem;
+    bottom: 0.5rem;
+  }
+}
+@media (max-height: 550px) {
+  .g-form-actions {
+    position: static;
+  }
+}
+
+.g-brand-preview {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  background: var(--g-background);
+  color: var(--g-text);
+  border: 1px solid var(--g-border);
+  border-radius: var(--g-radius);
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.g-brand-preview[data-compact='true'] {
+  max-width: 390px;
+}
+.g-brand-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--g-surface);
+  color: var(--g-text);
+}
+.g-brand-preview-header img {
+  width: 4rem;
+  height: 4rem;
+  object-fit: contain;
+}
+.g-brand-preview-cover {
+  display: block;
+  width: 100%;
+  max-height: 16rem;
+  object-fit: cover;
+}
+.g-brand-preview-content {
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+.g-brand-preview-content p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.g-brand-preview-header {
+  border-block-start: 4px solid var(--g-primary);
 }

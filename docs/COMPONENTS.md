@@ -118,3 +118,17 @@ Accordion headers reserve at least 16px of vertical padding. Header and body hor
 `HighlightedTextarea size="small"` uses 14px text and a matching emphasis layer on desktop with a fine pointer. Mobile/touch retains 16px. The default medium size stays unchanged.
 
 `HighlightedTextarea font="body"` uses the shared theme font. Its emphasis uses a same-width visual stroke so the native caret and mirror wrapping stay aligned with proportional letters. The default `mono` font is unchanged.
+
+Glass cards use 36% surface tint in light mode and 46% in dark mode, with 18px backdrop blur, 1.25 saturation, a diagonal reflection and illuminated inset edges. Reduced-transparency preferences and browsers without backdrop filtering use solid surfaces. Inputs and overlays retain their existing fills. No API migration is required; rebuild and synchronize consumer packages. Check card text against the consuming application’s actual backdrop.
+
+Glass backgrounds use broad, low-chroma mist with a warm light source, with a quieter treatment in dark mode. The atmosphere fills the entire workspace and continues beneath short pages. Workbench previews use the same atmosphere.
+
+AppShell standard/dashboard layouts fill the dynamic viewport even with short content. The main area grows below the toolbar, while decorative backgrounds cover the full workspace independently of the content width limit.
+
+AppShell accepts `stickyToolbar` to keep its toolbar visible at the top of the viewport while scrolling. It defaults to false and preserves the toolbar’s space in the layout on desktop and mobile.
+
+## Long-form editing
+
+EditorLayout keeps the main document before its optional named aside ({label, content}); it uses a wider editor column and stacks at 1100px. FormSection groups fields with a named heading (level 2–4), optional description and decorative number. FormActions is an opaque, in-flow sticky action surface; it becomes static in viewports at most 550px high. Keep the footer compact. Applications own forms, state, labels, save/error handling and validation. Native inputs remain mounted; there is no wizard or automatic saving. All three use shared theme roles and logical spacing, with no application CSS needed.
+
+`BrandPreview` renders a scoped landing-page specimen with consumer-provided `label`, `name`, optional `logo`, decorative `cover`, `title`, `description`, content `language` and children. `compact` constrains the preview to 390px without horizontal overflow; it is a width preview, not an iframe/device emulator. Place it inside ThemeProvider. Media validation, URLs, translations and persistence remain consumer responsibilities.

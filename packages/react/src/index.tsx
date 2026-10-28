@@ -1012,9 +1012,11 @@ export function AppShell({
   children,
   viewKey,
   appearance = 'standard',
+  stickyToolbar = false,
   brandMark,
 }: {
   appearance?: 'standard' | 'editorial' | 'dashboard';
+  stickyToolbar?: boolean;
   brandMark?: ReactNode;
   viewKey?: string;
   brand: string;
@@ -1057,7 +1059,7 @@ export function AppShell({
         {footer && <div className="g-sidebar-footer">{footer}</div>}
       </aside>
       <div className="g-workspace">
-        <div className="g-toolbar">
+        <div className="g-toolbar" data-sticky={stickyToolbar || undefined}>
           <div className="g-mobile-nav">
             <Drawer
               open={navOpen}
@@ -1384,3 +1386,6 @@ export { HighlightedTextarea } from './highlighted-textarea';
 export { ThemeSelector, type ThemeSelection } from './theme-selector';
 
 export { ThumbnailChoice } from './thumbnail-choice';
+
+export { EditorLayout, FormSection, FormActions } from './form-layout';
+export { BrandPreview } from './brand-preview';
