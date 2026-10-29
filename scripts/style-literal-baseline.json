@@ -2,7 +2,7 @@
   "file": "packages/react/src/styles.css",
   "categories": {
     "hex": {
-      "count": 78,
+      "count": 85,
       "entries": {
         "--g-background: #fff;": 1,
         "--g-inspector-depth: 0 12px 48px #00000026;": 1,
@@ -21,9 +21,9 @@
         "#000": 2,
         "#000 3px": 3,
         "background: #0c132b99;": 1,
-        "background: #193b3d;": 1,
+        "background: #193b3d;": 2,
         "background: #25283f;": 1,
-        "background: #285954;": 2,
+        "background: #285954;": 4,
         "background: #30344f;": 1,
         "background: #343852;": 2,
         "background: #41456a;": 1,
@@ -56,10 +56,10 @@
         "color: #52615b;": 1,
         "color: #595959;": 1,
         "color: #795023;": 1,
-        "color: #b0d3d4;": 1,
+        "color: #b0d3d4;": 2,
         "color: #c5c9e7;": 1,
         "color: #c6e8da;": 1,
-        "color: #edfcf9;": 3,
+        "color: #edfcf9;": 6,
         "color: #f5f6ff;": 1,
         "color: #ffffff;": 3,
         "filter: drop-shadow(0 4px 16px #00000026);": 1,
@@ -71,13 +71,13 @@
       }
     },
     "colorFunction": {
-      "count": 16,
+      "count": 22,
       "entries": {
-        "--g-card-border-color: rgba(255, 255, 255, 0.18);": 1,
+        "--g-card-border-color: rgba(255, 255, 255, 0.18);": 2,
         "--g-primary-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);": 1,
-        "inset 0 -1px 0 rgba(255, 255, 255, 0.06), 0 18px 40px -20px rgba(0, 0, 0, 0.55);": 2,
+        "inset 0 -1px 0 rgba(255, 255, 255, 0.06), 0 18px 40px -20px rgba(0, 0, 0, 0.55);": 4,
         "inset 0 -1px 0 rgba(255, 255, 255, 0.24), 0 16px 36px -20px rgba(var(--g-shadow-color), 0.3);": 1,
-        "inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 8px 20px -16px rgba(0, 0, 0, 0.4);": 2,
+        "inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 8px 20px -16px rgba(0, 0, 0, 0.4);": 4,
         "inset 0 1px 0 rgba(255, 255, 255, 0.18);": 1,
         "inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 5px 12px rgba(var(--g-shadow-color), 0.18);": 1,
         "inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 2px 3px rgba(var(--g-shadow-color), 0.1);": 1,
@@ -85,7 +85,7 @@
         "inset 0 2px 0 rgba(255, 255, 255, 0.2), 0 3px 6px rgba(var(--g-shadow-color), 0.12);": 1,
         "inset 0 2px 1px rgba(255, 255, 255, 0.25), 3px 5px 10px rgba(var(--g-shadow-color), 0.23);": 1,
         "linear-gradient(160deg, rgba(255, 255, 255, 0.34), transparent 80%);": 1,
-        "rgba(255, 255, 255, 0.045)": 1,
+        "rgba(255, 255, 255, 0.045)": 2,
         "rgba(255, 255, 255, 0.12)": 1
       }
     },
