@@ -390,7 +390,26 @@ export interface ActionItem {
   disabled?: boolean;
   danger?: boolean;
 }
-/** A labelled action popover using ordinary Tab navigation, not menu semantics. */
+/**
+ * A labelled action popover using ordinary Tab navigation, not menu semantics.
+ *
+ * @deprecated Use `Menu`, which has ARIA menu semantics (arrow keys, typeahead,
+ * Escape), icons, shortcuts, checkbox/radio items and submenus. ActionMenu stays
+ * exported and working for existing consumers. Migration:
+ *
+ * ```tsx
+ * // Before
+ * <ActionMenu label="Project actions" actions={[{ id: 'open', label: 'Open', onAction: open }]} />
+ * // After
+ * <Menu
+ *   label="Project actions"
+ *   trigger={<Button variant="secondary">Project actions</Button>}
+ *   items={[{ id: 'open', label: 'Open', onSelect: open }]}
+ * />
+ * ```
+ *
+ * `onAction` becomes `onSelect`; `disabled` and `danger` keep their meaning.
+ */
 export function ActionMenu({ label, actions }: { label: string; actions: ActionItem[] }) {
   return (
     <Popover label={label} trigger={<Button variant="secondary">{label}</Button>}>

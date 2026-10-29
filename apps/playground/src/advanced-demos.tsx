@@ -1,6 +1,6 @@
 import { PostcardDemo } from './postcard-demo';
 import { BannerDemo, ToastDemo } from './feedback-demo';
-import { BreadcrumbsDemo, MenuDemo, SideNavDemo } from './navigation-demo';
+import { BreadcrumbsDemo, MenuDemo, ContextMenuDemo, SideNavDemo } from './navigation-demo';
 import { CalendarAgendaDemo, CalendarMonthDemo, DatePickerDemo } from './calendar-demo';
 import { samplePhoto, PhotoCredit } from './sample-media';
 import { TypographyDemo, PageCompositionDemo } from './content-demo';
@@ -672,7 +672,7 @@ export function useAdvancedExamples(): CatalogEntry[] {
     entry(
       'Action Menu',
       'Actions',
-      'A focus-managed action popover using normal Tab navigation and Escape to close.',
+      'Deprecated: use Menu, which has ARIA menu keyboard semantics. Kept for existing consumers: a focus-managed action popover using normal Tab navigation and Escape to close.',
       '<ActionMenu label="Project actions" actions={actions} />',
       <Stack>
         <ActionMenu label="Project actions" actions={actions} />
@@ -685,6 +685,13 @@ export function useAdvancedExamples(): CatalogEntry[] {
       'Dropdown menu with menu semantics: arrow keys, typeahead and Escape. Supports links, shortcuts, checkbox and radio items, groups and submenus.',
       '<Menu trigger={<IconButton label="Actions">…</IconButton>} items={[{ id: "rename", label: "Rename", onSelect }, { type: "separator", id: "s" }, { type: "submenu", id: "export", label: "Export as", items }]} />',
       <MenuDemo />,
+    ),
+    entry(
+      'Context Menu',
+      'Navigation',
+      'Right-click, long-press, Shift+F10 or ContextMenu key menu for a region. Shares the Menu item model, rendering and keyboard behaviour. Offer the same actions through a visible control too.',
+      '<ContextMenu label="Report actions" items={items}><Card tabIndex={0}>…</Card></ContextMenu>',
+      <ContextMenuDemo />,
     ),
     entry(
       'Breadcrumbs',

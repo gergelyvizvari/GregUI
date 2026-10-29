@@ -1,6 +1,16 @@
 'use client';
-import { useId, type ReactNode } from 'react';
-import * as MenuPrimitive from '@radix-ui/react-dropdown-menu';
+import {
+  Children,
+  createContext,
+  isValidElement,
+  useContext,
+  useId,
+  type KeyboardEvent,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
+import * as DropdownPrimitive from '@radix-ui/react-dropdown-menu';
+import * as ContextPrimitive from '@radix-ui/react-context-menu';
 import { useLocale } from '@gregui/localization';
 import { Icon, renderIcon, type IconSource } from './icons';
 import { PortalFrame } from './theme';
@@ -67,6 +77,28 @@ export interface MenuProps {
   onOpenChange?: (open: boolean) => void;
 }
 
+/**
+ * Radix scopes each menu family's context, so dropdown parts cannot render inside a
+ * context menu. The shared entry renderer reads the matching family from context.
+ */
+type MenuParts = Pick<
+  typeof DropdownPrimitive,
+  | 'Item'
+  | 'CheckboxItem'
+  | 'RadioGroup'
+  | 'RadioItem'
+  | 'ItemIndicator'
+  | 'Group'
+  | 'Label'
+  | 'Separator'
+  | 'Sub'
+  | 'SubTrigger'
+  | 'SubContent'
+  | 'Portal'
+>;
+const contextParts: MenuParts = ContextPrimitive;
+const PartsContext = createContext<MenuParts>(DropdownPrimitive);
+
 function ItemContent({ icon, label, end }: { icon?: IconSource; label: string; end?: ReactNode }) {
   return (
     <>
@@ -78,6 +110,7 @@ function ItemContent({ icon, label, end }: { icon?: IconSource; label: string; e
 }
 
 function Indicator() {
+  const MenuPrimitive = useContext(PartsContext);
   return (
     <span className="g-menu-indicator">
       <MenuPrimitive.ItemIndicator>
@@ -89,6 +122,7 @@ function Indicator() {
 
 function LabelledGroup({ label, children }: { label?: string; children: ReactNode }) {
   const id = useId();
+  const MenuPrimitive = useContext(PartsContext);
   return (
     <MenuPrimitive.Group aria-labelledby={label ? id : undefined}>
       {label && (
@@ -103,6 +137,7 @@ function LabelledGroup({ label, children }: { label?: string; children: ReactNod
 
 function Entries({ items }: { items: MenuEntry[] }) {
   const { direction } = useLocale();
+  const MenuPrimitive = useContext(PartsContext);
   return items.map((entry) => {
     switch (entry.type) {
       case 'separator':
@@ -131,6 +166,7 @@ function Entries({ items }: { items: MenuEntry[] }) {
                   className="g-menu-item"
                   value={option.value}
                   disabled={entry.disabled || option.disabled}
+                  onSelect={(event) => event.preventDefault()}
                 >
                   <Indicator />
                   <span className="g-menu-label">{option.label}</span>
@@ -211,11 +247,11 @@ export function Menu({
 }: MenuProps) {
   const { direction } = useLocale();
   return (
-    <MenuPrimitive.Root dir={direction} open={open} onOpenChange={onOpenChange} modal={false}>
-      <MenuPrimitive.Trigger asChild>{trigger}</MenuPrimitive.Trigger>
-      <MenuPrimitive.Portal>
+    <DropdownPrimitive.Root dir={direction} open={open} onOpenChange={onOpenChange} modal={false}>
+      <DropdownPrimitive.Trigger asChild>{trigger}</DropdownPrimitive.Trigger>
+      <DropdownPrimitive.Portal>
         <PortalFrame>
-          <MenuPrimitive.Content
+          <DropdownPrimitive.Content
             className="g-menu"
             aria-label={label}
             side={side}
@@ -224,9 +260,80 @@ export function Menu({
             collisionPadding={8}
           >
             <Entries items={items} />
-          </MenuPrimitive.Content>
+          </DropdownPrimitive.Content>
         </PortalFrame>
-      </MenuPrimitive.Portal>
-    </MenuPrimitive.Root>
+      </DropdownPrimitive.Portal>
+    </DropdownPrimitive.Root>
+  );
+}
+
+export interface ContextMenuProps {
+  /**
+   * The target region: one element that forwards its ref and spreads props, such as
+   * Card or a native element. Make it, or a control inside it, focusable so keyboard
+   * users can open the menu with Shift+F10 or the ContextMenu key.
+   */
+  children: ReactElement;
+  items: MenuEntry[];
+  /** Accessible name for the menu. */
+  label?: string;
+  /** Leaves the browser's native context menu in place. */
+  disabled?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+/** Opens the menu at the focused element for Shift+F10 and the ContextMenu key. */
+function openFromKeyboard(event: KeyboardEvent<HTMLElement>, rtl: boolean) {
+  if (event.key !== 'ContextMenu' && !(event.shiftKey && event.key === 'F10')) return;
+  event.preventDefault();
+  const target = event.target as HTMLElement;
+  const rect = target.getBoundingClientRect();
+  target.dispatchEvent(
+    new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      clientX: rtl ? rect.right : rect.left,
+      clientY: Math.min(rect.bottom, window.innerHeight),
+    }),
+  );
+}
+
+/**
+ * A context menu for a region, opened by right click, touch long-press, Shift+F10 or
+ * the ContextMenu key. Uses the same items, rendering and keyboard model as Menu.
+ * Offer the same actions through a visible control as well: context menus are hard
+ * to discover.
+ */
+export function ContextMenu({ children, items, label, disabled, onOpenChange }: ContextMenuProps) {
+  const { direction } = useLocale();
+  const child = Children.only(children);
+  if (!isValidElement(child)) throw new Error('ContextMenu expects a single element child.');
+  return (
+    <ContextPrimitive.Root dir={direction} onOpenChange={onOpenChange} modal={false}>
+      <ContextPrimitive.Trigger
+        asChild
+        disabled={disabled}
+        onKeyDown={disabled ? undefined : (event) => openFromKeyboard(event, direction === 'rtl')}
+      >
+        {child}
+      </ContextPrimitive.Trigger>
+      <ContextPrimitive.Portal>
+        <PortalFrame>
+          {/* Opening below the point lets the menu shift sideways on narrow screens. */}
+          <ContextPrimitive.Content
+            className="g-menu"
+            aria-label={label}
+            side="bottom"
+            align="start"
+            sideOffset={2}
+            collisionPadding={8}
+          >
+            <PartsContext.Provider value={contextParts}>
+              <Entries items={items} />
+            </PartsContext.Provider>
+          </ContextPrimitive.Content>
+        </PortalFrame>
+      </ContextPrimitive.Portal>
+    </ContextPrimitive.Root>
   );
 }
