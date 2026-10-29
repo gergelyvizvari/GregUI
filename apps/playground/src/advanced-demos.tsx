@@ -1,3 +1,4 @@
+import { PostcardDemo } from './postcard-demo';
 import { samplePhoto, PhotoCredit } from './sample-media';
 import { TypographyDemo, PageCompositionDemo } from './content-demo';
 import { useEffect, useState, type ReactNode } from 'react';
@@ -370,6 +371,13 @@ export function useAdvancedExamples(): CatalogEntry[] {
     { id: 'unavailable', label: 'Export (unavailable)', disabled: true, onAction: () => {} },
   ];
   return [
+    entry(
+      'Postcard studio',
+      'Patterns',
+      'Flat and folded cards with visual selection, inside spreads and separate envelope addresses.',
+      '<VisualChoiceGroup label="Design" options={designs} value={design} onChange={setDesign} />\n<AddressFields label="Recipient address" value={address} onChange={setAddress} fields={fields} countries={countries} />\n<DocumentPreview label="Postcard" widthMm={148} heightMm={105} pages={pages} pageId={side} onPageChange={setSide} labels={labels} />',
+      <PostcardDemo />,
+    ),
     entry(
       'Typography & content',
       'Foundations',

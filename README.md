@@ -85,7 +85,7 @@ Apps own domain content, state, routing, validation rules and data processing. g
 
 ## Typography and page foundations
 
-Open **Typography & pages** in the main navigation: **Text styles**, **Reading content**, **Page elements**, and **Type scale** are separate tabs. The page can be opened directly with `?page=typography`. Components has category/search filters and an index that opens one focused example; its address includes a stable component ID for bookmarking.
+Open **Typography & pages** in the main navigation: **Text styles**, **Reading content**, **Page elements**, and **Type scale** are separate tabs. The page can be opened directly with `?page=typography`. Components has category/search filters and an index with collapsible categories that remembers expansion choices in this browser, keeps the selected category open and shows one focused example; its address includes a stable component ID for bookmarking.
 
 Use Heading levels h1–h6 independently from visual sizes, Text lead/caption roles, and Prose for readable native content. Container reading width, nested Section levels and compact PageHeader breadcrumbs/metadata compose common pages without app CSS. Foundations and the catalog include live typography/content and page-composition examples. See [contracts](docs/COMPONENTS.md#typography-and-page-foundations).
 
@@ -106,3 +106,15 @@ Every style supports Iris, Lagoon, Forest, Plum, Clay, Cobalt, Ink & cream, Ocea
 Open **Authentication** in the workbench to try sign-in, registration, recovery, password reset, email verification and two-step verification. Shared forms include password visibility, remember preference, pending/error/success states and translation hooks. See [integration examples](docs/AUTHENTICATION.md). The demo performs no network authentication or credential storage.
 
 Featured choices are Workspace, Bloom, Clay, Neumorphic, Glass and Flat. `featuredPresets` drives new theme pickers; `presets` retains all saved-theme IDs for compatibility. Selecting a complete direction can load `recommendedPalettes[preset]`; users may then customize colours independently.
+
+### Visual choices and document previews
+
+`VisualChoiceGroup` provides controlled visual radio selection. `DocumentPreview` provides dimensioned pages, fit/zoom, page switching and optional safe-area guides. Open **Postcard studio** in the Components catalog to choose a template and personalise a local front/back preview. AI generation, address storage and print/PDF export remain application responsibilities. See [contracts](docs/COMPONENTS.md#visual-single-selection).
+
+`AddressFields` adds controlled recipient and postal-address entry with application-configured country choices, field order, labels, requiredness and errors. The postcard example starts with Hungary, supports Hungarian/UK address layouts and basic postcode checks, and updates its preview as details change. See [address contracts](docs/COMPONENTS.md#address-fields).
+
+Postcard studio also offers flat and folded formats, each in portrait or landscape. Folded cards include cover, open inside and back-cover previews and editable inside text. Mailing method is separate from card format: flat cards can be directly addressed or use an envelope; any enveloped card keeps the address only on its separate envelope preview. `DocumentSpread` supplies reusable equal document panels; printing and duplex imposition remain application responsibilities.
+
+`MailFace` provides realistic screen compositions for postcard backs and envelope fronts: reserved upper-right postage, lower-right recipient address, and a message/address divider for direct postcards. These are preview guides, not paid postage or a certified print layout.
+
+Sender / return address fields now populate the upper-left mailing area on direct postcards and envelopes, using the Posting from country and the same Hungarian/UK formatting policy. Sender details remain separate from both recipient drafts.

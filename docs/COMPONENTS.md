@@ -237,3 +237,138 @@ The workbench Components page composes this mode with category/search filters, a
 TeamMembers invite and role-save actions align with the bottom of their adjacent input/select. A role-save failure appears below the control row, preserves the selected draft and permits retry; changing the role clears that member's previous error.
 
 Palette review: Iris and Lagoon retain their existing clean, distinct accents. Forest moves from grey-green to fresher green; Plum and Rose gain clearer violet/raspberry accents; Ocean becomes a cleaner cyan-blue. Clay's beige ground becomes pale peach, Amber's muted tan becomes a lighter warm ground, and Ink & cream loses its yellow-green cast. Cobalt retains its blue accent with a lighter ground. Dark counterparts retain their readable established colours; the four new accents and Pure white include matching dark values. These choices are visual direction, not claims of user preference research.
+
+## Visual single selection
+
+`VisualChoiceGroup` exports `VisualChoiceGroupProps` and `VisualChoiceOption`. It takes a `label`, controlled `value: string | null`, `onChange(value)` and `options` with unique stable `value`, `label`, decorative `preview`, optional `description`, `disabled` and translated `status`. Previews must be noninteractive; their contents are hidden from assistive technology. Labels and descriptions carry the accessible meaning. Use disabled/status together for generating or unavailable options. The group supports `hint`, `error`, `required`, `disabled` and an optional native form `name`. Generated names isolate multiple groups. Native radios provide form, Tab and Space semantics; shared arrow/Home/End handling keeps focus and selection consistent across browsers, including RTL and skipping disabled choices. The application owns options, selection, validation and asynchronous generation. There is no automatic selection or fallback when options change; retain the selected option or update the controlled value. `ThumbnailChoice` retains its existing independent-checkbox API.
+
+```tsx
+<VisualChoiceGroup
+  label="Design"
+  value={design}
+  onChange={setDesign}
+  options={[
+    { value: 'lake', label: 'Lake', preview: <img src={lakeUrl} alt="" /> },
+    { value: 'hello', label: 'Greeting', preview: <Text>Hello</Text> },
+  ]}
+/>
+```
+
+## Document preview
+
+`DocumentPreview` exports `DocumentPreviewProps` and `DocumentPreviewPage`. Required props are `label`, positive finite `widthMm`/`heightMm`, nonempty `pages`, controlled `pageId`/`onPageChange` and translated `labels` (`page`, `zoom`, `fit`, `guides`). Each page has a unique `id`, `label` and `content`; `pageId` must identify a supplied page. Invalid dimensions, safe-area values or page IDs throw. The application must update pages and selection together. Page content unmounts on side changes: keep editable state in the application.
+
+The preview owns fit/50/100/150/200-percent zoom and optional guide visibility. Fit shrinks oversized pages to the viewport without enlarging smaller pages. Fixed physical dimensions use CSS's reference conversion of 96 pixels per inch; 100% is not a calibrated physical measurement on the user's screen. Zoom scrolls inside a keyboard-focusable region. A ResizeObserver refits after resizing; it disconnects on unmount. Page geometry is retained on narrow screens; explicit Grid column counts inside document content do not collapse with the surrounding UI. Other responsive components may still depend on the browser viewport, so use simple composition for fixed documents.
+
+Pages default to `padding="standard"` (8mm); `padding="none"` supports artwork. A single direct image fills the available page area with contain-fit, preserving the whole image. White paper and neutral ink remain fixed in dark mode, while the toolbar follows the surrounding theme. Pages inherit provider direction, with optional per-page `direction` overrides. `safeAreaMm` enables a labelled guide toggle; the inset must be nonnegative and less than half the shorter dimension. Guides are decorative and are hidden initially.
+
+```tsx
+<DocumentPreview
+  label="Postcard preview"
+  widthMm={148}
+  heightMm={105}
+  safeAreaMm={5}
+  pageId={side}
+  onPageChange={setSide}
+  labels={{ page: 'Side', zoom: 'Zoom', fit: 'Fit to view', guides: 'Show safe area' }}
+  pages={[
+    { id: 'front', label: 'Front', padding: 'none', content: <img src={artwork} alt="Lake" /> },
+    { id: 'back', label: 'Back', content: <Text>{message}</Text> },
+  ]}
+/>
+```
+
+This is a screen-proofing surface, not a print renderer. Overflowing document content is clipped to the page. Applications own text-fit validation, artwork resolution, asset loading/errors, bleed/trim requirements, export composition and PDF/print delivery. Guides alone do not establish print readiness. Postcard templates, addresses and personalisation rules stay in the consumer. Open **Postcard studio** in the Components catalog (`?page=components&component=postcard-studio`) for a local template/message/recipient/front/back example. AI generation and printing are not connected.
+
+## Address fields
+
+`AddressFields` exports `AddressFieldsProps`, `AddressValue`, `AddressFieldKey`, `AddressFieldConfig` and `AddressCountryOption`. It is a controlled, named fieldset composed from shared Field/Input/Select controls. `AddressValue` contains string keys `recipient`, `addressLine1`, `addressLine2`, `locality`, `region`, `postalCode` and `countryCode`. Those original keys are present, including empty strings for unused data. Optional `dependentLocality` supports a village or locality below post-town level, with `address-level3` autocomplete; existing values need no migration. Country values are stable application-supplied codes; labels come from `countries: { value, label, disabled? }[]`. No country catalogue, postal rules or address lookup service is bundled.
+
+Supply `label`, `value`, `onChange(nextValue, changedField)`, `fields` and `countries`. `fields` is an ordered list of unique `{ key, label, hint?, placeholder?, required?, inputMode? }` entries. Consumers can change field order, labels, visibility and requiredness when the country changes. Recipient and street lines take a full row; remaining controls wrap into columns according to available space. Omitted fields retain their controlled values but are absent from native form submission. Country changes never clear, transform or validate other fields. Applications decide whether retained hidden values belong in a rendered/exported address.
+
+`errors` maps field keys to application-owned translated messages. These are associated with the inputs alongside field hints through the existing Field contract. `onBlur(field)` supports application validation timing; `disabled` disables the complete fieldset. Group `hint` is associated with the legend/fieldset. Labels, hints, country display names, required flags and validation messages belong to the consumer. Native `required` flags are supported without imposing country-specific formats; postal codes remain text to preserve letters and leading zeroes. No trimming or normalisation occurs in AddressFields. Field `inputMode` accepts text/numeric keyboard hints; the underlying control remains text.
+
+`namePrefix` gives native form names such as `recipient.addressLine1`; otherwise a generated prefix isolates groups. IDs and autocomplete sections are unique per instance and stable across server rendering/hydration. `autoComplete="shipping"` or `"billing"` groups the standard name/address/country autocomplete tokens; omit it for an unqualified address section or use `"off"`. Actual browser autofill depends on the browser and saved user data. A country placeholder uses the configured field `placeholder`, falling back to the field label. An unknown controlled country code is displayed as a disabled option, preserving the supplied value rather than appearing to select another country. Applications must validate membership in their allowed country list.
+
+```tsx
+const [address, setAddress] = useState<AddressValue>({
+  recipient: '',
+  addressLine1: '',
+  addressLine2: '',
+  locality: '',
+  region: '',
+  postalCode: '',
+  countryCode: 'GB',
+});
+
+<AddressFields
+  label="Recipient address"
+  value={address}
+  onChange={setAddress}
+  namePrefix="recipient"
+  autoComplete="shipping"
+  countries={[
+    { value: 'GB', label: 'United Kingdom' },
+    { value: 'FR', label: 'France' },
+  ]}
+  fields={[
+    { key: 'countryCode', label: 'Country', placeholder: 'Choose a country', required: true },
+    { key: 'recipient', label: 'Recipient name', required: true },
+    { key: 'addressLine1', label: 'Address line 1', required: true },
+    { key: 'addressLine2', label: 'Address line 2' },
+    { key: 'locality', label: 'Town or city', required: true },
+    { key: 'postalCode', label: 'Postcode', required: true },
+  ]}
+/>;
+```
+
+The Postcard studio example defaults to Hungary and supplies Hungary/UK configurations, basic postcode-format feedback and its own preview formatting. See the country policy below. This is not a complete international postal-address policy. Applications own address verification, storage, permitted countries, formatting, country-change policy and personal-data handling. Existing consumer APIs are unchanged.
+
+### Hungary and UK postcard addressing
+
+The playground owns these policies in `apps/playground/src/postcard-address.ts`; they are not built-in country rules in AddressFields. Hungary is the initial destination and posting country, with Hungary first in both selectors. A single full-name field preserves the entered name order and accented letters.
+
+- **Hungary:** numeric keyboard hint for the text postcode control; four-digit syntax check; settlement, street name/type and house number, plus optional building/staircase/floor/door details. The preview renders recipient, capitalised settlement, street/details and postcode on separate lines, following [Magyar Posta's domestic addressing order](https://www.posta.hu/static/internet/download/Correct_addressing_of_letter-mail_items.pdf) and the [UPU Hungary address sheet](https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/hunEn.pdf).
+- **UK:** optional flat/sub-building above the building/street, optional dependent locality, capitalised post town and postcode on its own line. Counties are omitted. The application accepts basic postcode shapes (including GIR 0AA), lower case and missing spaces, and renders an uppercase postcode with one space before the final three characters. The original input value is retained. See the [UPU UK address sheet](https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/gbrEn.pdf) and [Royal Mail's clear-addressing guide](https://www.royalmailtechnical.com/rmt_docs/User_Guides_2024/Guide_For_Clear_Addressing_20240402.pdf).
+
+**Posting from** controls the country line: domestic mail omits it; UK-to-Hungary adds HUNGARY; Hungary-to-UK adds EGYESÜLT KIRÁLYSÁG / UNITED KINGDOM. The latter includes the Hungarian and English country names described in Magyar Posta's international guidance, while retaining the destination's UK line layout. Country changes preserve entered details and revalidate the active postcode format after the user has requested a check. They do not replace user data with country-specific sample details.
+
+This first policy covers ordinary geographical addresses. Postcode shape checks do not confirm an allocated postcode, its match to the settlement/street or deliverability. Full international formats, PO-box/poste-restante workflows, exceptional address structures and carrier-specific machine-readable print areas require application work. The screen preview does not establish print suitability.
+
+AddressFields shares label, hint, control and error rows between adjacent fields so optional guidance, wrapped labels and validation messages do not shift neighbouring input positions. Country selection takes a full row. DocumentPreview uses the shared Field, Select and Checkbox primitives, including the current theme/density and select chevron; its guide checkbox aligns with the select controls.
+
+## Two-panel document spreads and card formats
+
+`DocumentSpread` exports `DocumentSpreadProps` and `DocumentSpreadPanel`. Supply an accessible `label` and a `panels` tuple containing exactly two `{ label, content }` objects. Each panel is a named section in reading order, occupies half the spread and has 8mm internal padding. Both columns remain fixed on narrow screens; place the spread in a `DocumentPreview` page with `padding="none"` and let the preview fit/zoom the complete sheet. Optional `showFold` draws a decorative centre guide; it defaults to false. Panels follow logical reading order in the surrounding document direction. Their content clips within the panel. The component owns presentation, not print imposition, fold policy or card content.
+
+Postcard studio offers **Flat card** and **Folded card** through the shared Select. **Mailing method** is a separate choice for flat cards: direct mail puts the message and recipient address on the back, while an enveloped flat card has a message-only back and puts its address exclusively on the envelope. Folded cards always use an envelope in this example. **Card orientation** selects landscape (148 × 105 mm) or portrait (105 × 148 mm) for both formats. Folded cards have a cover and back cover at the selected closed size, and an **Inside (open spread)** at 296 × 105 mm in landscape or 210 × 148 mm in portrait. Both orientations open side by side with a central vertical fold. The left message is optional; the main message occupies the right panel. The back-cover text is editable. The fold line is an illustrative guide in the inside preview.
+
+For either card format, envelope recipient details belong to a separate **Envelope address** draft and a separate 162 × 114 mm **Envelope preview**. They never appear on an enveloped card's front, back or inside. Both address drafts use the same Hungary/UK field and formatting policy; switching formats or mailing methods retains the direct-mail/envelope drafts, both inside messages, artwork choice and back-cover text. The flat-card mailing preference is retained while using the folded format. Format changes reset the selected card surface to Front/Cover to keep the controlled page ID valid. Card and envelope previews have independent zoom/guide state. Orientation changes preserve the selected surface, text, artwork and address drafts; the envelope remains a separate 162 × 114 mm landscape specimen. All document content is application-owned.
+
+The example envelope size and recipient position demonstrate composition only. Actual duplex outside/inside print spreads, print/PDF output, paper/printer margins, envelope positioning and production checks remain future application work. No print/export capability is implied by these screen previews.
+
+The format/mailing distinction follows the physical examples in [VistaPrint UK's note-card guide](https://www.vistaprint.co.uk/stationery/note-cards), which offers both flat and folded cards with optional envelopes. Postal layout guidance distinguishes the addressed outer envelope from the directly addressed postcard; see [Magyar Posta's postcard and envelope diagrams](https://www.posta.hu/static/internet/download/Correct_addressing_of_letter-mail_items.pdf). These sources inform the consumer example, not an automatic postal-production validation claim.
+
+## Postal mailing faces
+
+`MailFace` exports `MailFaceProps`. It composes a `variant="postcard" | "envelope"` mailing face inside a zero-padding DocumentPreview page. Required props are an accessible `label`, `postageLabel` and `recipient: { label, content }`. Optional `message: { label, content }` renders only for postcards; envelope variants omit the message and divider even if a message was supplied. Optional `sender: { label, content }` occupies the upper-left area, moving the postcard message below it when present. Each supplied content area is a named section; divider and postage placeholder are decorative. The placeholder represents reserved space, not paid postage or an actual stamp.
+
+Physical positions remain fixed under RTL: postage upper right, recipient lower right, optional sender upper left. Slot text uses automatic direction. Direct postcards place the message to the left of a central divider and the address to the right. The mailing face leaves 15mm at the right and at least 15mm along the bottom; the recipient ends 20mm above the bottom. Postage is an illustrative 24 × 28 mm box, inset 8mm from the top. Address slots use regular 10pt Arial/Helvetica text and consistent line spacing on white paper, independent of the UI theme. Long content is clipped within its reserved region: applications must validate fit before production.
+
+These positions reflect [Magyar Posta's postcard diagram and blank-bottom-strip guidance](https://www.posta.hu/static/internet/download/Correct_addressing_of_letter-mail_items.pdf) and [Royal Mail's upper-right postage area](https://www.royalmailtechnical.com/rmt_docs/User_Guides_2024/Guide_For_Clear_Addressing_20240402.pdf). This visual layout does not implement every carrier/product specification. Applications own formatting, actual postage, sender/recipient data, address/asset validation and final print-area compliance.
+
+Postcard studio uses MailFace for directly mailed postcard backs and outer envelope fronts, in either card orientation. Enveloped cards retain their message-only surface with no mailing face; the sender slot is populated by the shared Sender / return address fields. Envelope recipient placement now uses the lower-right address region rather than a generic half-page panel.
+
+Postcard studio provides one **Sender / return address** draft, preserved across both card formats, orientations and mailing methods. It reuses AddressFields and the Hungarian/UK policy with a Sender name label. The existing **Posting from** selector is the sender country source of truth; the sender field group omits a duplicate country control. Changing that country preserves entered values and changes the field labels/postcode validation. **Check address fields** checks both sender and active recipient fields. Sender and recipient state, form names and autocomplete sections remain independent.
+
+Direct postcards show the sender upper left above the message; envelopes show the sender upper left opposite the postage space. Enveloped cards keep both sender and recipient details off the card's artwork/message/inside/back. Sender names and address lines are regular text, with a country line when sender and destination countries differ. For this return address, formatting uses the recipient country as the reference country, rather than treating it as another outbound recipient. No address lookup, storage or postal verification is configured.
+
+ListDetail items now accept optional `group` text. Grouped items render under named category lists and level-two headings; entries without groups keep the existing flat-list presentation. Groups follow their first occurrence in the supplied items, so consumers own category ordering. Descriptions remain optional. Selection, callbacks and detail content keep their existing contract.
+
+With stickyNavigation, the navigation's maximum height follows its actual viewport position on page scroll, resize and pane-size changes. It leaves bottom padding so the final item and focus outline remain reachable. Narrow screens retain the bounded navigation pane above the detail. The workbench groups its component index by category, puts Foundations and Layout first, and retains search, category filtering, keyboard selection and direct-link/history behavior.
+
+`ListDetail collapsibleGroups` opts grouped navigation into disclosure controls. It defaults to false, preserving existing grouped and flat consumers. With it enabled, categories start collapsed except for the selected item's group. Unselected categories can be opened/closed independently by mouse, Enter or Space; each toggle exposes aria-expanded/aria-controls. The selected category is always open and its toggle is aria-disabled (focusable, with no collapse action). A controlled selection change, search result or direct link opens the relevant category immediately. By default, manual expansion choices remain in memory while the component is mounted, including through filtering; applications may control them as described below. Ungrouped entries remain directly visible. The Components catalog enables this option.
+
+ListDetail also accepts controlled `expandedGroups?: readonly string[]` and `onExpandedGroupsChange(groups)` for application-owned preferences. These represent manual expansion choices; the selected item's group is still forced open even when absent from the controlled array. Without controlled props, expansion remains local component state. The shared component never reads or writes browser storage.
+
+The playground saves manual category expansion in `localStorage` under `gregui.catalog.groups.v1` as `{ version: 1, expandedGroups: string[] }`. It restores valid preferences when mounting/refreshing and writes only when the user toggles a category. Missing, malformed or unsupported values fall back to collapsed groups plus the selected category. Unknown group names have no visible effect. If storage reads/writes fail, the catalog remains usable with session state. Selected-category visibility never overwrites a saved manual collapse choice. Preferences are local to the browser origin and are not account/device-synchronised.

@@ -1576,3 +1576,28 @@ export { ThumbnailChoice } from './thumbnail-choice';
 
 export { EditorLayout, FormSection, FormActions } from './form-layout';
 export { BrandPreview } from './brand-preview';
+
+export {
+  VisualChoiceGroup,
+  type VisualChoiceGroupProps,
+  type VisualChoiceOption,
+} from './visual-choice-group';
+export {
+  DocumentPreview,
+  DocumentSpread,
+  type DocumentSpreadProps,
+  type DocumentSpreadPanel,
+  type DocumentPreviewProps,
+  type DocumentPreviewPage,
+} from './document-preview';
+
+export {
+  AddressFields,
+  type AddressValue,
+  type AddressFieldKey,
+  type AddressFieldConfig,
+  type AddressCountryOption,
+  type AddressFieldsProps,
+} from './address-fields';
+
+export { MailFace, type MailFaceProps } from './mail-face';

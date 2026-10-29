@@ -2,7 +2,15 @@
 
 Source review: 28 October 2026. Open candidates are proposals, not implemented APIs or an approved delivery plan. The DataTable, Combobox and ConfirmDialog first increments were delivered on 28 October 2026; see the expanded contracts and verification record. Priorities reflect reuse and gaps visible in this repository; no external consumer-demand study was performed.
 
-## Current focus — typography and page foundations
+## Postcard-driven shared foundations — 29 October 2026
+
+Owner-selected addition: VisualChoiceGroup and DocumentPreview, composed in a local Postcard studio playground example. The first increment supplies controlled visual single selection, disabled/status feedback, fixed document dimensions, controlled page switching, fit/zoom and optional safe-area guides. These are reusable presentation APIs; postcard templates, personalisation, address storage, AI generation and print/PDF export remain consumer responsibilities. See component contracts and VERIFICATION.md for executed checks and limits. This takes priority over the previously suggested FileUpload extension; authentication remains deferred.
+
+The follow-up AddressFields increment adds controlled address entry with configurable country/field policy and per-field feedback. Postcard studio now defaults to Hungary with Hungarian/UK entry and preview policies, basic postcode checks and domestic/cross-border country lines; provider lookup, address verification and storage remain consumer work.
+
+The next delivered composition adds flat/folded card selection, cover/open-inside/back previews and separate envelope recipient drafts. DocumentSpread provides the reusable two-panel layout; duplex imposition and print/PDF output remain future application work.
+
+## Previous focus — typography and page foundations
 
 Owner-selected priority: a shared foundation for all app types. First increment delivered: shared typography roles, h1–h6, lead/caption text, Prose reading flow, a reading-width container and compact page-header breadcrumbs/metadata with nested section levels. Foundations and catalog specimens support review of the shared foundation. Keep existing defaults and theme JSON compatible; application content remains consumer-owned. FileUpload and other interaction extensions follow this work.
 
@@ -21,7 +29,7 @@ Recorded at the owner's request on 28 October 2026; implementation is deferred w
 | 5        | TreeView        | `packages/react/src/data.tsx`: internal expansion initialised from defaultExpanded                                                                | Optional controlled expansion and a documented contract for changing node datasets                                                      | Focus recovery after removal/collapse, RTL navigation, retained expansion; lazy loading only after the state contract is defined                      |
 | 6        | DateRangePicker | `packages/react/src/advanced-inputs.tsx`: two native date inputs                                                                                  | Better consumer-supplied hint/error/required integration and range presets; establish a concrete need before replacing native calendars | Date-only values without timezone shifts, min/max and partial ranges, locale labels, keyboard/native validation                                       |
 
-DataTable now supplies the first controlled state increment. Column resizing, virtualisation and bulk-action tooling remain future candidates. Combobox now also supplies its first remote-search increment. ConfirmDialog now supports async confirmation. Typography and page foundations are the current priority; FileUpload transfer-state presentation remains the next interaction-focused candidate.
+DataTable now supplies the first controlled state increment. Column resizing, virtualisation and bulk-action tooling remain future candidates. Combobox now also supplies its first remote-search increment. ConfirmDialog now supports async confirmation. The first typography/page increment is delivered. The owner-selected visual choice and document preview increment now supplies the postcard example; FileUpload transfer-state presentation remains a later interaction candidate.
 
 ## Cross-cutting findings
 

@@ -1489,6 +1489,35 @@ function ComponentCatalog({
   search: string;
   onSearchChange: (search: string) => void;
 }) {
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(() => {
+    try {
+      const saved: unknown = JSON.parse(localStorage.getItem('gregui.catalog.groups.v1') ?? 'null');
+      if (
+        saved &&
+        typeof saved === 'object' &&
+        'version' in saved &&
+        saved.version === 1 &&
+        'expandedGroups' in saved &&
+        Array.isArray(saved.expandedGroups) &&
+        saved.expandedGroups.every((group) => typeof group === 'string' && group.length > 0)
+      )
+        return [...new Set(saved.expandedGroups as string[])];
+    } catch {
+      /* Browser preferences may be unavailable or malformed. */
+    }
+    return [];
+  });
+  const saveExpandedGroups = (groups: string[]) => {
+    setExpandedGroups(groups);
+    try {
+      localStorage.setItem(
+        'gregui.catalog.groups.v1',
+        JSON.stringify({ version: 1, expandedGroups: groups }),
+      );
+    } catch {
+      /* Keep the current session usable when storage is blocked. */
+    }
+  };
   const [category, setCategory] = useState('all');
   const [selectedId, setSelectedId] = useState(
     () => new URLSearchParams(window.location.search).get('component') ?? 'typography-content',
@@ -1872,9 +1901,12 @@ function ComponentCatalog({
           .includes(query),
     )
     .sort((a, b) => {
-      const priority = (name: string) =>
-        name === 'Typography & content' ? 0 : name === 'Page foundations' ? 1 : 2;
-      return priority(a.name) - priority(b.name) || a.name.localeCompare(b.name);
+      const priority = (name: string) => (name === 'Foundations' ? 0 : name === 'Layout' ? 1 : 2);
+      return (
+        priority(a.category) - priority(b.category) ||
+        a.category.localeCompare(b.category) ||
+        a.name.localeCompare(b.name)
+      );
     });
   const current =
     filtered.find((entry) => entry.id === selectedId) ??
@@ -1942,12 +1974,15 @@ function ComponentCatalog({
         />
       ) : (
         <ListDetail
+          expandedGroups={expandedGroups}
+          onExpandedGroupsChange={saveExpandedGroups}
+          collapsibleGroups
           stickyNavigation
           label="Component index"
           items={filtered.map((entry) => ({
             id: entry.id,
             label: entry.name,
-            description: entry.category,
+            group: entry.category,
           }))}
           selectedId={current.id}
           onSelect={(id) => {

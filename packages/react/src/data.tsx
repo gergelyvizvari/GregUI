@@ -1,5 +1,13 @@
 'use client';
-import { useEffect, useRef, useState, type ReactNode, type KeyboardEvent } from 'react';
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ReactNode,
+  type KeyboardEvent,
+  type CSSProperties,
+} from 'react';
 import { useLocale } from '@gregui/localization';
 import { Alert, Button, Checkbox, Field, Input, Pagination, Select, Stack, Text } from './index';
 
@@ -429,15 +437,52 @@ export function ListDetail({
   onSelect,
   children,
   stickyNavigation = false,
+  collapsibleGroups = false,
+  expandedGroups,
+  onExpandedGroupsChange,
 }: {
   label: string;
-  items: { id: string; label: string; description?: string }[];
+  items: { id: string; label: string; description?: string; group?: string }[];
   selectedId?: string;
   onSelect: (id: string) => void;
   children: ReactNode;
   stickyNavigation?: boolean;
+  collapsibleGroups?: boolean;
+  expandedGroups?: readonly string[];
+  onExpandedGroupsChange?: (groups: string[]) => void;
 }) {
   const navigation = useRef<HTMLElement>(null);
+  const groupId = useId();
+  const [localExpandedGroups, setLocalExpandedGroups] = useState<Set<string>>(() => new Set());
+  const openGroups = expandedGroups === undefined ? localExpandedGroups : new Set(expandedGroups);
+  const selectedGroup = items.find((item) => item.id === selectedId)?.group;
+  const [availableHeight, setAvailableHeight] = useState<number>();
+  useEffect(() => {
+    if (!stickyNavigation || !navigation.current) return;
+    const element = navigation.current;
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      setAvailableHeight(
+        Math.max(96, window.innerHeight - Math.max(16, element.getBoundingClientRect().top) - 16),
+      );
+    };
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(measure);
+    };
+    measure();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    const observer =
+      typeof ResizeObserver !== 'undefined' ? new ResizeObserver(schedule) : undefined;
+    observer?.observe(element);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      observer?.disconnect();
+    };
+  }, [stickyNavigation]);
   useEffect(() => {
     if (!stickyNavigation || !navigation.current) return;
     const current = navigation.current.querySelector<HTMLElement>('[aria-current="true"]');
@@ -448,27 +493,73 @@ export function ListDetail({
     if (item.top < pane.top) navigation.current.scrollTop -= pane.top - item.top;
     else if (item.bottom > visibleBottom)
       navigation.current.scrollTop += item.bottom - visibleBottom;
-  }, [selectedId, stickyNavigation]);
+  }, [selectedId, stickyNavigation, availableHeight, items.length]);
+  const renderItem = (item: (typeof items)[number]) => (
+    <li className="g-list-detail-item" key={item.id}>
+      <button
+        type="button"
+        aria-current={selectedId === item.id ? 'true' : undefined}
+        onClick={() => onSelect(item.id)}
+      >
+        <strong>
+          {item.label}
+          {selectedId === item.id && <span aria-hidden="true"> ✓</span>}
+        </strong>
+        {item.description && <span>{item.description}</span>}
+      </button>
+    </li>
+  );
+  const groups = new Map<string | undefined, typeof items>();
+  for (const item of items) groups.set(item.group, [...(groups.get(item.group) ?? []), item]);
   return (
     <div className="g-list-detail" data-sticky-navigation={stickyNavigation || undefined}>
-      <nav ref={navigation} aria-label={label}>
+      <nav
+        ref={navigation}
+        aria-label={label}
+        style={
+          availableHeight === undefined
+            ? undefined
+            : ({ '--g-list-nav-available': `${availableHeight}px` } as CSSProperties)
+        }
+      >
         <ul>
-          {items.map((item) => (
-            <li key={item.id}>
-              <button
-                type="button"
-                tabIndex={0}
-                aria-current={selectedId === item.id ? 'true' : undefined}
-                onClick={() => onSelect(item.id)}
-              >
-                <strong>
-                  {item.label}
-                  {selectedId === item.id && <span aria-hidden="true"> ✓</span>}
-                </strong>
-                {item.description && <span>{item.description}</span>}
-              </button>
-            </li>
-          ))}
+          {[...groups].map(([group, entries], index) => {
+            if (group === undefined) return entries.map(renderItem);
+            const selected = selectedGroup === group;
+            const open = !collapsibleGroups || selected || openGroups.has(group);
+            const panelId = `${groupId}-group-${index}`;
+            return (
+              <li className="g-list-detail-group" key={group}>
+                <h2>
+                  {collapsibleGroups ? (
+                    <button
+                      className="g-list-detail-group-toggle"
+                      type="button"
+                      aria-expanded={open}
+                      aria-controls={panelId}
+                      aria-disabled={selected || undefined}
+                      onClick={() => {
+                        if (selected) return;
+                        const next = new Set(openGroups);
+                        if (next.has(group)) next.delete(group);
+                        else next.add(group);
+                        if (expandedGroups === undefined) setLocalExpandedGroups(next);
+                        onExpandedGroupsChange?.([...next]);
+                      }}
+                    >
+                      {group}
+                      <span aria-hidden="true">{open ? '−' : '+'}</span>
+                    </button>
+                  ) : (
+                    group
+                  )}
+                </h2>
+                <ul id={panelId} aria-label={group} hidden={!open}>
+                  {entries.map(renderItem)}
+                </ul>
+              </li>
+            );
+          })}
         </ul>
       </nav>
       <section aria-label={items.find((item) => item.id === selectedId)?.label ?? label}>
