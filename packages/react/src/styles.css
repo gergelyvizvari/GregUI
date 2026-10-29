@@ -31,6 +31,10 @@ body {
 .g-theme[data-mode='dark'] {
   color-scheme: dark;
 }
+/* colorScheme="system" before the device preference is read (server render, hydration). */
+.g-theme[data-mode='system'] {
+  color-scheme: light dark;
+}
 .g-theme *,
 .g-theme *::before,
 .g-theme *::after {
@@ -3970,6 +3974,56 @@ body {
   text-shadow:
     0.35px 0 currentColor,
     -0.35px 0 currentColor;
+}
+
+/* Dark-mode rules for colorScheme="system" before JavaScript reads the device preference.
+   Keep in sync with the [data-mode='dark'] rules above; the Glass fallbacks below still win. */
+@media (prefers-color-scheme: dark) {
+  .g-theme[data-preset='glass'][data-mode='system'] {
+    --g-workspace-art:
+      radial-gradient(ellipse at 72% 8%, rgba(255, 221, 163, 0.07), transparent 72%),
+      radial-gradient(ellipse at 8% 48%, rgba(167, 198, 191, 0.09), transparent 78%),
+      radial-gradient(
+        ellipse at 85% 92%,
+        color-mix(in srgb, var(--g-selection) 7%, transparent),
+        transparent 76%
+      );
+    --g-showcase-surface: var(--g-background);
+    --g-card-fill: color-mix(in srgb, var(--g-surface) 46%, transparent);
+    --g-card-border-color: rgba(255, 255, 255, 0.18);
+    --g-card-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 1px 0 0 rgba(255, 255, 255, 0.1),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.06), 0 18px 40px -20px rgba(0, 0, 0, 0.55);
+    --g-nested-card-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 8px 20px -16px rgba(0, 0, 0, 0.4);
+  }
+  .g-theme[data-preset='glass'][data-mode='system'] :where(.g-card, .g-mini-card) {
+    background-image: linear-gradient(
+      125deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.015) 38%,
+      transparent 58%,
+      rgba(255, 255, 255, 0.045)
+    );
+  }
+  .g-theme[data-preset='joyful'][data-mode='system']
+    .g-app-shell[data-appearance='dashboard']
+    > .g-sidebar {
+    background: #193b3d;
+    color: #edfcf9;
+  }
+  .g-theme[data-preset='joyful'][data-mode='system'] .g-sidebar .g-nav-item,
+  .g-theme[data-preset='joyful'][data-mode='system'] .g-sidebar .g-text[data-tone='muted'] {
+    color: #b0d3d4;
+  }
+  .g-theme[data-preset='joyful'][data-mode='system'] .g-sidebar .g-nav-item[aria-current='page'] {
+    background: #285954;
+    color: #edfcf9;
+  }
+  .g-theme[data-preset='joyful'][data-mode='system'] .g-sidebar .g-nav-item:hover {
+    background: #285954;
+    color: #edfcf9;
+  }
 }
 
 /* Keep the Glass content readable when transparency is unavailable or reduced. */

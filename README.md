@@ -75,6 +75,8 @@ export function App() {
 }
 ```
 
+To follow the device's light/dark setting, add `colorScheme="system"`: `<ThemeProvider theme={theme} colorScheme="system">`. The provider derives the other mode with `switchMode`, follows live changes and paints the device's mode before JavaScript runs, including server-rendered pages. `useTheme().mode` reports the resolved mode and `useSystemMode()` the device setting. Saved theme JSON keeps `mode: 'light' | 'dark'`; store a "match system" preference separately. The default is unchanged: the theme's own mode.
+
 Import the stylesheet once, at the application root. Packages ship ESM and TypeScript declarations; React providers/components carry a `use client` directive for frameworks with server components. The package itself does not depend on Next.js. Locale/time-zone inputs must be consistent on server and client.
 
 Use `parseTheme(JSON.parse(input))` before applying externally supplied theme JSON. Within version 1 it ignores (and drops) properties and colour roles it does not know, so themes saved by a newer build still load; every known field must still be valid, and other versions are rejected. `exportTheme` rejects schemas or checked color pairs that fail validation; export is not accessibility certification. Changing light/dark mode with `switchMode` uses the matching palette's light/dark colours. Hand-picked colour roles are kept when they still pass `checkContrast` in the new mode, and the rest come from the closest palette or the preset's defaults; other theme properties are preserved.
