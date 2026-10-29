@@ -46,6 +46,8 @@ test('menu supports keyboard navigation, submenus and focus return', async ({ pa
   const menu = page.getByRole('menu', { name: 'Campaign actions' });
   await expect(menu).toBeVisible();
   await expect(menu.getByRole('menuitem', { name: /Rename/ })).toBeFocused();
+  // Contrast is meaningful once the menu's entrance fade has finished.
+  await expect(menu).toHaveCSS('opacity', '1');
   expect((await axe(page, '[role="menu"]')).violations).toEqual([]);
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('ArrowDown');

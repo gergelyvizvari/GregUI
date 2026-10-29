@@ -27,6 +27,10 @@ test('segmented control, slider and number field pass axe in Glass and Paper, li
         await expect
           .poll(() => preview.evaluate((el) => el.closest('.g-theme')?.getAttribute('data-preset')))
           .toBe(preset);
+        // Contrast is meaningful once the theme switch's colour transitions have settled.
+        await page.waitForFunction(() =>
+          document.getAnimations().every((animation) => animation.playState !== 'running'),
+        );
         expect((await axe(page)).violations).toEqual([]);
         if (testInfo.project.name === 'chromium')
           await preview.screenshot({
