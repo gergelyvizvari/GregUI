@@ -2865,6 +2865,81 @@ body {
   display: grid;
   gap: 0.75rem;
 }
+/* Entry only: the app removes toasts, so there is no exit to animate. Reduced motion disables it. */
+.g-toast {
+  animation: g-float-in var(--g-duration) var(--g-ease-enter) both;
+}
+.g-banner {
+  --g-banner-tone: var(--g-selection);
+  display: grid;
+  /* icon | title and description | actions | dismiss */
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: start;
+  gap: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--g-line);
+  border-top: 3px solid var(--g-banner-tone);
+  background: color-mix(in srgb, var(--g-banner-tone) 8%, var(--g-surface));
+  padding: 0.75rem clamp(1rem, 3vw, 3rem);
+  color: var(--g-text);
+}
+.g-banner[data-tone='success'] {
+  --g-banner-tone: var(--g-success);
+}
+.g-banner[data-tone='warning'] {
+  --g-banner-tone: var(--g-warning);
+}
+.g-banner[data-tone='danger'] {
+  --g-banner-tone: var(--g-danger);
+}
+.g-banner > .g-icon {
+  grid-column: 1;
+  margin-top: 0.15rem;
+  color: var(--g-banner-tone);
+}
+.g-banner-body {
+  display: grid;
+  grid-column: 2;
+  gap: 0.15rem;
+  overflow-wrap: anywhere;
+}
+.g-banner-description {
+  font-size: var(--g-type-small-size);
+}
+.g-banner-actions {
+  grid-column: 3;
+  align-self: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.g-banner > .g-button[data-icon-only] {
+  grid-column: 4;
+  grid-row: 1;
+  align-self: start;
+  margin-block: -0.25rem;
+}
+@media (max-width: 600px) {
+  /* Actions drop below the text so the message keeps a readable width. */
+  .g-banner-actions {
+    grid-column: 2 / 4;
+    grid-row: 2;
+  }
+}
+.g-banner[data-sticky='true'] {
+  position: sticky;
+  top: 0;
+  z-index: 21;
+}
+/* In AppShell the area wrapper sticks instead, so the banner stays within the workspace. */
+.g-shell-banner:has(> .g-banner[data-sticky='true']) {
+  position: sticky;
+  top: 0;
+  z-index: 21;
+}
+.g-shell-banner:has(> .g-banner[data-sticky='true']) + .g-toolbar[data-sticky='true'] {
+  top: var(--g-shell-banner-size, 0px);
+}
 .g-feature-list {
   padding-inline-start: 1.25rem;
   margin: 0;

@@ -41,6 +41,7 @@ export {
   EmptyState,
   ErrorSummary,
 } from './feedback';
+export { Banner, type BannerProps } from './banner';
 export { DescriptionList, Table } from './tables';
 export { type BreadcrumbItem, type BreadcrumbsProps, Breadcrumbs, Tabs } from './navigation';
 export {

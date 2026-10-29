@@ -1,4 +1,5 @@
 import { PostcardDemo } from './postcard-demo';
+import { BannerDemo, ToastDemo } from './feedback-demo';
 import { BreadcrumbsDemo, MenuDemo, SideNavDemo } from './navigation-demo';
 import { CalendarAgendaDemo, CalendarMonthDemo, DatePickerDemo } from './calendar-demo';
 import { samplePhoto, PhotoCredit } from './sample-media';
@@ -47,12 +48,10 @@ import {
   TeamMembers,
   Text,
   Timeline,
-  ToastStack,
   TreeView,
   type NotificationItem,
   type MemberItem,
   type CommentItem,
-  type ToastItem,
 } from '@gregui/react';
 export interface CatalogEntry {
   name: string;
@@ -350,7 +349,6 @@ export function useAdvancedExamples(): CatalogEntry[] {
     { id: '1', author: 'Sam', dateLabel: 'Today', body: 'The draft is ready for review.' },
   ]);
   const [decision, setDecision] = useState('');
-  const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [horizontal, setHorizontal] = useState(false);
   const entry = (
     name: string,
@@ -720,29 +718,16 @@ export function useAdvancedExamples(): CatalogEntry[] {
     entry(
       'Toast Stack',
       'Feedback',
-      'Persistent dismissible messages with optional actions. No automatic timeout hides important feedback.',
-      '<ToastStack items={messages} onDismiss={dismiss} />',
-      <Stack>
-        <Button
-          onClick={() =>
-            setToasts((old) => [
-              ...old,
-              {
-                id: String(Date.now()),
-                title: 'Changes saved',
-                tone: 'success',
-                description: 'Local demonstration only.',
-              },
-            ])
-          }
-        >
-          Show notification
-        </Button>
-        <ToastStack
-          items={toasts}
-          onDismiss={(id) => setToasts((old) => old.filter((item) => item.id !== id))}
-        />
-      </Stack>,
+      'Dismissible messages with optional actions. Persistent by default; an opt-in duration expires toasts, pausing while hovered, focused or the page is hidden. Error toasts never expire unless forced.',
+      '<ToastStack items={messages} duration={6000} onDismiss={dismiss} />',
+      <ToastDemo />,
+    ),
+    entry(
+      'Banner',
+      'Feedback',
+      'Page-level announcement across the page or AppShell workspace, with tone icon, actions and optional dismiss. Silent on page load; use live for banners inserted later.',
+      '<AppShell banner={<Banner title="Scheduled maintenance" tone="warning" sticky onDismiss={hide}>Read-only on Sunday.</Banner>} … />',
+      <BannerDemo />,
     ),
     entry(
       'Search & Filter Bar',

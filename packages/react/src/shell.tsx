@@ -115,7 +115,13 @@ export function AppShell({
   sidebarCollapsed,
   defaultSidebarCollapsed = false,
   onSidebarCollapsedChange,
+  banner,
 }: {
+  /**
+   * Page-level Banner shown across the workspace above the toolbar. A sticky banner stays at the
+   * top and a sticky toolbar then sits below it.
+   */
+  banner?: ReactNode;
   /** Adds a control that shrinks the desktop sidebar to an icon rail. */
   sidebarCollapsible?: boolean;
   sidebarCollapsed?: boolean;
@@ -145,6 +151,18 @@ export function AppShell({
   React.useEffect(() => {
     if (viewKey) window.scrollTo(0, 0);
   }, [viewKey]);
+  const bannerRef = React.useRef<HTMLDivElement>(null);
+  const hasBanner = Boolean(banner);
+  React.useEffect(() => {
+    const area = bannerRef.current;
+    if (!area || typeof ResizeObserver === 'undefined') return;
+    // A sticky toolbar is offset by the banner height so the two never overlap.
+    const observer = new ResizeObserver(() =>
+      area.parentElement?.style.setProperty('--g-shell-banner-size', `${area.offsetHeight}px`),
+    );
+    observer.observe(area);
+    return () => observer.disconnect();
+  }, [hasBanner]);
   return (
     <div className="g-app-shell" data-appearance={appearance}>
       <SkipLink href={`#${mainId}`} />
@@ -185,6 +203,11 @@ export function AppShell({
         {footer && <div className="g-sidebar-footer">{footer}</div>}
       </aside>
       <div className="g-workspace">
+        {hasBanner && (
+          <div className="g-shell-banner" ref={bannerRef}>
+            {banner}
+          </div>
+        )}
         <div className="g-toolbar" data-sticky={stickyToolbar || undefined}>
           <div className="g-mobile-nav">
             <Drawer
