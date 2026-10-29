@@ -9,7 +9,12 @@ import {
   type CSSProperties,
 } from 'react';
 import { useLocale } from '@gregui/localization';
-import { Alert, Button, Checkbox, Field, Input, Pagination, Select, Stack, Text } from './index';
+import { Button } from './buttons';
+import { Alert } from './feedback';
+import { Checkbox, Field, Input, Select } from './forms';
+import { Stack } from './layout';
+import { Text } from './typography';
+import { Pagination } from './workflows';
 
 export interface TreeNode {
   id: string;

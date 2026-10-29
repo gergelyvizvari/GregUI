@@ -10,7 +10,9 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from 'react';
-import { Field, Icon, IconButton } from './index';
+import { IconButton } from './buttons';
+import { Field } from './forms';
+import { Icon } from './icons';
 
 /** Calendar dates are plain `YYYY-MM-DD` strings; months are `YYYY-MM`. No time zone is applied. */
 export type CalendarDate = string;

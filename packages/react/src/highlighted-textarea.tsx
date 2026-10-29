@@ -1,6 +1,6 @@
 'use client';
 import { useLayoutEffect, useRef, type ComponentPropsWithoutRef } from 'react';
-import { Field } from './index';
+import { Field } from './forms';
 
 type Props = Omit<
   ComponentPropsWithoutRef<'textarea'>,

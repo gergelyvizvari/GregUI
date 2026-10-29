@@ -1,26 +1,14 @@
 'use client';
 import { useRef, useState, type ReactNode } from 'react';
 import { useLocale } from '@gregui/localization';
-import {
-  Alert,
-  Badge,
-  Button,
-  Card,
-  Checkbox,
-  DescriptionList,
-  Field,
-  Heading,
-  Inline,
-  Metric,
-  Select,
-  Stack,
-  Status,
-  Text,
-  Textarea,
-  TextField,
-  Timeline,
-  type TimelineItem,
-} from './index';
+import { Button } from './buttons';
+import { Timeline, type TimelineItem } from './data';
+import { Alert, Badge, Status } from './feedback';
+import { Checkbox, Field, Select, Textarea, TextField } from './forms';
+import { Card, Inline, Stack } from './layout';
+import { DescriptionList } from './tables';
+import { Heading, Text } from './typography';
+import { Metric } from './workbench';
 
 function AsyncAction({
   children,

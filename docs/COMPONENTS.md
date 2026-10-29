@@ -1,6 +1,6 @@
 # Component contracts
 
-All public exports are typed in `packages/react/src/index.tsx`; generated declarations ship with the package. The workbench's Components page provides live states and usage snippets. Public components omit `className` and `style` from their APIs.
+All public exports go through `packages/react/src/index.tsx`, which re-exports the component modules beside it; generated declarations ship with the package. The workbench's Components page provides live states and usage snippets. Public components omit `className` and `style` from their APIs.
 
 ## Composition
 
