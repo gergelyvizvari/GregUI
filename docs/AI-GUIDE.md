@@ -4,6 +4,8 @@ Read this alongside the repository's [AGENTS.md](../AGENTS.md). This guide descr
 
 ## Start here
 
+Building an app in a specific style? Read its guide in [styles](styles/README.md), or the DESIGN.md exported from the workbench for a custom theme.
+
 1. Read [README](../README.md) and [component contracts](COMPONENTS.md). For library changes, also read [contributing](CONTRIBUTING.md).
 2. Find the relevant implementation using the map below. Confirm props and exports in source before writing usage; do not infer APIs from another UI library.
 3. Read the matching tests and existing consumer examples. [Expanded components](EXPANDED-COMPONENTS.md) and [authentication](AUTHENTICATION.md) explain specialised contracts.

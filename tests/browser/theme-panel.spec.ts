@@ -85,6 +85,13 @@ test('floating theme editor updates live previews and shares drafts, history and
     font: 'mono',
     motion: 'reduced',
   });
+  const guideEvent = page.waitForEvent('download');
+  await panel.getByRole('button', { name: 'Export DESIGN.md', exact: true }).click();
+  const guide = await guideEvent;
+  expect(guide.suggestedFilename()).toBe('DESIGN.md');
+  const markdown = await readFile((await guide.path())!, 'utf8');
+  expect(markdown).toContain('# Workspace');
+  expect(markdown).toContain('"name": "Catalog edit"');
   await panel.getByRole('button', { name: 'Import JSON', exact: true }).click();
   const importer = page.getByRole('dialog', { name: 'Import a theme', exact: true });
   await importer.getByLabel('Theme JSON').fill('{"version":2}');
