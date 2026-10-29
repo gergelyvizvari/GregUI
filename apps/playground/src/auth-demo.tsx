@@ -13,6 +13,7 @@ import {
   Stack,
   Text,
   ThemeProvider,
+  type ThemeColorScheme,
   ThemeArtwork,
   PageHeader,
   Alert,
@@ -29,9 +30,11 @@ const flows: { value: AuthMode; label: string }[] = [
 ];
 export function AuthDemo({
   theme,
+  colorScheme,
   onPresetChange,
 }: {
   theme: Theme;
+  colorScheme: ThemeColorScheme;
   onPresetChange: (preset: Preset) => void;
 }) {
   const [mode, setMode] = useState<AuthMode>('login');
@@ -126,7 +129,7 @@ export function AuthDemo({
         </Field>
       </Grid>
       <LocaleProvider locale={locale === 'hu' ? 'hu-HU' : 'en-GB'}>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={theme} colorScheme={colorScheme}>
           <AuthLayout
             brand={<Badge tone="primary">STUDIO NORTH</Badge>}
             introduction={

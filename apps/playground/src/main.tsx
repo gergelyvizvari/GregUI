@@ -46,6 +46,8 @@ import {
   Section,
   PageHeader,
   ThemeProvider,
+  useSystemMode,
+  type ThemeColorScheme,
   ThemeArtwork,
   LocaleProvider,
   Field,
@@ -307,10 +309,12 @@ function SettingsExample({ language = 'en' }: { language?: Language }) {
 }
 function LocalePreview({
   theme,
+  colorScheme,
   language,
   children,
 }: {
   theme: Theme;
+  colorScheme: ThemeColorScheme;
   language: Language;
   children: ReactNode;
 }) {
@@ -324,7 +328,9 @@ function LocalePreview({
           : undefined
       }
     >
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <ThemeProvider theme={theme} colorScheme={colorScheme}>
+        {children}
+      </ThemeProvider>
     </LocaleProvider>
   );
 }
@@ -346,6 +352,9 @@ function pageFromLocation() {
 function App() {
   const [page, setPageState] = useState(pageFromLocation);
   const [theme, setTheme] = useState<Theme>(createTheme('glass'));
+  // Runtime preview preference only: the edited theme keeps its own light/dark mode.
+  const [colorScheme, setColorScheme] = useState<ThemeColorScheme>('theme');
+  const systemMode = useSystemMode();
   const [history, setHistory] = useState<Theme[]>([]);
   const [language, setLanguage] = useState<Language>('en');
   const [notice, setNotice] = useState('');
@@ -537,6 +546,7 @@ function App() {
       <Switch
         label="Dark mode"
         checked={theme.mode === 'dark'}
+        disabled={colorScheme === 'system'}
         onChange={(e) => {
           edit(switchMode(theme, e.target.checked ? 'dark' : 'light'));
           setNotice(
@@ -544,6 +554,17 @@ function App() {
           );
         }}
       />
+      <Switch
+        label="Match system"
+        checked={colorScheme === 'system'}
+        onChange={(e) => setColorScheme(e.target.checked ? 'system' : 'theme')}
+      />
+      {colorScheme === 'system' && (
+        <Text size="small" tone="muted">
+          Previews follow this device: {systemMode ?? 'checking'}. Turn this off to choose the
+          theme's own mode.
+        </Text>
+      )}
       <Field label="Density">
         {(p) => (
           <Select
@@ -767,7 +788,7 @@ function App() {
           )}
         </Field>
       </Inline>
-      <LocalePreview theme={theme} language={language}>
+      <LocalePreview theme={theme} colorScheme={colorScheme} language={language}>
         <PreviewStage showcase>
           <PreviewComposition>
             <SettingsExample language={language} />
@@ -903,7 +924,7 @@ function App() {
               <PageHeader
                 eyebrow="GREGUI — INTERFACE STUDIES / 01"
                 artwork={
-                  <ThemeProvider theme={theme}>
+                  <ThemeProvider theme={theme} colorScheme={colorScheme}>
                     <ThemeArtwork />
                   </ThemeProvider>
                 }
@@ -983,7 +1004,12 @@ function App() {
                   </Field>
                 }
               />
-              <ComponentCatalog theme={theme} search={search} onSearchChange={setSearch} />
+              <ComponentCatalog
+                theme={theme}
+                colorScheme={colorScheme}
+                search={search}
+                onSearchChange={setSearch}
+              />
             </>
           )}
           {page === 'typography' && (
@@ -1001,7 +1027,7 @@ function App() {
                     label: 'Text styles',
                     content: (
                       <Section title="Text styles">
-                        <ThemeProvider theme={theme}>
+                        <ThemeProvider theme={theme} colorScheme={colorScheme}>
                           <PreviewStage label="Text styles preview">
                             <TextStylesDemo />
                           </PreviewStage>
@@ -1014,7 +1040,7 @@ function App() {
                     label: 'Reading content',
                     content: (
                       <Section title="Reading content">
-                        <ThemeProvider theme={theme}>
+                        <ThemeProvider theme={theme} colorScheme={colorScheme}>
                           <PreviewStage label="Reading content preview">
                             <ReadingContentDemo />
                           </PreviewStage>
@@ -1027,7 +1053,7 @@ function App() {
                     label: 'Page elements',
                     content: (
                       <Section title="Page elements">
-                        <ThemeProvider theme={theme}>
+                        <ThemeProvider theme={theme} colorScheme={colorScheme}>
                           <PreviewStage label="Page elements preview">
                             <PageCompositionDemo />
                           </PreviewStage>
@@ -1079,7 +1105,7 @@ function App() {
                   title="Typography"
                   description="Local system fonts. No external font requests."
                 >
-                  <ThemeProvider theme={theme}>
+                  <ThemeProvider theme={theme} colorScheme={colorScheme}>
                     <PreviewStage label="Typography preview">
                       <TypographyDemo />
                     </PreviewStage>
@@ -1089,7 +1115,7 @@ function App() {
                   title="Page foundations"
                   description="Page titles, context, reading measures and semantic section nesting."
                 >
-                  <ThemeProvider theme={theme}>
+                  <ThemeProvider theme={theme} colorScheme={colorScheme}>
                     <PreviewStage label="Page composition preview">
                       <PageCompositionDemo />
                     </PreviewStage>
@@ -1123,7 +1149,9 @@ function App() {
               </Stack>
             </>
           )}
-          {page === 'auth' && <AuthDemo theme={theme} onPresetChange={changePreset} />}
+          {page === 'auth' && (
+            <AuthDemo theme={theme} colorScheme={colorScheme} onPresetChange={changePreset} />
+          )}
           {page === 'patterns' && (
             <Stack gap={8}>
               <PageHeader
@@ -1208,7 +1236,7 @@ function App() {
                     value: 'onboarding',
                     label: 'Onboarding',
                     content: (
-                      <ThemeProvider theme={theme}>
+                      <ThemeProvider theme={theme} colorScheme={colorScheme}>
                         <PreviewStage>
                           <OnboardingDemo />
                         </PreviewStage>
@@ -1219,7 +1247,7 @@ function App() {
                     value: 'settings',
                     label: 'Settings form',
                     content: (
-                      <LocalePreview theme={theme} language={language}>
+                      <LocalePreview theme={theme} colorScheme={colorScheme} language={language}>
                         <PreviewStage>
                           <SettingsExample language={language} />
                         </PreviewStage>
@@ -1230,7 +1258,7 @@ function App() {
                     value: 'data',
                     label: 'Data page',
                     content: (
-                      <LocalePreview theme={theme} language={language}>
+                      <LocalePreview theme={theme} colorScheme={colorScheme} language={language}>
                         <Card>
                           <Stack>
                             <Heading level={3}>Your projects</Heading>
@@ -1495,10 +1523,12 @@ function App() {
 }
 function ComponentCatalog({
   theme,
+  colorScheme,
   search,
   onSearchChange,
 }: {
   theme: Theme;
+  colorScheme: ThemeColorScheme;
   search: string;
   onSearchChange: (search: string) => void;
 }) {
@@ -2112,7 +2142,7 @@ function ComponentCatalog({
               <Text size="small" tone="muted">
                 {current.description}
               </Text>
-              <ThemeProvider theme={theme}>
+              <ThemeProvider theme={theme} colorScheme={colorScheme}>
                 <PreviewStage>{current.demo}</PreviewStage>
               </ThemeProvider>
               <Accordion
