@@ -1,5 +1,5 @@
 'use client';
-import { Field, Select, Checkbox } from './index';
+import { Field, Select, Checkbox } from './forms';
 import { useLocale } from '@gregui/localization';
 import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 

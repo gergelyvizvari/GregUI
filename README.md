@@ -16,7 +16,7 @@ npm run build
 npm run dev
 ```
 
-Open the URL printed by Vite. The workbench includes a component catalog, theme editor, foundations, example patterns and an accessibility/support page. Use the floating **Edit theme** button on Components, Typography & pages, Patterns, Authentication or Foundations to adjust previews live; it opens a non-modal desktop inspector or a modal mobile drawer with the same theme/history as Theme studio. It has no backend, analytics or external fonts. Save draft explicitly stores a theme in this browser; Delete saved draft removes it.
+Open the URL printed by Vite. The workbench imports the built packages, like a real app would, so `npm run dev` rebuilds them first. After changing package source while the server runs, run `npm run build:packages` again. The workbench includes a component catalog, theme editor, foundations, example patterns and an accessibility/support page. Use the floating **Edit theme** button on Components, Typography & pages, Patterns, Authentication or Foundations to adjust previews live; it opens a non-modal desktop inspector or a modal mobile drawer with the same theme/history as Theme studio. It has no backend, analytics or external fonts. Save draft explicitly stores a theme in this browser; Delete saved draft removes it.
 
 ```sh
 npm run check           # types, consumer style boundary, unit/interaction tests, builds

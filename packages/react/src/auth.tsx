@@ -8,18 +8,11 @@ import React, {
   type ReactNode,
 } from 'react';
 import { useLocale } from '@gregui/localization';
-import {
-  Alert,
-  Button,
-  Card,
-  Checkbox,
-  Field,
-  Heading,
-  Input,
-  Stack,
-  Text,
-  TextField,
-} from './index';
+import { Button } from './buttons';
+import { Alert } from './feedback';
+import { Checkbox, Field, Input, TextField } from './forms';
+import { Card, Stack } from './layout';
+import { Heading, Text } from './typography';
 
 type InputProps = Omit<ComponentPropsWithoutRef<'input'>, 'className' | 'style' | 'type'>;
 export const PasswordField = forwardRef<

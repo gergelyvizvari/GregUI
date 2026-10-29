@@ -1,6 +1,9 @@
 'use client';
 import { useId, useRef, useState, type ReactNode } from 'react';
-import { Badge, Button, Icon, Field, Input } from './index';
+import { Button } from './buttons';
+import { Badge } from './feedback';
+import { Field, Input } from './forms';
+import { Icon } from './icons';
 
 /** Controlled disclosure for editing one field in a schema or form builder. */
 export function FieldEditorItem({

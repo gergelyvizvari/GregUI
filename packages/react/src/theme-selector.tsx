@@ -7,7 +7,8 @@ import {
   type Palette,
   type Mode,
 } from '@gregui/tokens';
-import { Field, Grid, Select } from './index';
+import { Field, Select } from './forms';
+import { Grid } from './layout';
 
 export interface ThemeSelection {
   preset: Preset;

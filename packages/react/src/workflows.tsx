@@ -1,7 +1,9 @@
 'use client';
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { useLocale } from '@gregui/localization';
-import { Alert, Button, Inline, Stack } from './index';
+import { Button } from './buttons';
+import { Alert } from './feedback';
+import { Inline, Stack } from './layout';
 
 export interface AccordionItem {
   value: string;

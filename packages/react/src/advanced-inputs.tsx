@@ -2,7 +2,13 @@
 import { Close as PopoverClose } from '@radix-ui/react-popover';
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { useLocale } from '@gregui/localization';
-import { Alert, Button, Dialog, Field, Icon, Inline, Input, Popover, Stack, Text } from './index';
+import { Button } from './buttons';
+import { Alert } from './feedback';
+import { Field, Input } from './forms';
+import { Icon } from './icons';
+import { Inline, Stack } from './layout';
+import { Dialog, Popover } from './overlays';
+import { Text } from './typography';
 
 export interface Choice {
   value: string;
