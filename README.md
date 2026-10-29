@@ -109,7 +109,7 @@ Featured choices are Workspace, Bloom, Clay, Neumorphic, Glass and Flat. `featur
 
 ### Visual choices and document previews
 
-`VisualChoiceGroup` provides controlled visual radio selection. `DocumentPreview` provides dimensioned pages, fit/zoom, page switching and optional safe-area guides. Open **Postcard studio** in the Components catalog to choose a template and personalise a local front/back preview. AI generation, address storage and print/PDF export remain application responsibilities. See [contracts](docs/COMPONENTS.md#visual-single-selection).
+`VisualChoiceGroup` provides controlled visual radio selection. `DocumentPreview` provides dimensioned pages, fit/zoom, page switching, optional safe-area, bleed and crop-mark guides, and a low-resolution image warning. Open **Postcard studio** in the Components catalog to choose a template and personalise a local front/back preview. AI generation, address storage and print/PDF export remain application responsibilities. See [contracts](docs/COMPONENTS.md#visual-single-selection).
 
 `AddressFields` adds controlled recipient and postal-address entry with application-configured country choices, field order, labels, requiredness and errors. The postcard example starts with Hungary, supports Hungarian/UK address layouts and basic postcode checks, and updates its preview as details change. See [address contracts](docs/COMPONENTS.md#address-fields).
 

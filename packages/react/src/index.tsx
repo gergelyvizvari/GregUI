@@ -78,10 +78,14 @@ export {
 export {
   DocumentPreview,
   DocumentSpread,
+  documentImageDpi,
   type DocumentSpreadProps,
   type DocumentSpreadPanel,
   type DocumentPreviewProps,
   type DocumentPreviewPage,
+  type DocumentPreviewImage,
+  type DocumentImageResolution,
+  type DocumentImageResolutionIssue,
 } from './document-preview';
 export {
   AddressFields,

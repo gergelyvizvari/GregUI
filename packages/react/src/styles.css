@@ -4189,9 +4189,13 @@ body {
   overflow: hidden;
 }
 .g-document-content {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  /* Content sits on the trimmed page; only padding="bleed" reaches the sheet edge. */
+  inset: var(--g-document-bleed, 0mm);
   overflow: hidden;
+}
+.g-document-sheet[data-padding='bleed'] .g-document-content {
+  inset: 0;
 }
 .g-document-sheet[data-padding='standard'] .g-document-content {
   padding: 8mm;
@@ -4202,9 +4206,54 @@ body {
   height: 100%;
   object-fit: contain;
 }
+/* Bleed artwork must reach every edge, so it crops instead of letterboxing. */
+.g-document-sheet[data-padding='bleed'] .g-document-content > img:only-child {
+  object-fit: cover;
+}
+.g-document-trim {
+  position: absolute;
+  inset: var(--g-document-bleed);
+  outline: 1px solid #000;
+  /* Tints only the bleed: the sheet clips the spread shadow at its own edge. */
+  box-shadow: 0 0 0 100vmax #c8102e2e;
+  pointer-events: none;
+}
+.g-document-crop {
+  position: absolute;
+  width: var(--g-document-bleed);
+  height: var(--g-document-bleed);
+  border: 0 solid #000;
+}
+.g-document-crop[data-corner='top-left'] {
+  right: 100%;
+  bottom: 100%;
+  border-right-width: 1px;
+  border-bottom-width: 1px;
+}
+.g-document-crop[data-corner='top-right'] {
+  left: 100%;
+  bottom: 100%;
+  border-left-width: 1px;
+  border-bottom-width: 1px;
+}
+.g-document-crop[data-corner='bottom-left'] {
+  right: 100%;
+  top: 100%;
+  border-right-width: 1px;
+  border-top-width: 1px;
+}
+.g-document-crop[data-corner='bottom-right'] {
+  left: 100%;
+  top: 100%;
+  border-left-width: 1px;
+  border-top-width: 1px;
+}
+.g-document-notices {
+  padding: 0 1rem 1rem;
+}
 .g-document-guides {
   position: absolute;
-  inset: var(--g-document-safe);
+  inset: calc(var(--g-document-bleed, 0mm) + var(--g-document-safe));
   border: 1px dashed #000;
   outline: 1px dashed #fff;
   pointer-events: none;
@@ -4221,6 +4270,12 @@ body {
   }
   .g-document-sheet {
     border: 1px solid CanvasText;
+  }
+  .g-document-trim {
+    outline-color: CanvasText;
+  }
+  .g-document-crop {
+    border-color: CanvasText;
   }
 }
 /* A document's explicit grid composition stays fixed while the surrounding UI reflows. */
