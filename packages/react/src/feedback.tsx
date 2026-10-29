@@ -7,12 +7,15 @@ import { Heading, Link, Text } from './typography';
 export function Badge({
   children,
   tone = 'neutral',
+  variant = 'standard',
 }: {
   children: ReactNode;
   tone?: 'neutral' | 'primary' | 'success' | 'warning' | 'danger';
+  /** `stamp` has a perforated stamp edge; `label` is a punched, pointed luggage-label tag. */
+  variant?: 'standard' | 'stamp' | 'label';
 }) {
   return (
-    <span className="g-badge" data-tone={tone}>
+    <span className="g-badge" data-tone={tone} data-variant={variant}>
       {children}
     </span>
   );

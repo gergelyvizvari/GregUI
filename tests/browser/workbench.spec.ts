@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { featuredPresets, presetInfo, presets } from '@gregui/tokens';
+import { featuredPresets, paletteOptions, presetInfo, presets } from '@gregui/tokens';
 async function navigate(page: Page, name: string) {
   if (await page.getByRole('button', { name: 'Open navigation' }).isVisible())
     await page.getByRole('button', { name: 'Open navigation' }).click();
@@ -636,7 +636,7 @@ test('refreshed palettes stay readable on Paper in both modes', async ({ page },
     .evaluateAll((options) =>
       options.map((option) => (option as HTMLOptionElement).value).filter((id) => id !== 'custom'),
     );
-  expect(ids).toHaveLength(16);
+  expect(ids).toHaveLength(paletteOptions.length);
   const preview = page.locator('[aria-label="Component preview"]');
   for (const id of ids) {
     await palette.selectOption(id);

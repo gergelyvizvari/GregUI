@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
-import { MailFace } from '@gregui/react';
+import { MailFace, Postmark } from '@gregui/react';
 it('names message, recipient and optional sender while keeping preview marks decorative', () => {
   const { container } = render(
     <MailFace
@@ -32,4 +32,18 @@ it('envelopes never render a postcard message or divider', () => {
   expect(screen.queryByText('Keep this inside the card')).toBeNull();
   expect(screen.queryByRole('region', { name: 'Private message' })).toBeNull();
   expect(container.querySelector('.g-mail-divider')).toBeNull();
+});
+it('places an optional postmark over the postage corner as decoration', () => {
+  const { container } = render(
+    <MailFace
+      label="Postcard"
+      variant="postcard"
+      postageLabel="Postage"
+      recipient={{ label: 'Recipient', content: 'Anna' }}
+      postmark={<Postmark place="Szeged" date="29 Oct" />}
+    />,
+  );
+  const mark = container.querySelector('.g-mail-postmark');
+  expect(mark).toHaveAttribute('aria-hidden', 'true');
+  expect(mark).toHaveTextContent('Szeged');
 });

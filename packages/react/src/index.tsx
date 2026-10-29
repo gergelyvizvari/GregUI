@@ -103,6 +103,7 @@ export {
   type AddressFieldsProps,
 } from './address-fields';
 export { MailFace, type MailFaceProps } from './mail-face';
+export { Postmark, type PostmarkProps } from './postmark';
 export {
   CalendarMonth,
   DatePicker,

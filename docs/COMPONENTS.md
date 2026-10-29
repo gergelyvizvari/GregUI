@@ -36,7 +36,7 @@ All public exports go through `packages/react/src/index.tsx`, which re-exports t
 
 - `Alert` is static unless `live` is requested; danger uses alert semantics, other live alerts use polite status. `Status` is a persistent polite live region.
 - `Progress` has a visible label; `Spinner` and `Skeleton` have accessible loading names and honor reduced motion. Skeleton is static.
-- `Badge` always includes text; status meaning is not color-only.
+- `Badge` always includes text; status meaning is not color-only. Optional `variant="stamp"` draws a perforated postage-stamp edge with an inner frame; `variant="label"` draws a pointed luggage-label tag with a punched eyelet that points to the inline start and mirrors under RTL. Both keep `tone` and stay plain text for assistive technology. The default is `variant="standard"`.
 - `Table` includes caption, column headers and first-column row headers inside a named scroll region. It deliberately has no sorting, pagination or virtualization.
 - `DescriptionList`, `EmptyState`, `CodeBlock`, `Divider` provide content structure without application styling. `EmptyState` titles render as `h3`; set `headingLevel` (2–6) to fit the page outline. `CodeBlock wrap` preserves whitespace while wrapping long lines and unbroken strings to the available width; the default retains horizontal scrolling.
 
@@ -47,6 +47,8 @@ All public exports go through `packages/react/src/index.tsx`, which re-exports t
 `PresetOption` accepts a light/dark `mode` and displays a decorative specimen using that preset's default tokens. Optional `palette` previews the consumer’s selected palette without changing its other preferences. `PreviewComposition` stacks children by default and creates two columns when its container is at least 600px wide. `PreviewStage showcase` adds a stronger decorative backdrop: place all text and controls inside opaque Cards or Alerts when using it. Use the default stage for uncontained content.
 
 All theme colors are six-digit hex values. Theme import rejects unknown fields, unsupported versions and malformed values. Schema-valid drafts may have contrast failures; JSON/CSS exports are blocked until checked pairs pass. CSS export is a token snapshot for adapters or generated stylesheets. React consumers should import the JSON into ThemeProvider; its inline variables take precedence over a separately imported CSS snapshot. No schema migrations exist yet because only version 1 exists.
+
+Themes accept an optional `accent: 'expressive' | 'restrained'`. Omitted means expressive, so existing version 1 JSON is unchanged. With `restrained`, `primary` appears only on primary buttons, links and focus; selected states, checkboxes, switches, tabs, progress, primary badges, current navigation and decorative art use `text` on `surface` (CSS `--g-selection` / `--g-onSelection`), and tint and atmosphere washes use ink. Both pairs are already covered by the contrast checks. `ThemeProvider` exposes it as `data-accent`. The Cream preset defaults to restrained; any preset can opt in, and mode or palette changes keep the setting.
 
 ## Authentication
 
@@ -91,7 +93,7 @@ Dashboard sidebars stay within the dynamic viewport and scroll independently whe
 
 ## Appearance preferences
 
-`ThemeSelector` accepts a controlled `ThemeSelection` (`preset`, `palette`, `mode`), `onChange`, required consumer-translated `labels` (`style`, `palette`, `mode`, `light`, `dark`), and optional `disabled`. It exposes all fifteen built-in styles and sixteen palettes with light/dark mode through labelled native selects; changing one preference preserves the other two. The three-column layout collapses on mobile. Style and palette names are gregUI identifiers/display names. Consumers apply the selection with `createTheme(preset, mode, palette)` and own persistence, density and validation of stored values. The Components catalog includes an isolated live preview. This is an additive API; existing consumers need no migration.
+`ThemeSelector` accepts a controlled `ThemeSelection` (`preset`, `palette`, `mode`), `onChange`, required consumer-translated `labels` (`style`, `palette`, `mode`, `light`, `dark`), and optional `disabled`. It exposes the eight featured styles (keeping a current legacy style selectable) and seventeen palettes with light/dark mode through labelled native selects; changing one preference preserves the other two. The three-column layout collapses on mobile. Style and palette names are gregUI identifiers/display names. Consumers apply the selection with `createTheme(preset, mode, palette)` and own persistence, density and validation of stored values. The Components catalog includes an isolated live preview. This is an additive API; existing consumers need no migration.
 
 `Dialog size="large"` provides a bounded 1040px desktop workflow surface, scrolling body and fixed header/footer. The default medium size is unchanged.
 
@@ -182,7 +184,7 @@ The panel and launcher are portaled with theme and locale inheritance. They anch
 
 Use one floating inspector per view to avoid overlapping launchers. Collapsing or changing between desktop/modal presentation can unmount body content; hoist drafts that must survive those changes. The component does not own editor data or persistence. Existing Dialog/Drawer semantics are unchanged.
 
-The workbench uses this component for **Edit theme** on Components, Typography & pages, Patterns, Authentication and Foundations. The inspector shares controls, import/export, contrast guards, current theme and Undo history with Theme studio. It offers all fifteen styles, sixteen palettes, modes, density, corners, typography, motion and eleven semantic colours, plus an expandable contrast report. Editor surfaces retain the stable workbench theme while previews update live. Closing keeps changes in the session; Save draft explicitly writes local browser storage. Navigation closes the inspector and keeps the edited theme. Theme studio and Overview retain their inline editors.
+The workbench uses this component for **Edit theme** on Components, Typography & pages, Patterns, Authentication and Foundations. The inspector shares controls, import/export, contrast guards, current theme and Undo history with Theme studio. It offers all sixteen styles, seventeen palettes, modes, restrained or expressive accent, density, corners, typography, motion and eleven semantic colours, plus an expandable contrast report. Editor surfaces retain the stable workbench theme while previews update live. Closing keeps changes in the session; Save draft explicitly writes local browser storage. Navigation closes the inspector and keeps the edited theme. Theme studio and Overview retain their inline editors.
 
 ## Typography and page foundations
 
@@ -371,6 +373,8 @@ The format/mailing distinction follows the physical examples in [VistaPrint UK's
 ## Postal mailing faces
 
 `MailFace` exports `MailFaceProps`. It composes a `variant="postcard" | "envelope"` mailing face inside a zero-padding DocumentPreview page. Required props are an accessible `label`, `postageLabel` and `recipient: { label, content }`. Optional `message: { label, content }` renders only for postcards; envelope variants omit the message and divider even if a message was supplied. Optional `sender: { label, content }` occupies the upper-left area, moving the postcard message below it when present. Each supplied content area is a named section; divider and postage placeholder are decorative. The placeholder represents reserved space, not paid postage or an actual stamp.
+
+Optional `postmark` is a decorative node, usually a `Postmark`, laid over the postage corner and hidden from assistive technology. `Postmark` (exports `PostmarkProps`) draws an ink ring with `place`, a pre-formatted `date` and optional `detail`, plus wavy cancellation lines (`cancellation`, default true) and a slight `tilt` (default true). Format the date with `useFormat` for the current locale. Outside a MailFace it uses the theme's muted ink; inside it uses the mailing face's fixed print grey. It never represents real postage or a postal service mark.
 
 Physical positions remain fixed under RTL: postage upper right, recipient lower right, optional sender upper left. Slot text uses automatic direction. Direct postcards place the message to the left of a central divider and the address to the right. The mailing face leaves 15mm at the right and at least 15mm along the bottom; the recipient ends 20mm above the bottom. Postage is an illustrative 24 × 28 mm box, inset 8mm from the top. Address slots use regular 10pt Arial/Helvetica text and consistent line spacing on white paper, independent of the UI theme. Long content is clipped within its reserved region: applications must validate fit before production.
 

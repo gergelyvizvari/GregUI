@@ -21,6 +21,7 @@ function ThemeFrame({
       className={`g-theme${portal ? ' g-portal' : ''}`}
       data-preset={theme.preset}
       data-mode={theme.mode}
+      data-accent={theme.accent ?? 'expressive'}
       data-density={theme.density}
       data-motion={theme.motion}
       style={themeVariables(theme) as CSSProperties}

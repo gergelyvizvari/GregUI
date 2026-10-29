@@ -21,6 +21,8 @@ const theme = createTheme('glass', 'light', 'plum');
 
 Use roles through component props such as `tone` and `variant`. Never hard-code these values in an app.
 
+**Accent: expressive.** `primary` also marks selected states, progress, badges and decoration. Set `accent: 'restrained'` to keep it to the main action, links and focus.
+
 | Role | Light | Dark | Use |
 | --- | --- | --- | --- |
 | `background` | `#f7f3ff` | `#181324` | Page canvas behind everything |

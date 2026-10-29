@@ -8,6 +8,8 @@ import {
   type AddressValue,
   DocumentPreview,
   MailFace,
+  Postmark,
+  useFormat,
   DocumentSpread,
   type DocumentPreviewPage,
   TextField,
@@ -41,6 +43,7 @@ export function PostcardDemo() {
   const [insideLeft, setInsideLeft] = useState('');
   const [backText, setBackText] = useState('A little note, just for you.');
   const [design, setDesign] = useState<string | null>('alpine');
+  const { date: formatDate } = useFormat();
   const [pageId, setPageId] = useState('front');
   const [message, setMessage] = useState(
     'Wish you were here! A little mountain air and a lot of happy memories.\n\nLove, Alex',
@@ -145,6 +148,13 @@ export function PostcardDemo() {
                   label: 'Postcard recipient',
                   content: addressContent(postcardAddress),
                 }}
+                postmark={
+                  <Postmark
+                    place={senderAddress.locality || 'Greetings'}
+                    date={formatDate(new Date(), { day: 'numeric', month: 'short' })}
+                    detail={formatDate(new Date(), { year: 'numeric' })}
+                  />
+                }
               />
             ),
           },

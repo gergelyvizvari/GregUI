@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { paletteOptions, presets } from '@gregui/tokens';
 
 test('floating theme editor updates live previews and shares drafts, history and transfers with Theme studio', async ({
   page,
@@ -20,8 +21,12 @@ test('floating theme editor updates live previews and shares drafts, history and
   const panel = page.getByRole('dialog', { name: 'Live theme editor', exact: true });
   if (compact) await expect(panel).toHaveAttribute('aria-modal', 'true');
   else await expect(panel).not.toHaveAttribute('aria-modal', 'true');
-  await expect(panel.getByLabel('Style', { exact: true }).locator('option')).toHaveCount(15);
-  await expect(panel.getByLabel('Palette', { exact: true }).locator('option')).toHaveCount(16);
+  await expect(panel.getByLabel('Style', { exact: true }).locator('option')).toHaveCount(
+    presets.length,
+  );
+  await expect(panel.getByLabel('Palette', { exact: true }).locator('option')).toHaveCount(
+    paletteOptions.length,
+  );
   await expect(panel.locator('input[type=color]')).toHaveCount(11);
   await panel.getByLabel('Style', { exact: true }).selectOption('professional');
   await panel.getByLabel('Palette', { exact: true }).selectOption('cobalt');

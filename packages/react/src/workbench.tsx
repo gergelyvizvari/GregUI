@@ -45,6 +45,7 @@ export function PresetOption({
         className="g-theme g-preset-art"
         data-preset={preset}
         data-mode={mode}
+        data-accent={sample.accent ?? 'expressive'}
         style={themeVariables(sample) as CSSProperties}
         aria-hidden="true"
       >

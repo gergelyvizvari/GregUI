@@ -15,6 +15,7 @@ export const presets = [
   'aurora',
   'studio',
   'canvas',
+  'cream',
 ] as const;
 export type Preset = (typeof presets)[number];
 export type Mode = 'light' | 'dark';
@@ -43,7 +44,14 @@ export interface Theme {
   font: 'system' | 'humanist' | 'mono';
   motion: 'standard' | 'reduced';
   colors: Record<ColorRole, string>;
+  /**
+   * Where the primary colour appears. `restrained` keeps it to the main action, links and focus;
+   * selection and decoration use ink. Omitted means `expressive`.
+   */
+  accent?: Accent;
 }
+export const accents = ['expressive', 'restrained'] as const;
+export type Accent = (typeof accents)[number];
 // Presets supply an art-directed starting palette; imported/custom colors remain editable.
 const basePalettes = {
   flat: {
@@ -328,6 +336,35 @@ const lagoon: Record<Mode, Theme['colors']> = {
     danger: '#ffafc2',
   },
 };
+// Warm cream stock with one vermilion accent; brighter and warmer than Paper.
+const cream: Record<Mode, Theme['colors']> = {
+  light: {
+    background: '#fcf6ea',
+    surface: '#fffcf5',
+    text: '#2b241e',
+    muted: '#68594c',
+    border: '#8e7d6c',
+    primary: '#c03d12',
+    onPrimary: '#ffffff',
+    focus: '#962f0d',
+    success: '#3d6a3a',
+    warning: '#7a560a',
+    danger: '#a52d2d',
+  },
+  dark: {
+    background: '#211c16',
+    surface: '#2b251e',
+    text: '#f8efe1',
+    muted: '#cfc0ad',
+    border: '#a2907b',
+    primary: '#ffb08a',
+    onPrimary: '#3b1a0a',
+    focus: '#ffcaa8',
+    success: '#b2d6a4',
+    warning: '#edcb86',
+    danger: '#ffaca6',
+  },
+};
 const paper: Record<Mode, Theme['colors']> = {
   light: {
     background: '#ffffff',
@@ -401,6 +438,7 @@ const extraPalettes = {
 const palettes: Record<Preset, Record<Mode, Theme['colors']>> = {
   ...basePalettes,
   paper,
+  cream,
   editorial: amber,
   porcelain: rose,
   aurora: ocean,
@@ -427,6 +465,7 @@ export const presetInfo: Record<Preset, { name: string; description: string }> =
   aurora: { name: 'Aurora', description: 'Luminous edges, flowing colour' },
   studio: { name: 'Studio', description: 'Precise lines, quiet depth' },
   canvas: { name: 'Canvas', description: 'Tactile paper, playful shapes' },
+  cream: { name: 'Cream', description: 'Warm stock, editorial ink' },
 };
 export const paletteOptions = [
   { id: 'coral', name: 'Coral', preset: 'paper' },
@@ -435,6 +474,7 @@ export const paletteOptions = [
   { id: 'violet', name: 'Violet', preset: 'paper' },
   { id: 'mono', name: 'Graphite', preset: 'paper' },
   { id: 'paper', name: 'Pure white', preset: 'paper' },
+  { id: 'cream', name: 'Cream & vermilion', preset: 'cream' },
   { id: 'iris', name: 'Iris', preset: 'professional' },
   { id: 'lagoon', name: 'Lagoon', preset: 'joyful' },
   { id: 'forest', name: 'Forest', preset: 'flat' },
@@ -450,6 +490,7 @@ export type Palette = (typeof paletteOptions)[number]['id'];
 /** Curated choices; legacy IDs stay readable for saved user themes. */
 export const featuredPresets = [
   'paper',
+  'cream',
   'professional',
   'joyful',
   'clay',
@@ -473,6 +514,7 @@ export const recommendedPalettes: Record<Preset, Palette> = {
   aurora: 'ocean',
   studio: 'cobalt',
   canvas: 'forest',
+  cream: 'cream',
 };
 function paletteColors(palette: Palette, mode: Mode): Theme['colors'] {
   const option = paletteOptions.find((option) => option.id === palette);
@@ -514,6 +556,7 @@ export function createTheme(
     font: preset === 'joyful' || preset === 'clay' ? 'humanist' : 'system',
     motion: 'standard',
     colors: materialColors(preset, palette ? paletteColors(palette, mode) : palettes[preset][mode]),
+    ...(preset === 'cream' ? { accent: 'restrained' as const } : {}),
   };
 }
 function baseColors(preset: Preset, mode: Mode, palette?: Palette): Theme['colors'] {
@@ -594,8 +637,10 @@ export function themeVariables(theme: Theme): Record<string, string> {
   const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ');
   const night = theme.mode === 'dark';
   vars['--g-line'] = `rgba(${rgb(theme.colors.text)}, ${night ? 0.22 : 0.14})`;
-  vars['--g-tint'] = `rgba(${rgb(theme.colors.primary)}, ${night ? 0.13 : 0.07})`;
-  vars['--g-atmosphere'] = `rgba(${rgb(theme.colors.primary)}, ${night ? 0.24 : 0.16})`;
+  // Restrained accents keep washes and glows in ink so the primary colour stays rare.
+  const wash = rgb(theme.accent === 'restrained' ? theme.colors.text : theme.colors.primary);
+  vars['--g-tint'] = `rgba(${wash}, ${night ? 0.13 : 0.07})`;
+  vars['--g-atmosphere'] = `rgba(${wash}, ${night ? 0.24 : 0.16})`;
   vars['--g-shadow-color'] = night ? '0, 0, 0' : rgb(theme.colors.text);
   vars['--g-highlight'] = night ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.85)';
   vars['--g-primary-sheen'] = night
@@ -628,6 +673,7 @@ export function themeVariables(theme: Theme): Record<string, string> {
     aurora: [260, 400],
     studio: [140, 220],
     canvas: [180, 280],
+    cream: [160, 260],
     joyful: [180, 300],
     professional: [120, 200],
     clay: [240, 340],
@@ -637,7 +683,7 @@ export function themeVariables(theme: Theme): Record<string, string> {
   const serifDisplay = '"Iowan Old Style", "Palatino Linotype", Charter, Georgia, serif';
   const roundedDisplay = 'ui-rounded, "SF Pro Rounded", "Nunito", "Avenir Next", var(--g-font)';
   vars['--g-display-font'] =
-    theme.font === 'system' && ['soft', 'editorial', 'paper'].includes(theme.preset)
+    theme.font === 'system' && ['soft', 'editorial', 'paper', 'cream'].includes(theme.preset)
       ? serifDisplay
       : theme.font !== 'mono' && ['joyful', 'clay'].includes(theme.preset)
         ? roundedDisplay
@@ -645,7 +691,7 @@ export function themeVariables(theme: Theme): Record<string, string> {
   vars['--g-art-spread'] = theme.motion === 'reduced' ? '17px' : '23px';
   vars['--g-icon-shift'] = theme.motion === 'reduced' ? '0px' : '2px';
   vars['--g-art-lift'] = theme.motion === 'reduced' ? '10px' : '15px';
-  vars['--g-display-weight'] = ['soft', 'editorial', 'paper'].includes(theme.preset)
+  vars['--g-display-weight'] = ['soft', 'editorial', 'paper', 'cream'].includes(theme.preset)
     ? '400'
     : ['outline', 'flat'].includes(theme.preset)
       ? '750'
@@ -727,6 +773,7 @@ export function parseTheme(input: unknown): Theme {
     'font',
     'motion',
     'colors',
+    'accent',
   ];
   if (Object.keys(v).some((k) => !exactKeys.includes(k)))
     throw new Error('Theme contains unsupported properties.');
@@ -741,6 +788,8 @@ export function parseTheme(input: unknown): Theme {
     font: ['system', 'humanist', 'mono'],
     motion: ['standard', 'reduced'],
   };
+  if (v.accent !== undefined && !accents.includes(v.accent as Accent))
+    throw new Error('Invalid accent.');
   for (const [key, values] of Object.entries(enums))
     if (typeof v[key] !== 'string' || !values.includes(v[key] as string))
       throw new Error(`Invalid ${key}.`);
@@ -767,6 +816,7 @@ export function parseTheme(input: unknown): Theme {
     colors: Object.fromEntries(
       colorRoles.map((r) => [r, (colors[r] as string).toLowerCase()]),
     ) as Theme['colors'],
+    ...(v.accent === undefined ? {} : { accent: v.accent as Accent }),
   };
 }
 export function exportTheme(theme: Theme, format: 'json' | 'css' = 'json'): string {
@@ -886,6 +936,16 @@ export const presetGuides: Record<
     useFor: 'Education, hobby and craft products.',
     rules: ['Mix shapes sparingly; one playful element per view is enough.'],
   },
+  cream: {
+    character:
+      'Warm cream stock, warm-black ink, a serif display face and one bright vermilion accent. Fine rules and soft corners instead of depth.',
+    useFor:
+      'Editorial products, stationery and postcard tools, newsletters and story-led marketing pages.',
+    rules: [
+      'Pair it with the restrained accent so vermilion marks only the main action, links and focus.',
+      'Use Stamp and Postmark for one tactile detail per view; keep long text on the plain surface.',
+    ],
+  },
 };
 const roleUse: Record<ColorRole, string> = {
   background: 'Page canvas behind everything',
@@ -947,6 +1007,10 @@ export function designMarkdown(theme: Theme): string {
     '## Colour roles',
     '',
     'Use roles through component props such as `tone` and `variant`. Never hard-code these values in an app.',
+    '',
+    valid.accent === 'restrained'
+      ? '**Accent: restrained.** `primary` appears only on the main action, links and focus. Selected states, progress, badges and decoration use `text` on `surface`.'
+      : "**Accent: expressive.** `primary` also marks selected states, progress, badges and decoration. Set `accent: 'restrained'` to keep it to the main action, links and focus.",
     '',
     table(
       ['Role', ...modes.map(capital), 'Use'],

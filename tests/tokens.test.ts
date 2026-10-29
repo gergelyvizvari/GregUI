@@ -12,6 +12,7 @@ import {
   getPalette,
   designMarkdown,
   presetGuides,
+  themeVariables,
 } from '@gregui/tokens';
 describe('theme contract', () => {
   it('matches reference black/white contrast', () =>
@@ -124,4 +125,42 @@ describe('designMarkdown', () => {
   it('has a guide for every preset', () => {
     for (const preset of presets) expect(presetGuides[preset].rules.length).toBeGreaterThan(0);
   });
+});
+
+describe('restrained accent', () => {
+  it('is optional, round trips and survives mode and palette changes', () => {
+    const plain = createTheme('flat');
+    expect(plain).not.toHaveProperty('accent');
+    expect(parseTheme(JSON.parse(exportTheme(plain)))).not.toHaveProperty('accent');
+    const theme = { ...plain, accent: 'restrained' as const };
+    expect(parseTheme(JSON.parse(exportTheme(theme)))).toEqual(theme);
+    expect(switchMode(theme, 'dark').accent).toBe('restrained');
+    expect(applyPalette(theme, 'coral').accent).toBe('restrained');
+    expect(getPalette(theme)).toBe(getPalette(plain));
+    expect(() => parseTheme({ ...theme, accent: 'loud' })).toThrow(/accent/);
+  });
+  it('keeps washes and glows in ink so the primary colour stays rare', () => {
+    const theme = { ...createTheme('flat'), accent: 'restrained' as const };
+    const ink = [1, 3, 5].map((i) => parseInt(theme.colors.text.slice(i, i + 2), 16)).join(', ');
+    expect(themeVariables(theme)['--g-tint']).toContain(ink);
+    expect(themeVariables(theme)['--g-atmosphere']).toContain(ink);
+    expect(themeVariables(createTheme('flat'))['--g-tint']).not.toContain(ink);
+  });
+  it('documents the accent in DESIGN.md', () => {
+    expect(designMarkdown(createTheme('flat'))).toContain('**Accent: expressive.**');
+    const md = designMarkdown({ ...createTheme('flat', 'light', 'forest'), accent: 'restrained' });
+    expect(md).toContain('**Accent: restrained.**');
+    expect(md).toContain('"accent": "restrained"');
+  });
+});
+
+it('Cream is a warm, restrained editorial preset distinct from Paper', () => {
+  const cream = createTheme('cream');
+  expect(cream.accent).toBe('restrained');
+  expect(cream.colors.background).not.toBe(createTheme('paper').colors.background);
+  expect(getPalette(cream)).toBe('cream');
+  const md = designMarkdown(cream);
+  expect(md).toContain('# Cream · Cream & vermilion');
+  expect(md).toContain("createTheme('cream', 'light', 'cream')");
+  expect(md).not.toContain('(fails)');
 });

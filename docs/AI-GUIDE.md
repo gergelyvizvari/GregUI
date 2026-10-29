@@ -74,7 +74,7 @@ Paths below are relative to `packages/react/src/`. All listed components are exp
 
 ## Themes, localisation and accessibility
 
-Use the exported lists rather than hard-coded choices. Currently there are fifteen `presets`, seven `featuredPresets` and sixteen `paletteOptions`. Workspace's stable ID is `professional`; Bloom's is `joyful`. Retain legacy preset IDs when reading saved preferences. A display-name change is not a schema migration.
+Use the exported lists rather than hard-coded choices. Currently there are sixteen `presets`, eight `featuredPresets` and seventeen `paletteOptions`. Cream (`cream`) is the warm editorial preset and defaults to `accent: 'restrained'`. Workspace's stable ID is `professional`; Bloom's is `joyful`. Retain legacy preset IDs when reading saved preferences. A display-name change is not a schema migration.
 
 Theme JSON is version 1. Pass external JSON through `parseTheme` before applying it. Schema validity and contrast validity are separate: `exportTheme` rejects failing declared colour pairs. `applyPalette` changes colours; `switchMode` preserves other theme properties, moves the closest built-in palette (or preset defaults) to the new mode and keeps hand-picked colour roles that still pass `checkContrast` there. Keep parsing, all presets, modes and exports aligned when adding a token.
 
