@@ -1,5 +1,9 @@
 # Verification record — 29 September 2026
 
+## Hungarian package messages
+
+Added a complete Hungarian `Messages` catalog and language-based selection in `LocaleProvider`. `npm run check` passed with 416 unit/interaction/SSR tests and all builds. Five new unit checks cover catalog completeness against English, locale-to-catalog selection and English fallback, Hungarian Pagination copy with an application override, Hungarian number/date formatting and Hungarian calendar month, weekday and navigation labels in server rendering. The workbench and calendar browser suites passed in Chromium only (89 tests), including the Hungarian authentication demo, which now relies on the built-in catalog. Translations were written by an AI assistant and have not had a native-speaker review; Firefox, WebKit and mobile were not run locally.
+
 ## Calendar agenda and yearly repeats
 
 Added `CalendarAgenda`, yearly `CalendarEvent` repeats and `events` on `CalendarMonth`/`DatePicker`. `npm run check` passed with 411 unit/interaction/SSR tests and all builds; formatting passed. New unit checks cover yearly expansion with `until`, years counts, the 29 February rule (both options), event titles in day descriptions, agenda headings, lists and relative labels, the empty state, single-tab-stop arrow/Home/End navigation, selection and Hungarian server rendering. Locally the calendar and catalog browser checks passed in Chromium and mobile Chromium, including axe on the agenda, adding a yearly occasion and narrow reflow. Firefox and WebKit run in CI only. The agenda and month demos were visually reviewed in Chromium light mode; dark mode, RTL and forced colors were not inspected by eye.

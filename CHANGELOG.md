@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added Hungarian package messages. `LocaleProvider` now picks built-in messages from the locale's language, so `locale="hu-HU"` shows every package label, error and calendar control in Hungarian; other languages still fall back to English and `messages` overrides still win. Dates, numbers, month and weekday names already follow the locale through `Intl`. Exported `english`, `hungarian` and `messagesFor`.
 - Added `CalendarAgenda`, a list of upcoming events grouped by day with relative labels and arrow-key navigation, and calendar events with a yearly repeat for birthdays and anniversaries. `CalendarMonth` and `DatePicker` take `events`. Added `occurrencesBetween`, `yearlyDate`, `daysBetween`, the `CalendarEvent`, `CalendarOccurrence` and `LeapDayRule` types, and two locale messages.
 - Added `headingLevel` (2–6) to the titled patterns, `PricingCards` plan names, `Wizard` step titles, `AuthForm` and `EmptyState`, so they fit any page outline. Defaults are unchanged.
 - `switchMode` now keeps hand-picked colours that still pass the contrast checks in the new mode, instead of resetting custom themes to the style defaults.

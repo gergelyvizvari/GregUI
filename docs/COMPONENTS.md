@@ -5,7 +5,7 @@ All public exports go through `packages/react/src/index.tsx`, which re-exports t
 ## Composition
 
 - `ThemeProvider`: scopes variables and the selected preset/mode. Nested providers inherit the current theme unless explicitly overridden. Portal components copy theme and locale into their portal root.
-- `LocaleProvider`: locale, direction, time zone and replaceable package-owned messages. Supply translated application labels/content yourself. `useFormat` formats numbers/dates and selects plural categories; applications supply plural message forms.
+- `LocaleProvider`: locale, direction, time zone and replaceable package-owned messages. Built-in messages follow the locale's language: English (default) and Hungarian (`hu`, for example `hu-HU`, informal register). `messages` overrides are applied on top. `english`, `hungarian` and `messagesFor(locale)` are exported for apps that build their own catalogs. Supply translated application labels/content yourself. `useFormat` formats numbers/dates and selects plural categories; applications supply plural message forms.
 - `Stack`, `Inline`, `Grid`: token-based gaps 0–8. Grid accepts 1–5 columns or `columns="auto"` (width-aware cards with a 15rem minimum) and collapses on small viewports. `Inline` wraps; do not depend on fixed text lengths.
 - `Split`, `Container`, `Card`, `Section`, `PageHeader`, `AppShell`: shared responsive composition. AppShell renders a skip link, desktop navigation and a modal navigation drawer on small screens. It does not own routing.
 - `Card` accepts an optional `footer` for actions anchored to the bottom of equal-height grid cards.

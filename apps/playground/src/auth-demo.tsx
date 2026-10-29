@@ -27,43 +27,6 @@ const flows: { value: AuthMode; label: string }[] = [
   { value: 'verify-email', label: 'Email verification' },
   { value: 'two-factor', label: 'Two-step verification' },
 ];
-const hungarian = {
-  required: 'kötelező',
-  loading: 'Betöltés',
-  authGoogle: 'Folytatás Google-fiókkal',
-  authApple: 'Folytatás Apple-fiókkal',
-  authOrEmail: 'vagy bejelentkezés e-maillel',
-  authShowPassword: 'Jelszó megjelenítése',
-  authShow: 'Mutat',
-  authHide: 'Elrejt',
-  authCode: 'Ellenőrző kód',
-  authLogin: 'Bejelentkezés',
-  authRegister: 'Fiók létrehozása',
-  authForgot: 'Elfelejtett jelszó?',
-  authReset: 'Új jelszó megadása',
-  authVerifyEmail: 'E-mail-cím megerősítése',
-  authTwoFactor: 'Kétlépcsős azonosítás',
-  authLoginDescription: 'Üdv újra! Jelentkezz be a folytatáshoz.',
-  authRegisterDescription: 'Hozd létre a fiókodat a kezdéshez.',
-  authForgotDescription: 'Add meg az e-mail-címedet a visszaállító hivatkozáshoz.',
-  authResetDescription: 'Válassz új jelszót a fiókodhoz.',
-  authVerifyDescription: 'Add meg az e-mailben kapott kódot.',
-  authTwoFactorDescription: 'Add meg a hitelesítő alkalmazás kódját.',
-  authVerify: 'Kód ellenőrzése',
-  authSendLink: 'Hivatkozás kérése',
-  authFailure: 'Nem sikerült. Próbáld újra.',
-  authMismatch: 'A két jelszó nem egyezik.',
-  authResetSent: 'Ha létezik ilyen fiók, elküldjük a visszaállító hivatkozást.',
-  authComplete: 'Sikeresen befejezted.',
-  authName: 'Teljes név',
-  authEmail: 'E-mail-cím',
-  authPassword: 'Jelszó',
-  authConfirmPassword: 'Jelszó megerősítése',
-  authRemember: 'Maradjak bejelentkezve',
-  authCodeSent: 'Új kódot kértél.',
-  authResend: 'Kód újraküldése',
-  authBackLogin: 'Vissza a bejelentkezéshez',
-};
 export function AuthDemo({
   theme,
   onPresetChange,
@@ -162,10 +125,7 @@ export function AuthDemo({
           )}
         </Field>
       </Grid>
-      <LocaleProvider
-        locale={locale === 'hu' ? 'hu-HU' : 'en-GB'}
-        messages={locale === 'hu' ? hungarian : {}}
-      >
+      <LocaleProvider locale={locale === 'hu' ? 'hu-HU' : 'en-GB'}>
         <ThemeProvider theme={theme}>
           <AuthLayout
             brand={<Badge tone="primary">STUDIO NORTH</Badge>}
