@@ -945,6 +945,97 @@ body {
   padding: 0.2em 0.45em;
   border-radius: 4px;
 }
+.g-kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0.1em 0.4em;
+  font-family: ui-monospace, monospace;
+  font-size: 0.8em;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--g-text);
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-bottom-width: 2px;
+  border-radius: var(--g-control-radius);
+}
+.g-kbd-combo {
+  display: inline-flex;
+  gap: 0.25rem;
+  font: inherit;
+}
+.g-avatar {
+  --g-avatar-size: 2.5rem;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--g-avatar-size);
+  height: var(--g-avatar-size);
+  border-radius: 50%;
+  /* The tint is translucent; the surface beneath keeps initials on an opaque ground. */
+  background: linear-gradient(var(--g-tint), var(--g-tint)), var(--g-surface);
+  box-shadow: inset 0 0 0 1px var(--g-line);
+  color: var(--g-text);
+  font-size: var(--g-type-small-size);
+  font-weight: 600;
+  line-height: 1;
+}
+.g-avatar[data-size='small'] {
+  --g-avatar-size: 1.75rem;
+  font-size: var(--g-type-caption-size);
+}
+.g-avatar[data-size='large'] {
+  --g-avatar-size: 3.5rem;
+  font-size: var(--g-type-section-size);
+}
+.g-avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+/* Each presence has its own shape, not only its own colour. */
+.g-avatar-status {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  width: max(0.625rem, calc(var(--g-avatar-size) * 0.3));
+  height: max(0.625rem, calc(var(--g-avatar-size) * 0.3));
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--g-surface);
+  forced-color-adjust: none;
+}
+.g-avatar-status[data-status='online'] {
+  background: var(--g-success);
+}
+.g-avatar-status[data-status='away'] {
+  background: radial-gradient(circle, var(--g-surface) 0 32%, var(--g-warning) 34%);
+}
+.g-avatar-status[data-status='busy'] {
+  background:
+    linear-gradient(var(--g-surface), var(--g-surface)) center / 60% 2px no-repeat,
+    var(--g-danger);
+}
+.g-avatar-status[data-status='offline'] {
+  background: radial-gradient(circle, var(--g-surface) 0 48%, var(--g-muted) 50%);
+}
+.g-avatar-group {
+  display: inline-flex;
+  align-items: center;
+}
+.g-avatar-group > .g-avatar {
+  box-shadow:
+    inset 0 0 0 1px var(--g-line),
+    0 0 0 2px var(--g-surface);
+}
+.g-avatar-group > .g-avatar + .g-avatar {
+  margin-inline-start: -0.5rem;
+}
+.g-avatar-more {
+  background: var(--g-background);
+  color: var(--g-muted);
+}
 .g-code-block {
   font-family: ui-monospace, monospace;
   font-size: 0.8rem;
@@ -1581,7 +1672,7 @@ body {
 .g-skip {
   position: fixed;
   top: 1rem;
-  left: 1rem;
+  inset-inline-start: 1rem;
   clip-path: inset(100%);
   pointer-events: none;
   background: var(--g-surface);

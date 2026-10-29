@@ -1,6 +1,6 @@
 # gregUI
 
-A reusable React UI foundation with seven featured visual directions and backwards-compatible legacy presets, typed design tokens, localization, accessible interaction primitives and a theme workbench. Built for the owner's future applications.
+A reusable React UI foundation with eight featured visual directions and backwards-compatible legacy presets, typed design tokens, localization, accessible interaction primitives and a theme workbench. Built for the owner's future applications.
 
 ## AI development guide
 
@@ -91,7 +91,7 @@ Use Heading levels h1–h6 independently from visual sizes, Text lead/caption ro
 
 ## Current scope and limits
 
-This is the first working foundation, not a production certification. The initial catalog includes buttons/links, labeled fields, select/textarea, checkbox/radio/switch, layouts, dialogs/drawers/full-screen flows, confirmation, tooltip/popover, tabs/navigation, alerts/status/progress/skeletons, tables and empty states. Fourteen presets work in light/dark modes. Glass uses translucent cards with a blurred backdrop; inputs and overlays retain opaque surfaces. Verify card text against the actual backdrop.
+This is the first working foundation, not a production certification. The initial catalog includes buttons/links, labeled fields, select/textarea, checkbox/radio/switch, layouts, dialogs/drawers/full-screen flows, confirmation, tooltip/popover, tabs/navigation, alerts/status/progress/skeletons, tables and empty states. Sixteen presets (eight featured) work in light/dark modes. Glass uses translucent cards with a blurred backdrop; inputs and overlays retain opaque surfaces. Verify card text against the actual backdrop.
 
 Combobox with local or application-controlled remote results, native DateRangePicker and DataTable with client or application-controlled server mode are implemented. Custom calendars, charts, upload orchestration, consent integrations and native mobile components remain future additions. Apps must complete their own accessibility, privacy and sector-specific checks. The 24-month browser policy is documented; historical devices and manual assistive-technology testing remain unverified.
 
@@ -99,13 +99,13 @@ See [component contracts](docs/COMPONENTS.md), [compatibility and verification](
 
 ### Palette choices
 
-Every style supports Iris, Lagoon, Forest, Plum, Clay, Cobalt, Ink & cream, Ocean, Rose and Amber: 140 preset/palette combinations, or 280 including light/dark modes. Use the workbench's Palette selector, or `createTheme('soft', 'light', 'cobalt')`. `applyPalette(theme, 'forest')` replaces only colours; `getPalette(theme)` identifies a matching built-in palette or returns undefined for custom colours. `paletteOptions` provides IDs and display names for consumers. Stored theme JSON remains version 1, and palette recognition survives import, save/restore and Undo.
+Every style supports all seventeen `paletteOptions` — Coral, Citrus, Mint, Violet, Graphite, Pure white, Cream & vermilion, Iris, Lagoon, Forest, Plum, Clay, Cobalt, Ink & cream, Ocean, Rose and Amber: 272 preset/palette combinations, or 544 including light/dark modes. Use the workbench's Palette selector, or `createTheme('soft', 'light', 'cobalt')`. `applyPalette(theme, 'forest')` replaces only colours; `getPalette(theme)` identifies a matching built-in palette or returns undefined for custom colours. `paletteOptions` provides IDs and display names for consumers. Stored theme JSON remains version 1, and palette recognition survives import, save/restore and Undo.
 
 ### Ready-made authentication
 
 Open **Authentication** in the workbench to try sign-in, registration, recovery, password reset, email verification and two-step verification. Shared forms include password visibility, remember preference, pending/error/success states and translation hooks. See [integration examples](docs/AUTHENTICATION.md). The demo performs no network authentication or credential storage.
 
-Featured choices are Workspace, Bloom, Clay, Neumorphic, Glass and Flat. `featuredPresets` drives new theme pickers; `presets` retains all saved-theme IDs for compatibility. Selecting a complete direction can load `recommendedPalettes[preset]`; users may then customize colours independently.
+Featured choices are Paper, Cream, Workspace, Bloom, Clay, Neumorphic, Glass and Flat. `featuredPresets` drives new theme pickers; `presets` retains all saved-theme IDs for compatibility. Selecting a complete direction can load `recommendedPalettes[preset]`; users may then customize colours independently.
 
 ### Visual choices and document previews
 

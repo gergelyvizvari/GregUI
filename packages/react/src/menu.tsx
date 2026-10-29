@@ -2,7 +2,7 @@
 import { useId, type ReactNode } from 'react';
 import * as MenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { useLocale } from '@gregui/localization';
-import { Icon, type IconName } from './icons';
+import { Icon, renderIcon, type IconSource } from './icons';
 import { PortalFrame } from './theme';
 
 interface MenuEntryBase {
@@ -13,7 +13,7 @@ interface MenuEntryBase {
 export interface MenuActionItem extends MenuEntryBase {
   type?: 'item';
   label: string;
-  icon?: IconName;
+  icon?: IconSource;
   /** Visual keyboard hint only; the application owns the shortcut itself. */
   shortcut?: string;
   href?: string;
@@ -45,7 +45,7 @@ export interface MenuGroup extends MenuEntryBase {
 export interface MenuSubmenu extends MenuEntryBase {
   type: 'submenu';
   label: string;
-  icon?: IconName;
+  icon?: IconSource;
   items: MenuEntry[];
 }
 export interface MenuSeparator {
@@ -67,10 +67,10 @@ export interface MenuProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-function ItemContent({ icon, label, end }: { icon?: IconName; label: string; end?: ReactNode }) {
+function ItemContent({ icon, label, end }: { icon?: IconSource; label: string; end?: ReactNode }) {
   return (
     <>
-      {icon && <Icon name={icon} />}
+      {icon && renderIcon(icon)}
       <span className="g-menu-label">{label}</span>
       {end}
     </>

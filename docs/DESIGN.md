@@ -16,7 +16,7 @@ The workbench uses stable paper-and-ink framing so editing a theme does not chan
 
 ## Editing and compatibility
 
-Selecting a preset in the workbench loads its default colours, corners and typography, while retaining the current mode, theme name, density and motion preference. Undo restores the previous draft. Each style offers all five palette families (Forest, Plum, Clay, Cobalt, Ink & cream). Choosing a palette preserves the style, shape, typography and density. Changing mode loads the matching family's light/dark colours. Hand-picked colours are kept when they still pass the contrast checks in the new mode; the rest use the closest family's colours. Individual colour roles remain editable afterwards.
+Selecting a preset in the workbench loads its default colours, corners and typography, while retaining the current mode, theme name, density and motion preference. Undo restores the previous draft. Each style offers every palette in `paletteOptions` (seventeen; the original five families were Forest, Plum, Clay, Cobalt and Ink & cream). Choosing a palette preserves the style, shape, typography and density. Changing mode loads the matching family's light/dark colours. Hand-picked colours are kept when they still pass the contrast checks in the new mode; the rest use the closest family's colours. Individual colour roles remain editable afterwards.
 
 Existing version 1 theme documents remain valid and keep their stored colours. The updated shared component treatments apply to them; `createTheme` now returns the new default palettes. No theme-schema migration is required.
 

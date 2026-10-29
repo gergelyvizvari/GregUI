@@ -103,11 +103,11 @@ Dashboard sidebars stay within the dynamic viewport and scroll independently whe
 
 Disclosure controls use + when collapsed and − when expanded. `FieldEditorItem` retains `editLabel` and `closeLabel` for accessible button names.
 
-Action icons: `Icon` supports `edit`, `save` and `plus`. `IconButton` uses its required accessible label as the default hover title; retain text for actions whose scope needs explanation.
+Icons: `Icon` draws one of the built-in `iconNames` (navigation, people, files, status and common actions), or SVG children on the same 24×24 stroke grid for an application glyph: `<Icon><path d="…" /></Icon>`. Icons are decorative (`aria-hidden`). Every `icon` prop (`SideNav`, `Menu`, `NavItem`) takes an `IconSource`: a built-in name or such an element. `Alert` uses a distinct icon per tone (info, check, warning, error), so tones never rely on colour alone. `IconButton` uses its required accessible label as the default hover title; retain text for actions whose scope needs explanation.
 
 Joyful, Professional, Clay and Neumorphic provide distinct material treatments across cards, controls, tabs and navigation. Neumorphic uses a single shared background/surface plane, opposing raised shadows and inset input/pressed-control shadows; palette recognition and light/dark switching preserve that material. Essential text remains on opaque surfaces, and keyboard focus outlines are retained.
 
-The appearance catalogue now features Paper, Workspace, Bloom, Clay, Neumorphic, Glass and Flat (`featuredPresets`). Legacy preset IDs remain valid for saved themes, but are omitted from new-choice cards. `recommendedPalettes` provides coordinated defaults; consumers can use these when selecting a complete visual direction. Workspace uses an ink navigation rail and restrained Iris surfaces; Bloom uses a warm navigation rail and Lagoon surfaces. ThemeSelector retains a saved legacy value as an explicit option.
+The appearance catalogue now features Paper, Cream, Workspace, Bloom, Clay, Neumorphic, Glass and Flat (`featuredPresets`). Legacy preset IDs remain valid for saved themes, but are omitted from new-choice cards. `recommendedPalettes` provides coordinated defaults; consumers can use these when selecting a complete visual direction. Workspace uses an ink navigation rail and restrained Iris surfaces; Bloom uses a warm navigation rail and Lagoon surfaces. ThemeSelector retains a saved legacy value as an explicit option.
 
 DataTable columns accept `width: "compact"` for narrow selection/action cells. Tables size from their content and scroll only when their natural minimum requires it.
 
@@ -467,3 +467,12 @@ const occasions = [
 - With `onSelect`, entries are buttons described by their date. The list is one tab stop; Arrow Up/Down move between entries across days and Home/End jump to the first and last. Without `onSelect` entries are plain text.
 - New locale messages: `repeatsYearly`, `agendaEmpty`. Apps providing a complete `Messages` object must add them.
 - Recurrence beyond yearly (weekly, monthly, "last Friday"), time zones and reminders are application concerns.
+
+## People, keys and hidden text
+
+- `Avatar` shows a person as `src` or, while the image is missing or fails, initials from the first and last words of `name` (so `Vizvári Gergely` → VG), upper-cased in the provider locale. `size` is small/medium/large. `status` (`online`, `away`, `busy`, `offline`) draws a presence marker with its own shape — filled, ring with a dot, bar, hollow ring — and appends the localized status to the accessible name (`Alex Morgan, away`). Use `decorative` when the name is already shown beside the avatar. The application owns images, presence and any link around the avatar.
+- `AvatarGroup` overlaps `people` (`{ id, name, src? }`) in a named `group`; past `max` the remainder becomes a `+N` item announced with the `morePeople` message.
+- `Kbd` marks up a key (`<Kbd>/</Kbd>`) or a combination (`<Kbd keys={['Ctrl', 'K']} />`, one nested `<kbd>` per key). It is visual; the application owns key bindings.
+- `VisuallyHidden` keeps text for assistive technology only, such as the unit after a count.
+- `SkipLink` is hidden until focused and jumps to `href` (`#id` of main content that accepts focus). `AppShell` already renders one; use it in custom layouts.
+- New locale messages: `statusOnline`, `statusAway`, `statusBusy`, `statusOffline`, `morePeople`. Apps providing a complete `Messages` object must add them.

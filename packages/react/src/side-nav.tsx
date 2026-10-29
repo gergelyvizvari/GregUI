@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useId, useMemo, useState, type ReactNode, type SyntheticEvent } from 'react';
-import { Icon, type IconName } from './icons';
+import { Icon, renderIcon, type IconSource } from './icons';
 import { Menu, type MenuEntry } from './menu';
 import { Tooltip } from './overlays';
 import { useSidebarCollapsed } from './shell';
@@ -8,7 +8,8 @@ import { useSidebarCollapsed } from './shell';
 export interface SideNavItem {
   id: string;
   label: string;
-  icon?: IconName;
+  /** Give top-level items an icon: the collapsed AppShell rail shows icons only, else an initial. */
+  icon?: IconSource;
   /** Leaf destination. Without it the leaf renders as a button. */
   href?: string;
   /** Short trailing content such as a count. Include it in the label if it matters to screen readers. */
@@ -125,15 +126,13 @@ export function SideNav({
     const containsCurrent = !current && currentPath.includes(item.id);
     const content = (
       <>
-        {item.icon ? (
-          <Icon name={item.icon} />
-        ) : (
-          rail && (
-            <span className="g-side-nav-initial" aria-hidden="true">
-              {item.label.slice(0, 1)}
-            </span>
-          )
-        )}
+        {item.icon
+          ? renderIcon(item.icon)
+          : rail && (
+              <span className="g-side-nav-initial" aria-hidden="true">
+                {item.label.slice(0, 1)}
+              </span>
+            )}
         <span className="g-nav-text">{item.label}</span>
         {item.badge != null && <span className="g-side-nav-badge">{item.badge}</span>}
       </>

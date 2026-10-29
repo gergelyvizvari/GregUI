@@ -100,6 +100,11 @@ export const english = {
   loading: 'Loading',
   dismiss: 'Dismiss',
   required: 'required',
+  statusOnline: 'online',
+  statusAway: 'away',
+  statusBusy: 'busy',
+  statusOffline: 'offline',
+  morePeople: 'more people',
 };
 export type Messages = typeof english;
 /** Hungarian package messages. Uses the informal register common in Hungarian product UI. */
@@ -203,6 +208,11 @@ export const hungarian: Messages = {
   loading: 'Betöltés',
   dismiss: 'Elvetés',
   required: 'kötelező',
+  statusOnline: 'elérhető',
+  statusAway: 'távol',
+  statusBusy: 'elfoglalt',
+  statusOffline: 'nem elérhető',
+  morePeople: 'további személy',
 };
 const catalogs: Record<string, Messages> = { en: english, hu: hungarian };
 /** Built-in package messages for a BCP 47 locale's language, falling back to English. */

@@ -61,6 +61,32 @@ export function Link({ children, ...props }: Clean<ComponentPropsWithoutRef<'a'>
 export function Code({ children }: { children: ReactNode }) {
   return <code className="g-code">{children}</code>;
 }
+/** Content for assistive technology only, such as a count's unit or an icon button's context. */
+export function VisuallyHidden({
+  children,
+  as: Tag = 'span',
+}: {
+  children: ReactNode;
+  as?: 'span' | 'div';
+}) {
+  return <Tag className="g-sr-only">{children}</Tag>;
+}
+/**
+ * A keyboard key or combination. Pass `keys` for a combination; each key is its own `<kbd>`.
+ * Visual only: the application owns the shortcut itself.
+ */
+export function Kbd({ children, keys }: { children?: ReactNode; keys?: string[] }) {
+  if (!keys) return <kbd className="g-kbd">{children}</kbd>;
+  return (
+    <kbd className="g-kbd-combo">
+      {keys.map((key, i) => (
+        <kbd key={i} className="g-kbd">
+          {key}
+        </kbd>
+      ))}
+    </kbd>
+  );
+}
 export function CodeBlock({
   children,
   label = 'Code example',

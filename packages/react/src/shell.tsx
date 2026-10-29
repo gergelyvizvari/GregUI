@@ -9,10 +9,22 @@ import React, {
 import { useLocale } from '@gregui/localization';
 import type { Clean } from './internal-types';
 import { IconButton } from './buttons';
-import { Icon, IconName } from './icons';
+import { Icon, renderIcon, type IconSource } from './icons';
 import { Inline, Stack } from './layout';
 import { Drawer, Tooltip } from './overlays';
 import { Heading, Text } from './typography';
+/**
+ * Hidden until focused; jumps past repeated navigation. AppShell includes one. Put it first in
+ * the page and point `href` at the main content, which should accept focus (`tabIndex={-1}`).
+ */
+export function SkipLink({ href, children }: { href: `#${string}`; children?: ReactNode }) {
+  const { messages } = useLocale();
+  return (
+    <a className="g-skip" href={href}>
+      {children ?? messages.skipToContent}
+    </a>
+  );
+}
 export function PageHeader({
   eyebrow,
   title,
@@ -66,7 +78,7 @@ export function NavItem({
   icon,
   children,
   ...props
-}: Clean<ComponentPropsWithoutRef<'button'>> & { active?: boolean; icon?: IconName }) {
+}: Clean<ComponentPropsWithoutRef<'button'>> & { active?: boolean; icon?: IconSource }) {
   const collapsed = useSidebarCollapsed();
   const button = (
     <button
@@ -75,7 +87,7 @@ export function NavItem({
       className="g-nav-item"
       aria-current={active ? 'page' : undefined}
     >
-      {icon && <Icon name={icon} />}
+      {icon && renderIcon(icon)}
       <span className="g-nav-text">{children}</span>
       {active && <span className="g-nav-dot" />}
     </button>
@@ -135,9 +147,7 @@ export function AppShell({
   }, [viewKey]);
   return (
     <div className="g-app-shell" data-appearance={appearance}>
-      <a className="g-skip" href={`#${mainId}`}>
-        {messages.skipToContent}
-      </a>
+      <SkipLink href={`#${mainId}`} />
       <aside className="g-sidebar" data-collapsed={collapsed || undefined}>
         <div className="g-brand">
           {brandMark ?? (

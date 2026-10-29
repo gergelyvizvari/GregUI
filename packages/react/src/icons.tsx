@@ -1,5 +1,5 @@
 'use client';
-import { type ReactNode } from 'react';
+import { type ReactElement, type ReactNode } from 'react';
 export type IconName =
   | 'grid'
   | 'palette'
@@ -22,7 +22,38 @@ export type IconName =
   | 'calendar'
   | 'plus'
   | 'edit'
-  | 'save';
+  | 'save'
+  | 'home'
+  | 'user'
+  | 'users'
+  | 'settings'
+  | 'bell'
+  | 'inbox'
+  | 'mail'
+  | 'folder'
+  | 'file'
+  | 'chart'
+  | 'help'
+  | 'info'
+  | 'warning'
+  | 'error'
+  | 'trash'
+  | 'logout'
+  | 'more'
+  | 'filter'
+  | 'eye'
+  | 'eye-off'
+  | 'lock'
+  | 'link'
+  | 'copy'
+  | 'refresh'
+  | 'star'
+  | 'clock';
+/**
+ * A built-in icon name, or an element such as `<Icon>…</Icon>` for an application-specific glyph.
+ * Accepted wherever a component takes an `icon` prop.
+ */
+export type IconSource = IconName | ReactElement;
 const paths: Record<IconName, ReactNode> = {
   grid: (
     <>
@@ -94,12 +125,110 @@ const paths: Record<IconName, ReactNode> = {
       <path d="M7 3v6h10V3M7 21v-8h10v8" />
     </>
   ),
+  home: <path d="M3 11 12 3l9 8M5 9.5V21h5v-6h4v6h5V9.5" />,
+  user: (
+    <>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21a8 8 0 0 1 16 0" />
+    </>
+  ),
+  users: (
+    <>
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M2 20a7 7 0 0 1 14 0M16 4.5a3.5 3.5 0 0 1 0 7M18 13.5a7 7 0 0 1 4 6.5" />
+    </>
+  ),
+  settings: (
+    <>
+      <path d="M4 6h10m4 0h2M4 12h4m4 0h8M4 18h12m4 0h0" />
+      <circle cx="16" cy="6" r="2" />
+      <circle cx="10" cy="12" r="2" />
+      <circle cx="18" cy="18" r="2" />
+    </>
+  ),
+  bell: <path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4ZM10 21h4" />,
+  inbox: <path d="M3 13 6 4h12l3 9v7H3ZM3 13h5l1 3h6l1-3h5" />,
+  mail: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </>
+  ),
+  folder: <path d="M3 6a1 1 0 0 1 1-1h6l2 2h8a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z" />,
+  file: <path d="M6 3h8l5 5v13H6ZM14 3v5h5" />,
+  chart: <path d="M4 4v16h16M8 16v-5m4 5V8m4 8v-3" />,
+  help: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14m0 3.5v.01" />
+    </>
+  ),
+  info: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v6m0-9.5v.01" />
+    </>
+  ),
+  warning: <path d="M12 3 22 20H2ZM12 10v4m0 3.5v.01" />,
+  error: <path d="M8 3h8l5 5v8l-5 5H8l-5-5V8ZM12 8v5m0 3.5v.01" />,
+  trash: <path d="M4 7h16M10 3h4M6 7l1 14h10l1-14M10 11v6m4-6v6" />,
+  logout: <path d="M10 4H5v16h5m4-12 4 4-4 4m4-4H9" />,
+  more: (
+    <>
+      <circle cx="5" cy="12" r="1" />
+      <circle cx="12" cy="12" r="1" />
+      <circle cx="19" cy="12" r="1" />
+    </>
+  ),
+  filter: <path d="M3 5h18l-7 8v6l-4 2v-8Z" />,
+  eye: (
+    <>
+      <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  'eye-off': (
+    <path d="m3 3 18 18M10.6 5.1A10 10 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3 3.6M6.6 6.6C3.8 8.4 2 12 2 12s4 7 10 7a9.6 9.6 0 0 0 4.4-1.1M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+  ),
+  lock: (
+    <>
+      <rect x="5" y="11" width="14" height="10" rx="2" />
+      <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+    </>
+  ),
+  link: (
+    <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
+  ),
+  copy: (
+    <>
+      <rect x="8" y="8" width="13" height="13" rx="2" />
+      <path d="M16 8V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h4" />
+    </>
+  ),
+  refresh: (
+    <path d="M20 11a8 8 0 0 0-14.3-4.9L4 8m0-4v4h4m-4 5a8 8 0 0 0 14.3 4.9L20 16m0 4v-4h-4" />
+  ),
+  star: <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2-5.5-2.9-5.5 2.9 1-6.2L3 9.6l6.2-.9Z" />,
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
 };
-export function Icon({ name }: { name: IconName }) {
+/** Every built-in icon name, in declaration order. */
+export const iconNames = Object.keys(paths) as IconName[];
+/**
+ * A decorative line icon. Pass `name` for a built-in glyph, or SVG children drawn on the same
+ * 24×24 stroke grid (no fill, round caps) for an application-specific one.
+ */
+export function Icon(
+  props: { name: IconName; children?: never } | { name?: never; children: ReactNode },
+) {
   return (
     <svg
       className="g-icon"
-      data-icon={name}
+      data-icon={props.name ?? 'custom'}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -109,7 +238,11 @@ export function Icon({ name }: { name: IconName }) {
       aria-hidden="true"
       focusable="false"
     >
-      {paths[name]}
+      {props.name ? paths[props.name] : props.children}
     </svg>
   );
+}
+/** Renders an `icon` prop: built-in names become `<Icon>`, elements are used as given. */
+export function renderIcon(source: IconSource) {
+  return typeof source === 'string' ? <Icon name={source} /> : source;
 }
