@@ -316,9 +316,7 @@ function LocalePreview({
       messages={
         language === 'ar'
           ? { close: 'إغلاق', required: 'مطلوب', loading: 'جار التحميل' }
-          : language === 'hu'
-            ? { close: 'Bezárás', required: 'kötelező', loading: 'Betöltés' }
-            : {}
+          : undefined
       }
     >
       <ThemeProvider theme={theme}>{children}</ThemeProvider>
@@ -537,7 +535,7 @@ function App() {
         onChange={(e) => {
           edit(switchMode(theme, e.target.checked ? 'dark' : 'light'));
           setNotice(
-            'Mode changed. Matched palettes keep their colour family; custom colours use the style defaults.',
+            'Mode changed. Your custom colours are kept where they stay readable; the rest follow the palette.',
           );
         }}
       />

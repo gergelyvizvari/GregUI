@@ -559,16 +559,41 @@ export function createTheme(
     ...(preset === 'cream' ? { accent: 'restrained' as const } : {}),
   };
 }
+function baseColors(preset: Preset, mode: Mode, palette?: Palette): Theme['colors'] {
+  return materialColors(preset, palette ? paletteColors(palette, mode) : palettes[preset][mode]);
+}
+/**
+ * Switches light/dark while keeping identity, shape and hand-picked colours.
+ * Roles that differ from the closest built-in palette (or the preset defaults) carry over
+ * when they still pass checkContrast in the new mode; the rest use that palette's colours.
+ */
 export function switchMode(theme: Theme, mode: Mode): Theme {
-  const palette = getPalette(theme);
-  return {
-    ...theme,
-    mode,
-    colors: materialColors(
-      theme.preset,
-      palette ? paletteColors(palette, mode) : palettes[theme.preset][mode],
-    ),
-  };
+  const sources: (Palette | undefined)[] = [
+    undefined,
+    ...paletteOptions.map((option) => option.id),
+  ];
+  const same = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
+  let base: Palette | undefined;
+  let best = -1;
+  for (const source of sources) {
+    const colors = baseColors(theme.preset, theme.mode, source);
+    const matches = colorRoles.filter((role) => same(colors[role], theme.colors[role])).length;
+    if (matches > best) [base, best] = [source, matches];
+  }
+  const from = baseColors(theme.preset, theme.mode, base);
+  const to = baseColors(theme.preset, mode, base);
+  const custom = new Set(colorRoles.filter((role) => !same(from[role], theme.colors[role])));
+  const result: Theme = { ...theme, mode, colors: { ...to } };
+  for (const role of custom) result.colors[role] = theme.colors[role];
+  // Built-in colours pass every pair, so reverting failing custom roles always terminates.
+  for (;;) {
+    const failing = checkContrast(result)
+      .filter((check) => !check.pass)
+      .flatMap((check) => [check.foreground, check.background])
+      .filter((role) => custom.delete(role));
+    if (!failing.length) return result;
+    for (const role of failing) result.colors[role] = to[role];
+  }
 }
 export const spacing = {
   0: '0',

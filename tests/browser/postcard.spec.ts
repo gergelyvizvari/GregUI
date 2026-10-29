@@ -77,7 +77,7 @@ test('postcard choices and dimensioned preview work in light/dark, RTL and narro
 
   await expect(preview.getByText('Jamie Example', { exact: true })).toBeVisible();
   await expect(preview.getByText('A postcard just for you.', { exact: true })).toBeVisible();
-  await preview.getByLabel('Show safe area').check();
+  await preview.getByLabel('Show print guides').check();
   await expect(preview.locator('.g-document-guides')).toBeVisible();
   await preview.getByLabel('Zoom', { exact: true }).selectOption('2');
   await expect(preview.locator('.g-document-sheet')).toHaveCSS(
@@ -140,6 +140,45 @@ test('postcard choices and dimensioned preview work in light/dark, RTL and narro
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
+test('print guides show bleed, trim and crop marks and the front warns about a low-resolution photo', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?page=components&component=postcard-studio');
+  const preview = page.getByRole('region', { name: 'Postcard preview', exact: true });
+  await preview.getByLabel('Zoom', { exact: true }).selectOption('1');
+  const warning = preview.locator('.g-alert[data-tone="warning"]');
+  await expect(warning).toContainText('Image may print blurry');
+  await expect(warning).toContainText('Alpine lake photo prints at about 183 dpi');
+  const sheet = (await preview.locator('.g-document-sheet').boundingBox())!;
+  const photo = (await preview.getByRole('img', { name: /Clear lake/ }).boundingBox())!;
+  // 154 × 111 mm with 3 mm bleed; the photo covers the whole sheet.
+  expect(sheet.width).toBeCloseTo((154 * 96) / 25.4, 0);
+  expect(sheet.height).toBeCloseTo((111 * 96) / 25.4, 0);
+  expect(photo.width).toBeCloseTo(sheet.width, 0);
+  expect(photo.height).toBeCloseTo(sheet.height, 0);
+  await expect(preview.locator('.g-document-trim')).toHaveCount(0);
+  await preview.getByLabel('Show print guides').check();
+  const trim = (await preview.locator('.g-document-trim').boundingBox())!;
+  const bleed = (3 * 96) / 25.4;
+  expect(trim.x - sheet.x).toBeCloseTo(bleed, 0);
+  expect(trim.width).toBeCloseTo((148 * 96) / 25.4, 0);
+  await expect(preview.locator('.g-document-crop')).toHaveCount(4);
+  const safe = (await preview.locator('.g-document-guides').boundingBox())!;
+  expect(safe.x - trim.x).toBeCloseTo((5 * 96) / 25.4, 0);
+  await preview.screenshot({ path: `test-results/print-guides-${testInfo.project.name}.png` });
+  await preview.getByLabel('Side', { exact: true }).selectOption('back');
+  await expect(warning).toHaveCount(0);
+  await preview.getByLabel('Side', { exact: true }).selectOption('front');
+  await page
+    .getByRole('group', { name: 'Postcard design' })
+    .getByRole('radio', { name: 'A little hello' })
+    .check();
+  await expect(warning).toHaveCount(0);
+  expect(
+    (await new AxeBuilder({ page }).include('.g-document-preview').analyze()).violations,
+  ).toEqual([]);
+});
+
 test('postcard fields align with unequal hints/errors and preview controls share form sizing', async ({
   page,
 }, testInfo) => {
@@ -167,7 +206,7 @@ test('postcard fields align with unequal hints/errors and preview controls share
       expect(Math.abs(side.height - country.height)).toBeLessThan(1);
       expect(Math.abs(side.y - zoom.y)).toBeLessThan(1);
       const check = (await preview
-        .getByRole('checkbox', { name: 'Show safe area' })
+        .getByRole('checkbox', { name: 'Show print guides' })
         .boundingBox())!;
       expect(Math.abs(check.y + check.height / 2 - side.y - side.height / 2)).toBeLessThan(1);
     }
@@ -291,7 +330,8 @@ test('flat and folded cards retain content and selected surface across portrait 
       await expect(
         preview.getByText('Preserved across orientations', { exact: true }),
       ).toBeVisible();
-      const dimensions = await preview.locator('.g-document-sheet').boundingBox();
+      // The sheet includes bleed; trimmed content keeps the card's proportions.
+      const dimensions = await preview.locator('.g-document-content').boundingBox();
       expect(dimensions!.width / dimensions!.height).toBeCloseTo(
         (width * (format === 'folded' ? 2 : 1)) / height,
         2,

@@ -1,7 +1,10 @@
 'use client';
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { useLocale } from '@gregui/localization';
-import { Alert, Button, Inline, Stack } from './index';
+import { Button } from './buttons';
+import { Alert } from './feedback';
+import { Inline, Stack } from './layout';
+import { useAsyncAction } from './use-async-action';
 
 export interface AccordionItem {
   value: string;
@@ -148,17 +151,18 @@ export function Wizard({
   onComplete,
   finishLabel,
   label,
+  headingLevel = 3,
 }: {
   steps: WizardStep[];
   onComplete: () => void | Promise<void>;
   finishLabel?: string;
   label?: string;
+  /** Level of the step title heading. Defaults to 3. */
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
 }) {
   const { messages } = useLocale();
   const [index, setIndex] = useState(0);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState(false);
-  const lock = useRef(false);
+  const { pending: busy, failed: error, run, reset } = useAsyncAction();
   const title = useRef<HTMLHeadingElement>(null);
   const previousIndex = useRef(index);
   const id = useId();
@@ -168,21 +172,13 @@ export function Wizard({
     previousIndex.current = index;
   }, [index]);
   if (!step) return null;
-  async function advance() {
-    if (lock.current) return;
-    lock.current = true;
-    setBusy(true);
-    setError(false);
-    try {
+  const StepTitle = `h${headingLevel}` as const;
+  function advance() {
+    void run(async () => {
       if (step.validate && !(await step.validate())) return;
       if (index < steps.length - 1) setIndex((i) => i + 1);
       else await onComplete();
-    } catch {
-      setError(true);
-    } finally {
-      lock.current = false;
-      setBusy(false);
-    }
+    });
   }
   return (
     <Stack gap={5}>
@@ -198,9 +194,9 @@ export function Wizard({
       >
         <Stack gap={5}>
           <div>
-            <h3 id={id} ref={title} tabIndex={-1} className="g-wizard-title">
+            <StepTitle id={id} ref={title} tabIndex={-1} className="g-wizard-title">
               {step.label}
-            </h3>
+            </StepTitle>
             {step.description && <p className="g-wizard-description">{step.description}</p>}
           </div>
           <fieldset disabled={busy} className="g-wizard-fields">
@@ -212,7 +208,7 @@ export function Wizard({
               variant="ghost"
               disabled={index === 0 || busy}
               onClick={() => {
-                setError(false);
+                reset();
                 setIndex((i) => i - 1);
               }}
             >

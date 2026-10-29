@@ -4,13 +4,17 @@ import { renderToString } from 'react-dom/server';
 import userEvent from '@testing-library/user-event';
 import { expect, it, vi } from 'vitest';
 import {
+  CalendarAgenda,
   CalendarMonth,
   DatePicker,
   LocaleProvider,
   addDays,
   addMonths,
   isCalendarDate,
+  occurrencesBetween,
+  yearlyDate,
   type CalendarDate,
+  type CalendarEvent,
 } from '@gregui/react';
 
 const weekendOrHoliday = (date: CalendarDate) => {
@@ -155,4 +159,140 @@ it('opens a date picker, selects a date, returns focus and submits the ISO value
   expect(trigger).toHaveTextContent('11 Dec 2026');
   const data = new FormData(screen.getByTestId('form') as HTMLFormElement);
   expect(data.get('arrival')).toBe('2026-12-11');
+});
+
+const occasions: CalendarEvent[] = [
+  { id: 'anna', title: "Anna's birthday", date: '1994-12-12', repeat: 'yearly' },
+  { id: 'card', title: 'Post the card', date: '2026-12-12' },
+  { id: 'leap', title: "Leo's birthday", date: '2000-02-29', repeat: 'yearly' },
+  { id: 'old', title: 'Office party', date: '2025-12-15' },
+  {
+    id: 'lease',
+    title: 'Lease renewal',
+    date: '2020-12-20',
+    repeat: 'yearly',
+    until: '2026-12-31',
+  },
+];
+
+it('repeats yearly events from their first date, counts years and moves 29 February', () => {
+  expect(yearlyDate('2000-02-29', 2027)).toBe('2027-02-28');
+  expect(yearlyDate('2000-02-29', 2027, 'mar1')).toBe('2027-03-01');
+  expect(yearlyDate('2000-02-29', 2028)).toBe('2028-02-29');
+  const december = occurrencesBetween(occasions, '2026-12-01', '2026-12-31');
+  expect(december.map(({ event, date, years }) => [event.id, date, years])).toEqual([
+    ['anna', '2026-12-12', 32],
+    ['card', '2026-12-12', 0],
+    ['lease', '2026-12-20', 6],
+  ]);
+  // Repeats never appear before the first occurrence or after `until`.
+  expect(occurrencesBetween(occasions, '1990-12-01', '1993-12-31')).toEqual([]);
+  expect(occurrencesBetween(occasions, '2024-12-01', '2024-12-31').map((o) => o.event.id)).toEqual([
+    'anna',
+    'lease',
+  ]);
+  expect(occurrencesBetween(occasions, '2027-12-01', '2027-12-31').map((o) => o.event.id)).toEqual([
+    'anna',
+  ]);
+  const years = occurrencesBetween(occasions, '2026-01-01', '2028-12-31').filter(
+    (o) => o.event.id === 'leap',
+  );
+  expect(years.map((o) => o.date)).toEqual(['2026-02-28', '2027-02-28', '2028-02-29']);
+  expect(
+    occurrencesBetween(occasions, '2027-02-01', '2027-03-31', { leapDay: 'mar1' }).map(
+      (o) => o.date,
+    ),
+  ).toEqual(['2027-03-01']);
+});
+
+it('shows yearly events inside month days and reads them with the date', () => {
+  render(<Month events={occasions} />);
+  const day = screen.getByRole('button', { name: 'Saturday, 12 December 2026' });
+  expect(day).toHaveAccessibleDescription(
+    "No collection at weekends Anna's birthday, Post the card",
+  );
+  expect(day).toHaveTextContent("Anna's birthday+1");
+  expect(
+    screen.getByRole('button', { name: 'Tuesday, 15 December 2026' }),
+  ).not.toHaveAccessibleDescription(/Office party/);
+});
+
+it('lists upcoming occurrences by day with relative labels and yearly details', () => {
+  render(
+    <CalendarAgenda
+      label="Coming up"
+      events={occasions}
+      today="2026-12-12"
+      days={10}
+      renderDetail={({ event, years }) => (event.repeat ? `Turns ${years}` : null)}
+    />,
+  );
+  const region = screen.getByRole('region', { name: 'Coming up' });
+  expect(within(region).getByRole('heading', { level: 2, name: 'Coming up' })).toBeInTheDocument();
+  const days = within(region).getAllByRole('heading', { level: 3 });
+  expect(days.map((d) => d.textContent)).toEqual([
+    'Saturday, 12 December 2026today',
+    'Sunday, 20 December 2026in 8 days',
+  ]);
+  const list = within(region).getByRole('list', { name: /12 December 2026/ });
+  expect(
+    within(list)
+      .getAllByRole('listitem')
+      .map((i) => i.textContent),
+  ).toEqual(["Anna's birthdayTurns 32Every year", 'Post the card']);
+  expect(region.querySelector('time')).toHaveAttribute('datetime', '2026-12-12');
+  expect(screen.queryByRole('button')).toBeNull();
+});
+
+it('says when nothing is coming up', () => {
+  render(<CalendarAgenda label="Coming up" events={occasions} today="2026-06-01" days={7} />);
+  expect(screen.getByText('Nothing coming up in this period.')).toBeInTheDocument();
+});
+
+it('makes agenda entries one tab stop with arrow, Home and End navigation', async () => {
+  const user = userEvent.setup();
+  const onSelect = vi.fn();
+  render(
+    <>
+      <button type="button">Before</button>
+      <CalendarAgenda
+        label="Coming up"
+        events={occasions}
+        today="2026-12-10"
+        days={30}
+        onSelect={onSelect}
+      />
+      <button type="button">After</button>
+    </>,
+  );
+  await user.click(screen.getByRole('button', { name: 'Before' }));
+  await user.tab();
+  const anna = screen.getByRole('button', { name: /^Anna's birthday/ });
+  expect(anna).toHaveFocus();
+  expect(anna).toHaveAccessibleDescription('Saturday, 12 December 2026 in 2 days');
+  await user.keyboard('{ArrowDown}');
+  expect(screen.getByRole('button', { name: 'Post the card' })).toHaveFocus();
+  await user.keyboard('{End}');
+  expect(screen.getByRole('button', { name: /^Lease renewal/ })).toHaveFocus();
+  await user.keyboard('{ArrowDown}{Home}');
+  expect(anna).toHaveFocus();
+  await user.keyboard('{ArrowDown}{Enter}');
+  expect(onSelect).toHaveBeenCalledWith(
+    expect.objectContaining({ date: '2026-12-12', years: 0, event: occasions[1] }),
+  );
+  await user.tab();
+  expect(screen.getByRole('button', { name: 'After' })).toHaveFocus();
+  await user.tab({ shift: true });
+  expect(screen.getByRole('button', { name: 'Post the card' })).toHaveFocus();
+});
+
+it('renders the agenda in another locale on the server', () => {
+  const html = renderToString(
+    <LocaleProvider locale="hu-HU" messages={{ repeatsYearly: 'Minden évben' }}>
+      <CalendarAgenda label="Közelgő" events={occasions} today="2026-12-11" days={3} />
+    </LocaleProvider>,
+  );
+  expect(html).toContain('Minden évben');
+  expect(html).toContain('holnap');
+  expect(html).toContain('2026. december 12.');
 });

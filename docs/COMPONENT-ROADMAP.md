@@ -35,8 +35,8 @@ DataTable now supplies the first controlled state increment. Column resizing, vi
 
 - Documentation had drifted: README listed existing inputs as future work, palette totals omitted Iris/Lagoon, and some prose still described five styles. The AI guide and corrected overview now distinguish shipped behaviour from proposals. Historical verification entries remain historical evidence.
 - `ThemeSelector` uses the literal suffix `(saved)` and token-owned English style/palette names. A later localisation pass could expose translations while retaining stable stored IDs. Combobox now uses the provider locale for case folding. TreeView still uses the runtime default locale; test its intended matching behaviour before changing it.
-- Data/input modules import shared primitives through `index.tsx`, which re-exports those modules. This creates barrel cycles. The current checks can pass with this structure; it is a maintenance concern, not a demonstrated runtime defect. Consider internal primitive modules when touching these areas, without changing public imports.
-- `index.tsx` and `styles.css` contain many component families. Keep public exports stable; split internal modules only where it makes an actual feature change easier to maintain. Avoid coupling a large structural rewrite to the first feature increment.
+- Done (29 October 2026): `index.tsx` is now only the public export list. Primitives live in internal modules (`layout`, `typography`, `buttons`, `icons`, `forms`, `feedback`, `tables`, `navigation`, `overlays`, `shell`, `theme`, `workbench`, `editorial`), and component modules import from them directly, so there are no barrel cycles.
+- `styles.css` still contains every component family. Split it only where it makes an actual feature change easier to maintain.
 
 ## Definition of a completed increment
 

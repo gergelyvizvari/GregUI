@@ -1,26 +1,18 @@
 'use client';
-import { useRef, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useLocale } from '@gregui/localization';
-import {
-  Alert,
-  Badge,
-  Button,
-  Card,
-  Checkbox,
-  DescriptionList,
-  Field,
-  Heading,
-  Inline,
-  Metric,
-  Select,
-  Stack,
-  Status,
-  Text,
-  Textarea,
-  TextField,
-  Timeline,
-  type TimelineItem,
-} from './index';
+import { Button } from './buttons';
+import { Timeline, type TimelineItem } from './data';
+import { Alert, Badge, Status } from './feedback';
+import { Checkbox, Field, Select, Textarea, TextField } from './forms';
+import { Card, Inline, Stack } from './layout';
+import { DescriptionList } from './tables';
+import { Heading, Text } from './typography';
+import { Metric } from './workbench';
+import { useAsyncAction } from './use-async-action';
+
+type HeadingLevel = 2 | 3 | 4 | 5 | 6;
+const below = (level: HeadingLevel) => Math.min(level + 1, 6) as HeadingLevel;
 
 function AsyncAction({
   children,
@@ -38,9 +30,7 @@ function AsyncAction({
   onErrorChange?: (error: boolean) => void;
 }) {
   const { messages } = useLocale();
-  const [busy, setBusy] = useState(false),
-    [error, setError] = useState(false);
-  const lock = useRef(false);
+  const { pending: busy, failed: error, run, locked } = useAsyncAction();
   return (
     <Stack gap={2}>
       <Button
@@ -48,22 +38,12 @@ function AsyncAction({
         disabled={disabled}
         loading={busy}
         onClick={async () => {
-          if (lock.current) return;
-          lock.current = true;
-          setBusy(true);
+          if (locked.current) return;
           onBusyChange?.(true);
-          setError(false);
           onErrorChange?.(false);
-          try {
-            await onAction();
-          } catch {
-            setError(true);
-            onErrorChange?.(true);
-          } finally {
-            lock.current = false;
-            setBusy(false);
-            onBusyChange?.(false);
-          }
+          const ok = await run(onAction);
+          onBusyChange?.(false);
+          if (ok === false) onErrorChange?.(true);
         }}
       >
         {children}
@@ -85,11 +65,14 @@ export function NotificationCentre({
   items,
   onRead,
   onDismiss,
+  headingLevel = 2,
 }: {
   title: string;
   items: NotificationItem[];
   onRead: (id: string) => void;
   onDismiss: (id: string) => void;
+  /** Level of the title heading; nested headings follow it. Defaults to 2. */
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
 }) {
   const { messages } = useLocale();
   const [unreadOnly, setUnreadOnly] = useState(false);
@@ -98,7 +81,7 @@ export function NotificationCentre({
     <Card>
       <Stack>
         <Inline justify="between">
-          <Heading level={2}>{title}</Heading>
+          <Heading level={headingLevel}>{title}</Heading>
           <Checkbox
             label={messages.unreadOnly}
             checked={unreadOnly}
@@ -191,14 +174,17 @@ export function Dashboard({
   title,
   metrics,
   children,
+  headingLevel = 2,
 }: {
   title: string;
   metrics: { id: string; label: string; value: string; detail?: string }[];
   children?: ReactNode;
+  /** Level of the title heading; nested headings follow it. Defaults to 2. */
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
 }) {
   return (
     <Stack gap={5}>
-      <Heading level={2}>{title}</Heading>
+      <Heading level={headingLevel}>{title}</Heading>
       <div className="g-pattern-cards">
         {metrics.map((metric) => (
           <Card key={metric.id}>
@@ -228,41 +214,33 @@ export function ProfileSettings({
   onChange,
   onSave,
   children,
+  headingLevel = 2,
 }: {
   title: string;
   value: ProfileValues;
   onChange: (value: ProfileValues) => void;
   onSave: (value: ProfileValues) => void | Promise<void>;
   children?: ReactNode;
+  /** Level of the title heading; nested headings follow it. Defaults to 2. */
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
 }) {
   const { messages } = useLocale();
-  const [busy, setBusy] = useState(false),
-    [error, setError] = useState(false),
-    [saved, setSaved] = useState(false);
-  const lock = useRef(false);
+  const { pending: busy, failed: error, run } = useAsyncAction();
+  const [saved, setSaved] = useState(false);
   return (
     <Card>
       <form
-        onSubmit={async (event) => {
+        onSubmit={(event) => {
           event.preventDefault();
-          if (lock.current) return;
-          lock.current = true;
-          setBusy(true);
-          setError(false);
-          setSaved(false);
-          try {
+          void run(async () => {
+            setSaved(false);
             await onSave(value);
             setSaved(true);
-          } catch {
-            setError(true);
-          } finally {
-            lock.current = false;
-            setBusy(false);
-          }
+          });
         }}
       >
         <Stack>
-          <Heading level={2}>{title}</Heading>
+          <Heading level={headingLevel}>{title}</Heading>
           <fieldset className="g-fieldset" disabled={busy}>
             <Stack>
               <TextField
@@ -311,19 +289,22 @@ export function SecuritySettings({
   sessions,
   onRevoke,
   children,
+  headingLevel = 2,
 }: {
   title: string;
   sessions: SessionItem[];
   onRevoke: (id: string) => void | Promise<void>;
   children?: ReactNode;
+  /** Level of the title heading; nested headings follow it. Defaults to 2. */
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
 }) {
   const { messages } = useLocale();
   return (
     <Card>
       <Stack>
-        <Heading level={2}>{title}</Heading>
+        <Heading level={headingLevel}>{title}</Heading>
         {children}
-        <Heading level={3}>{messages.sessions}</Heading>
+        <Heading level={below(headingLevel)}>{messages.sessions}</Heading>
         {sessions.map((session) => (
           <div className="g-notification" key={session.id}>
             <Inline justify="between">
@@ -358,41 +339,33 @@ export function TeamMembers({
   roles,
   onInvite,
   onRoleChange,
+  headingLevel = 2,
 }: {
   title: string;
   members: MemberItem[];
   roles: { value: string; label: string }[];
   onInvite: (email: string) => void | Promise<void>;
   onRoleChange: (id: string, role: string) => void | Promise<void>;
+  /** Level of the title heading; nested headings follow it. Defaults to 2. */
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
 }) {
   const { messages } = useLocale();
   const [email, setEmail] = useState(''),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState(false),
     [sent, setSent] = useState(false);
-  const lock = useRef(false);
+  const { pending: busy, failed: error, run } = useAsyncAction();
   return (
     <Card>
       <Stack>
-        <Heading level={2}>{title}</Heading>
+        <Heading level={headingLevel}>{title}</Heading>
         <form
-          onSubmit={async (event) => {
+          onSubmit={(event) => {
             event.preventDefault();
-            if (lock.current) return;
-            lock.current = true;
-            setBusy(true);
-            setError(false);
-            setSent(false);
-            try {
+            void run(async () => {
+              setSent(false);
               await onInvite(email);
               setEmail('');
               setSent(true);
-            } catch {
-              setError(true);
-            } finally {
-              lock.current = false;
-              setBusy(false);
-            }
+            });
           }}
         >
           <Inline align="end">
@@ -494,6 +467,7 @@ export function PrivacyPreferences({
   value,
   onChange,
   onSave,
+  headingLevel = 2,
 }: {
   title: string;
   description: string;
@@ -501,6 +475,8 @@ export function PrivacyPreferences({
   value: string[];
   onChange: (value: string[]) => void;
   onSave: (value: string[]) => void | Promise<void>;
+  /** Level of the title heading; nested headings follow it. Defaults to 2. */
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
 }) {
   const { messages } = useLocale();
   const [busy, setBusy] = useState(false);
@@ -514,7 +490,7 @@ export function PrivacyPreferences({
   return (
     <Card>
       <Stack>
-        <Heading level={2}>{title}</Heading>
+        <Heading level={headingLevel}>{title}</Heading>
         <Text>{description}</Text>
         {categories.map((category) => (
           <div className="g-notification" key={category.id}>
@@ -576,29 +552,23 @@ export function PricingCards({
   currentId,
   onSelect,
   label,
+  headingLevel = 3,
 }: {
   plans: PricingPlan[];
   currentId?: string;
   onSelect: (id: string) => void | Promise<void>;
   label: string;
+  /** Level of each plan name heading. Defaults to 3. */
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
 }) {
   const { messages } = useLocale();
-  const [pending, setPending] = useState<string | null>(null);
-  const [failed, setFailed] = useState<string | null>(null);
-  const lock = useRef(false);
-  async function select(id: string) {
-    if (lock.current || id === currentId) return;
-    lock.current = true;
-    setPending(id);
-    setFailed(null);
-    try {
-      await onSelect(id);
-    } catch {
-      setFailed(id);
-    } finally {
-      lock.current = false;
-      setPending(null);
-    }
+  const [target, setTarget] = useState<string | null>(null);
+  const { pending: busy, failed, run, locked } = useAsyncAction();
+  const pending = busy ? target : null;
+  function select(id: string) {
+    if (locked.current || id === currentId) return;
+    setTarget(id);
+    void run(() => onSelect(id));
   }
   return (
     <section aria-label={label}>
@@ -620,7 +590,7 @@ export function PricingCards({
               )}
               {plan.recommended && <Badge>{messages.recommended}</Badge>}
             </div>
-            <Heading level={3}>{plan.name}</Heading>
+            <Heading level={headingLevel}>{plan.name}</Heading>
             <Text size="large" weight="strong">
               {plan.price}
             </Text>
@@ -640,7 +610,9 @@ export function PricingCards({
               >
                 {currentId === plan.id ? messages.currentPlan : messages.choosePlan}
               </Button>
-              {failed === plan.id && <Alert tone="danger" live title={messages.workflowError} />}
+              {failed && target === plan.id && (
+                <Alert tone="danger" live title={messages.workflowError} />
+              )}
             </div>
           </article>
         ))}
@@ -659,20 +631,21 @@ export function CommentsPanel({
   title,
   comments,
   onSubmit,
+  headingLevel = 2,
 }: {
   title: string;
   comments: CommentItem[];
   onSubmit: (body: string) => void | Promise<void>;
+  /** Level of the title heading; nested headings follow it. Defaults to 2. */
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
 }) {
   const { messages } = useLocale();
-  const [body, setBody] = useState(''),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState(false);
-  const lock = useRef(false);
+  const [body, setBody] = useState('');
+  const { pending: busy, failed: error, run } = useAsyncAction();
   return (
     <Card>
       <Stack>
-        <Heading level={2}>{title}</Heading>
+        <Heading level={headingLevel}>{title}</Heading>
         {comments.map((comment) => (
           <article className="g-notification" key={comment.id}>
             <Inline justify="between">
@@ -685,21 +658,13 @@ export function CommentsPanel({
           </article>
         ))}
         <form
-          onSubmit={async (event) => {
+          onSubmit={(event) => {
             event.preventDefault();
-            if (lock.current || !body.trim()) return;
-            lock.current = true;
-            setBusy(true);
-            setError(false);
-            try {
+            if (!body.trim()) return;
+            void run(async () => {
               await onSubmit(body.trim());
               setBody('');
-            } catch {
-              setError(true);
-            } finally {
-              lock.current = false;
-              setBusy(false);
-            }
+            });
           }}
         >
           <Stack>
@@ -731,38 +696,30 @@ export function ApprovalPanel({
   details,
   onDecision,
   history = [],
+  headingLevel = 2,
 }: {
   title: string;
   description: string;
   details: { term: string; description: ReactNode }[];
   onDecision: (decision: 'approve' | 'reject', comment: string) => void | Promise<void>;
   history?: TimelineItem[];
+  /** Level of the title heading; nested headings follow it. Defaults to 2. */
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
 }) {
   const { messages } = useLocale();
   const [comment, setComment] = useState(''),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState(false),
     [done, setDone] = useState(false);
-  const lock = useRef(false);
-  async function decide(decision: 'approve' | 'reject') {
-    if (lock.current) return;
-    lock.current = true;
-    setBusy(true);
-    setError(false);
-    try {
+  const { pending: busy, failed: error, run } = useAsyncAction();
+  function decide(decision: 'approve' | 'reject') {
+    void run(async () => {
       await onDecision(decision, comment);
       setDone(true);
-    } catch {
-      setError(true);
-    } finally {
-      lock.current = false;
-      setBusy(false);
-    }
+    });
   }
   return (
     <Card>
       <Stack>
-        <Heading level={2}>{title}</Heading>
+        <Heading level={headingLevel}>{title}</Heading>
         <Text>{description}</Text>
         <DescriptionList items={details} />
         {done ? (

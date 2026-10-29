@@ -8,18 +8,12 @@ import React, {
   type ReactNode,
 } from 'react';
 import { useLocale } from '@gregui/localization';
-import {
-  Alert,
-  Button,
-  Card,
-  Checkbox,
-  Field,
-  Heading,
-  Input,
-  Stack,
-  Text,
-  TextField,
-} from './index';
+import { Button } from './buttons';
+import { Alert } from './feedback';
+import { Checkbox, Field, Input, TextField } from './forms';
+import { Card, Stack } from './layout';
+import { Heading, Text } from './typography';
+import { useAsyncAction } from './use-async-action';
 
 type InputProps = Omit<ComponentPropsWithoutRef<'input'>, 'className' | 'style' | 'type'>;
 export const PasswordField = forwardRef<
@@ -143,6 +137,8 @@ export interface AuthFormProps {
   error?: string;
   successMessage?: string;
   footer?: ReactNode;
+  /** Level of the form title heading. Defaults to 2. */
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
 }
 /** Providers own authentication, session persistence, token validation and rate limits. */
 export function AuthForm(props: AuthFormProps) {
@@ -164,13 +160,14 @@ function AuthFormScreen({
   error,
   successMessage,
   footer,
+  headingLevel = 2,
 }: AuthFormProps) {
   const { messages: m } = useLocale();
   const id = useId();
-  const locked = useRef(false);
-  const [pending, setPending] = useState(false);
+  const { pending, failed, run: runAction, locked } = useAsyncAction();
   const [pendingAction, setPendingAction] = useState('submit');
-  const [failure, setFailure] = useState('');
+  const [rejection, setRejection] = useState('');
+  const failure = rejection || (failed ? m.authFailure : '');
   const [status, setStatus] = useState('');
   const [mismatch, setMismatch] = useState(false);
   const feedback = useRef<HTMLDivElement>(null);
@@ -207,27 +204,20 @@ function AuthFormScreen({
     source = 'submit',
   ) {
     if (locked.current) return;
-    locked.current = true;
     setPendingAction(source);
-    setPending(true);
-    setFailure('');
+    setRejection('');
     setStatus('');
-    try {
+    await runAction(async () => {
       const result = await operation();
       if (result === false) return;
       if (result && typeof result === 'object') {
-        setFailure(result.error || m.authFailure);
+        setRejection(result.error || m.authFailure);
         return;
       }
       form?.reset();
       setStatus(message);
-    } catch {
-      setFailure(m.authFailure);
-    } finally {
-      locked.current = false;
-      setPending(false);
-      requestAnimationFrame(() => feedback.current?.focus());
-    }
+    });
+    requestAnimationFrame(() => feedback.current?.focus());
   }
   return (
     <form
@@ -272,7 +262,7 @@ function AuthFormScreen({
     >
       <Stack gap={5}>
         <Stack gap={2}>
-          <Heading level={2} size="section" id={`${id}-title`}>
+          <Heading level={headingLevel} size="section" id={`${id}-title`}>
             {title ?? titles[mode]}
           </Heading>
           <Text tone="muted" size="small">

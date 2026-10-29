@@ -32,6 +32,8 @@ All exports below ship from `@gregui/react`. Import the shared stylesheet once. 
 | `CommentsPanel`      | Plain-text comments with a required composer, whitespace rejection, async posting, draft preservation on failure and clearing after success. No HTML execution, rich text, attachments or realtime transport. Apps append confirmed comments to the controlled list.                                                                                                                                                          |
 | `ApprovalPanel`      | Review details, optional timeline history, comment and approve/reject actions. A shared lock blocks both actions while a decision is pending; failure permits retry and success replaces actions with confirmation. Remount with a new request key for another review. Apps enforce workflow permissions and persist audit history.                                                                                           |
 
+Patterns with a title (`Dashboard`, `ProfileSettings`, `SecuritySettings`, `TeamMembers`, `NotificationCentre`, `PrivacyPreferences`, `CommentsPanel`, `ApprovalPanel`) render it as `h2` by default; set `headingLevel` (2–6) to fit the surrounding page outline. Nested headings, such as the SecuritySettings session list, follow one level below. `PricingCards headingLevel` sets the plan-name level (default `h3`).
+
 ## Integration example
 
 ```tsx

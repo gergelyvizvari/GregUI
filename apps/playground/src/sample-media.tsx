@@ -5,6 +5,8 @@ import { Link, Text } from '@gregui/react';
 export const samplePhoto = {
   src: `${import.meta.env.BASE_URL}images/alpine-lake.jpg`,
   alt: 'Clear lake reflecting forested mountains beneath a blue sky',
+  widthPx: 1200,
+  heightPx: 801,
   source:
     'https://unsplash.com/photos/landscape-photography-of-lake-surrounded-by-mountains-8aSs7QejvSw',
 };

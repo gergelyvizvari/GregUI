@@ -16,7 +16,7 @@ npm run build
 npm run dev
 ```
 
-Open the URL printed by Vite. The workbench includes a component catalog, theme editor, foundations, example patterns and an accessibility/support page. Use the floating **Edit theme** button on Components, Typography & pages, Patterns, Authentication or Foundations to adjust previews live; it opens a non-modal desktop inspector or a modal mobile drawer with the same theme/history as Theme studio. It has no backend, analytics or external fonts. Save draft explicitly stores a theme in this browser; Delete saved draft removes it.
+Open the URL printed by Vite. The workbench imports the built packages, like a real app would, so `npm run dev` rebuilds them first. After changing package source while the server runs, run `npm run build:packages` again. The workbench includes a component catalog, theme editor, foundations, example patterns and an accessibility/support page. Use the floating **Edit theme** button on Components, Typography & pages, Patterns, Authentication or Foundations to adjust previews live; it opens a non-modal desktop inspector or a modal mobile drawer with the same theme/history as Theme studio. It has no backend, analytics or external fonts. Save draft explicitly stores a theme in this browser; Delete saved draft removes it.
 
 ```sh
 npm run check           # types, consumer style boundary, unit/interaction tests, builds
@@ -77,7 +77,7 @@ export function App() {
 
 Import the stylesheet once, at the application root. Packages ship ESM and TypeScript declarations; React providers/components carry a `use client` directive for frameworks with server components. The package itself does not depend on Next.js. Locale/time-zone inputs must be consistent on server and client.
 
-Use `parseTheme(JSON.parse(input))` before applying externally supplied theme JSON. `exportTheme` rejects schemas or checked color pairs that fail validation; export is not accessibility certification. Changing light/dark mode with `switchMode` uses the matching palette's light/dark colours. Custom colours fall back to the preset's defaults; other theme properties are preserved.
+Use `parseTheme(JSON.parse(input))` before applying externally supplied theme JSON. `exportTheme` rejects schemas or checked color pairs that fail validation; export is not accessibility certification. Changing light/dark mode with `switchMode` uses the matching palette's light/dark colours. Hand-picked colour roles are kept when they still pass `checkContrast` in the new mode, and the rest come from the closest palette or the preset's defaults; other theme properties are preserved.
 
 Each preset has its own default palette and component treatment: forest Flat, plum Glass, clay Soft, blue Elevated and ink/cream Outline. See the [visual direction](docs/DESIGN.md) and the generated per-preset [style guides](docs/styles/README.md). The workbench loads the complete preset when selected; Undo restores your previous custom draft.
 
@@ -109,7 +109,7 @@ Featured choices are Workspace, Bloom, Clay, Neumorphic, Glass and Flat. `featur
 
 ### Visual choices and document previews
 
-`VisualChoiceGroup` provides controlled visual radio selection. `DocumentPreview` provides dimensioned pages, fit/zoom, page switching and optional safe-area guides. Open **Postcard studio** in the Components catalog to choose a template and personalise a local front/back preview. AI generation, address storage and print/PDF export remain application responsibilities. See [contracts](docs/COMPONENTS.md#visual-single-selection).
+`VisualChoiceGroup` provides controlled visual radio selection. `DocumentPreview` provides dimensioned pages, fit/zoom, page switching, optional safe-area, bleed and crop-mark guides, and a low-resolution image warning. Open **Postcard studio** in the Components catalog to choose a template and personalise a local front/back preview. AI generation, address storage and print/PDF export remain application responsibilities. See [contracts](docs/COMPONENTS.md#visual-single-selection).
 
 `AddressFields` adds controlled recipient and postal-address entry with application-configured country choices, field order, labels, requiredness and errors. The postcard example starts with Hungary, supports Hungarian/UK address layouts and basic postcode checks, and updates its preview as details change. See [address contracts](docs/COMPONENTS.md#address-fields).
 

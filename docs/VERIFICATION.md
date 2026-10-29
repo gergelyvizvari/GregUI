@@ -1,5 +1,13 @@
 # Verification record — 29 September 2026
 
+## Hungarian package messages
+
+Added a complete Hungarian `Messages` catalog and language-based selection in `LocaleProvider`. `npm run check` passed with 416 unit/interaction/SSR tests and all builds. Five new unit checks cover catalog completeness against English, locale-to-catalog selection and English fallback, Hungarian Pagination copy with an application override, Hungarian number/date formatting and Hungarian calendar month, weekday and navigation labels in server rendering. The workbench and calendar browser suites passed in Chromium only (89 tests), including the Hungarian authentication demo, which now relies on the built-in catalog. Translations were written by an AI assistant and have not had a native-speaker review; Firefox, WebKit and mobile were not run locally.
+
+## Calendar agenda and yearly repeats
+
+Added `CalendarAgenda`, yearly `CalendarEvent` repeats and `events` on `CalendarMonth`/`DatePicker`. `npm run check` passed with 411 unit/interaction/SSR tests and all builds; formatting passed. New unit checks cover yearly expansion with `until`, years counts, the 29 February rule (both options), event titles in day descriptions, agenda headings, lists and relative labels, the empty state, single-tab-stop arrow/Home/End navigation, selection and Hungarian server rendering. Locally the calendar and catalog browser checks passed in Chromium and mobile Chromium, including axe on the agenda, adding a yearly occasion and narrow reflow. Firefox and WebKit run in CI only. The agenda and month demos were visually reviewed in Chromium light mode; dark mode, RTL and forced colors were not inspected by eye.
+
 ## Authentication style selector
 
 Added a labelled Preview style selector on the Authentication page, connected to the existing shared theme state. `npm run check` passed (53 unit/interaction/SSR tests and all builds). Four targeted browser checks passed across Chromium, Firefox, WebKit and mobile Chromium: all five styles switch in place, entered email survives switching, the selection stays synchronized across navigation, narrow reflow works and axe reports no violations. The desktop screenshot was visually reviewed.
@@ -423,6 +431,12 @@ Added opt-in ListDetail.collapsibleGroups and enabled it in the component catalo
 Added controlled ListDetail.expandedGroups/onExpandedGroupsChange for consumer-owned preferences. The playground restores and saves a versioned list of manually expanded category names in localStorage under gregui.catalog.groups.v1. Selected-category visibility is derived separately and does not rewrite saved choices. Defaults preserve local state for existing consumers. Missing/invalid/unsupported stored data falls back safely, and blocked reads/writes retain usable session toggles. The shared component contains no storage access; no presentation styling changed.
 
 `npm run check` passed with 376 tests, TypeScript, consumer style boundaries and all builds. The new unit check covers controlled notifications, no internal mutation of controlled props, collapse payloads and selected-category visibility. Twenty-four catalog browser checks passed across Chromium, Firefox, WebKit and mobile Chromium emulation. New coverage exercises expanded/collapsed refresh restoration, invalid JSON/schema recovery, direct selection overriding a saved collapse without changing it, filtering retention and blocked storage. Existing keyboard, scrolling, search/history, alignment and axe checks passed. The isolated package smoke check, formatting and whitespace checks passed. Preferences are specific to the current browser origin; cross-tab/account synchronisation was not implemented or tested. Real devices, historical browsers and manual assistive-technology checks remain outstanding.
+
+## Print-safe DocumentPreview — 29 October 2026
+
+Added DocumentPreview `bleedMm`, `padding="bleed"`, per-page `images`, `imageResolution` and the exported `documentImageDpi` helper. Bleed grows the sheet around the unchanged trimmed size; guides add a tinted bleed, trim outline and four crop marks, and the safe area is measured from the trim. Existing pages with `standard`/`none` padding keep their trimmed geometry. Postcard studio now uses a 3 mm bleed and reports its 1200 × 801 px sample photo at 183 dpi.
+
+Five new unit checks cover sheet growth and guide parts, bleed-only guides and invalid bleed recovery, density maths, the per-page warning with threshold changes and skipped unknown sizes, and no check without copy. A new browser check measures sheet, trim, safe-area and photo geometry at 100%, the warning text, its absence on the back and the text design, and runs axe; the folded/flat proportion check now measures trimmed content. Postcard browser checks passed locally in Chromium and mobile Chromium emulation; Firefox and WebKit were left to CI. Screen proofing only: the warning is advisory, does not detect upscaled or compressed sources, and no printed output was checked.
 
 ## Restrained accent, Cream preset and postal details — 29 October 2026
 

@@ -9,6 +9,7 @@
     "examples/*"
   ],
   "scripts": {
+    "predev": "npm run build:packages",
     "dev": "npm run dev -w @gregui/playground --",
     "build": "npm run build -w @gregui/tokens && npm run build -w @gregui/localization && npm run build -w @gregui/react && npm run build -w @gregui/playground && npm run build -w @gregui/consumer",
     "typecheck": "tsc --noEmit",

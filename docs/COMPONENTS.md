@@ -1,11 +1,11 @@
 # Component contracts
 
-All public exports are typed in `packages/react/src/index.tsx`; generated declarations ship with the package. The workbench's Components page provides live states and usage snippets. Public components omit `className` and `style` from their APIs.
+All public exports go through `packages/react/src/index.tsx`, which re-exports the component modules beside it; generated declarations ship with the package. The workbench's Components page provides live states and usage snippets. Public components omit `className` and `style` from their APIs.
 
 ## Composition
 
 - `ThemeProvider`: scopes variables and the selected preset/mode. Nested providers inherit the current theme unless explicitly overridden. Portal components copy theme and locale into their portal root.
-- `LocaleProvider`: locale, direction, time zone and replaceable package-owned messages. Supply translated application labels/content yourself. `useFormat` formats numbers/dates and selects plural categories; applications supply plural message forms.
+- `LocaleProvider`: locale, direction, time zone and replaceable package-owned messages. Built-in messages follow the locale's language: English (default) and Hungarian (`hu`, for example `hu-HU`, informal register). `messages` overrides are applied on top. `english`, `hungarian` and `messagesFor(locale)` are exported for apps that build their own catalogs. Supply translated application labels/content yourself. `useFormat` formats numbers/dates and selects plural categories; applications supply plural message forms.
 - `Stack`, `Inline`, `Grid`: token-based gaps 0–8. Grid accepts 1–5 columns or `columns="auto"` (width-aware cards with a 15rem minimum) and collapses on small viewports. `Inline` wraps; do not depend on fixed text lengths.
 - `Split`, `Container`, `Card`, `Section`, `PageHeader`, `AppShell`: shared responsive composition. AppShell renders a skip link, desktop navigation and a modal navigation drawer on small screens. It does not own routing.
 - `Card` accepts an optional `footer` for actions anchored to the bottom of equal-height grid cards.
@@ -38,7 +38,7 @@ All public exports are typed in `packages/react/src/index.tsx`; generated declar
 - `Progress` has a visible label; `Spinner` and `Skeleton` have accessible loading names and honor reduced motion. Skeleton is static.
 - `Badge` always includes text; status meaning is not color-only. Optional `variant="stamp"` draws a perforated postage-stamp edge with an inner frame; `variant="label"` draws a pointed luggage-label tag with a punched eyelet that points to the inline start and mirrors under RTL. Both keep `tone` and stay plain text for assistive technology. The default is `variant="standard"`.
 - `Table` includes caption, column headers and first-column row headers inside a named scroll region. It deliberately has no sorting, pagination or virtualization.
-- `DescriptionList`, `EmptyState`, `CodeBlock`, `Divider` provide content structure without application styling. `CodeBlock wrap` preserves whitespace while wrapping long lines and unbroken strings to the available width; the default retains horizontal scrolling.
+- `DescriptionList`, `EmptyState`, `CodeBlock`, `Divider` provide content structure without application styling. `EmptyState` titles render as `h3`; set `headingLevel` (2–6) to fit the page outline. `CodeBlock wrap` preserves whitespace while wrapping long lines and unbroken strings to the available width; the default retains horizontal scrolling.
 
 ## Theme editing
 
@@ -63,7 +63,7 @@ Themes accept an optional `accent: 'expressive' | 'restrained'`. Omitted means e
 - `Accordion`: independent native `details`/`summary` disclosures with unique item `value`, plain-text `title` and rich `content`. `defaultOpen` selects initially expanded items. Multiple items may stay open; Enter/Space toggle the focused summary. Do not put interactive controls in titles.
 - `Pagination`: controlled, one-based `page`, `pageCount` and `onPageChange`. Renders first/last/current/neighbour pages with gaps and disabled boundary actions; the current page has `aria-current="page"`. `disabled` locks navigation during data fetching. Invalid numeric bounds are clamped for rendering; apps own fetching, result announcements and page resets after filters. Optional `label` distinguishes multiple paginators.
 - `Stepper`: non-interactive progress list; `currentStep` is zero-based. Stable step values, visible numbers/checks, current-step semantics and localized completed text convey progress beyond colour. It does not skip steps or navigate.
-- `Wizard`: ready-made form shell with Stepper, Back/Continue/Finish, native required/type validation, step-heading focus, pending locking and generic failure/retry feedback. Supply stable, non-empty `steps` with unique values, labels, descriptions and content, plus `onComplete`. Optional step `validate` may asynchronously return false (consumer must show field errors/focus the invalid field) or reject (generic retry alert). `finishLabel` replaces the last action label. Do not nest forms inside step content. Keep entered values in the consuming app because only the active content is mounted. Keep step structure stable during a run; remount with a new React key to restart with a different structure. The app replaces the wizard or navigates after successful completion; the library does not persist data or invent a success destination.
+- `Wizard`: ready-made form shell with Stepper, Back/Continue/Finish, native required/type validation, step-heading focus, pending locking and generic failure/retry feedback. Supply stable, non-empty `steps` with unique values, labels, descriptions and content, plus `onComplete`. Optional step `validate` may asynchronously return false (consumer must show field errors/focus the invalid field) or reject (generic retry alert). `finishLabel` replaces the last action label. Step titles render as `h3`; set `headingLevel` (2–6) to fit the page outline. Do not nest forms inside step content. Keep entered values in the consuming app because only the active content is mounted. Keep step structure stable during a run; remount with a new React key to restart with a different structure. The app replaces the wizard or navigates after successful completion; the library does not persist data or invent a success destination.
 
 Package-owned navigation, progress and error labels can be replaced through `LocaleProvider.messages`. Application step names, descriptions and validation messages remain consumer-owned. The Components catalog demonstrates all four exports; Patterns → Onboarding provides a complete local setup flow including simulated save failure and retry.
 
@@ -258,11 +258,19 @@ Palette review: Iris and Lagoon retain their existing clean, distinct accents. F
 
 ## Document preview
 
-`DocumentPreview` exports `DocumentPreviewProps` and `DocumentPreviewPage`. Required props are `label`, positive finite `widthMm`/`heightMm`, nonempty `pages`, controlled `pageId`/`onPageChange` and translated `labels` (`page`, `zoom`, `fit`, `guides`). Each page has a unique `id`, `label` and `content`; Invalid dimensions or an empty `pages` list throw. A `pageId` that matches no page shows the first page, and a safe area that doesn't fit hides the guides; both log a development warning instead of crashing the screen. Page content unmounts on side changes: keep editable state in the application.
+`DocumentPreview` exports `DocumentPreviewProps`, `DocumentPreviewPage`, `DocumentPreviewImage`, `DocumentImageResolution`, `DocumentImageResolutionIssue` and the `documentImageDpi` helper. Required props are `label`, positive finite `widthMm`/`heightMm`, nonempty `pages`, controlled `pageId`/`onPageChange` and translated `labels` (`page`, `zoom`, `fit`, `guides`). Each page has a unique `id`, `label` and `content`; Invalid dimensions or an empty `pages` list throw. A `pageId` that matches no page shows the first page, a safe area that doesn't fit hides the safe-area guide, and a negative or non-finite bleed is ignored; each logs a development warning instead of crashing the screen. Page content unmounts on side changes: keep editable state in the application.
 
 The preview owns fit/50/100/150/200-percent zoom and optional guide visibility. Fit shrinks oversized pages to the viewport without enlarging smaller pages. Fixed physical dimensions use CSS's reference conversion of 96 pixels per inch; 100% is not a calibrated physical measurement on the user's screen. Zoom scrolls inside a keyboard-focusable region. A ResizeObserver refits after resizing; it disconnects on unmount. Page geometry is retained on narrow screens; explicit Grid column counts inside document content do not collapse with the surrounding UI. Other responsive components may still depend on the browser viewport, so use simple composition for fixed documents.
 
-Pages default to `padding="standard"` (8mm); `padding="none"` supports artwork. A single direct image fills the available page area with contain-fit, preserving the whole image. White paper and neutral ink remain fixed in dark mode, while the toolbar follows the surrounding theme. Pages inherit provider direction, with optional per-page `direction` overrides. `safeAreaMm` enables a labelled guide toggle; the inset must be nonnegative and less than half the shorter dimension. Guides are decorative and are hidden initially.
+Pages default to `padding="standard"` (8mm inside the trim); `padding="none"` fills the trimmed page and `padding="bleed"` fills the page and its bleed for edge-to-edge artwork. A single direct image fills the available page area with contain-fit, preserving the whole image. White paper and neutral ink remain fixed in dark mode, while the toolbar follows the surrounding theme. Pages inherit provider direction, with optional per-page `direction` overrides. `safeAreaMm` enables a labelled guide toggle; the inset is measured from the trim, must be nonnegative and less than half the shorter dimension. Guides are decorative and are hidden initially.
+
+### Bleed and trim marks
+
+`bleedMm` adds that much artwork beyond each trimmed edge. `widthMm`/`heightMm` stay the trimmed (finished) size, which the caption keeps showing; the sheet grows to `widthMm + 2 × bleedMm` by `heightMm + 2 × bleedMm` and fit/zoom measure the whole sheet. Bleed alone also enables the guide toggle. With guides on, the bleed is tinted, the trim edge is outlined, crop marks extend each trim edge through the bleed at all four corners and the safe area sits `safeAreaMm` inside the trim. A single direct image on a `padding="bleed"` page uses cover-fit, cropping rather than leaving white edges. Pages with `standard` or `none` padding stay on the trimmed page, so mailing faces and text are unaffected by bleed. Common postcard bleed is 2–3 mm; check the printer's specification.
+
+### Image resolution warning
+
+List the raster images on a page as `images: { label, widthPx, heightPx, widthMm?, heightMm? }[]`. Pixel sizes come from the application, for example an upload's `naturalWidth`/`naturalHeight`; zero or unknown sizes are skipped until known. Printed size defaults to the whole sheet including bleed, which matches full-bleed artwork. Supply `imageResolution: { title, describe, minimumDpi? }` to check them: images on the shown page whose effective density is below `minimumDpi` (default 300) appear in a warning alert between the toolbar and the page, one translated `describe({ label, dpi, minimumDpi })` line each. Without `imageResolution` no check runs. `documentImageDpi(image, widthMm, heightMm)` returns the same rounded-down density for applications that want to block export; it uses the lower of the two axes, which is what a cover-fit image prints at. The warning is advisory and does not detect upscaled or compressed source files.
 
 ```tsx
 <DocumentPreview
@@ -270,17 +278,28 @@ Pages default to `padding="standard"` (8mm); `padding="none"` supports artwork. 
   widthMm={148}
   heightMm={105}
   safeAreaMm={5}
+  bleedMm={3}
+  imageResolution={{
+    title: 'Image may print blurry',
+    describe: ({ label, dpi, minimumDpi }) => `${label}: ${dpi} dpi (needs ${minimumDpi})`,
+  }}
   pageId={side}
   onPageChange={setSide}
-  labels={{ page: 'Side', zoom: 'Zoom', fit: 'Fit to view', guides: 'Show safe area' }}
+  labels={{ page: 'Side', zoom: 'Zoom', fit: 'Fit to view', guides: 'Show print guides' }}
   pages={[
-    { id: 'front', label: 'Front', padding: 'none', content: <img src={artwork} alt="Lake" /> },
+    {
+      id: 'front',
+      label: 'Front',
+      padding: 'bleed',
+      content: <img src={artwork.src} alt="Lake" />,
+      images: [{ label: 'Lake photo', widthPx: artwork.width, heightPx: artwork.height }],
+    },
     { id: 'back', label: 'Back', content: <Text>{message}</Text> },
   ]}
 />
 ```
 
-This is a screen-proofing surface, not a print renderer. Overflowing document content is clipped to the page. Applications own text-fit validation, artwork resolution, asset loading/errors, bleed/trim requirements, export composition and PDF/print delivery. Guides alone do not establish print readiness. Postcard templates, addresses and personalisation rules stay in the consumer. Open **Postcard studio** in the Components catalog (`?page=components&component=postcard-studio`) for a local template/message/recipient/front/back example. AI generation and printing are not connected.
+This is a screen-proofing surface, not a print renderer. Overflowing document content is clipped to the page. Applications own text-fit validation, the printer's bleed and resolution requirements, asset loading/errors, export composition and PDF/print delivery. Guides and the resolution warning alone do not establish print readiness. Postcard templates, addresses and personalisation rules stay in the consumer. Open **Postcard studio** in the Components catalog (`?page=components&component=postcard-studio`) for a local template/message/recipient/front/back example. AI generation and printing are not connected.
 
 ## Address fields
 
@@ -398,3 +417,31 @@ The playground saves manual category expansion in `localStorage` under `gregui.c
 - `DatePicker` opens the grid in a popover, focuses the current or selected date, closes on selection or Escape and returns focus to the field. `name` adds a hidden input so native forms post the ISO date.
 - New locale messages: `chooseDate`, `previousMonth`, `nextMonth`, `dateBeforeMin`, `dateAfterMax`. Apps providing a complete `Messages` object must add them.
 - Holiday calendars, collection days and print cut-offs are application policy; the components only display them.
+
+### Events, yearly repeats and the agenda
+
+A `CalendarEvent` is `{ id, date, title, repeat?: 'yearly', until? }`. Store the first occurrence as `date` (for a birthday, the birth date); `repeat: 'yearly'` repeats it on the same day every year from then on, up to `until` if set. Extend the type with your own fields (`interface Occasion extends CalendarEvent { kind: 'birthday' }`); the components pass your objects back unchanged.
+
+```tsx
+const occasions = [
+  { id: 'anna', title: "Anna's birthday", date: '1994-12-12', repeat: 'yearly' },
+  { id: 'card', title: 'Post the card', date: '2026-12-10' },
+];
+
+<CalendarMonth label="Send date" month={month} onMonthChange={setMonth} events={occasions} />
+<CalendarAgenda
+  label="Coming up"
+  events={occasions}
+  days={45}
+  onSelect={({ event, date }) => openOccasion(event.id, date)}
+  renderDetail={({ years }) => `Turns ${years}`}
+/>
+```
+
+- `occurrencesBetween(events, from, to)` returns `{ event, date, years }` for every occurrence in the inclusive range, sorted by date and then input order. `years` counts whole years since `event.date` (32 on a 32nd birthday, 0 on the first occurrence). Repeats never appear before `event.date`.
+- 29 February falls on 28 February in common years. Pass `leapDay: 'mar1'` (to `occurrencesBetween`, `CalendarMonth`, `DatePicker` or `CalendarAgenda`) for 1 March. `yearlyDate(date, year, leapDay)` gives the single date for a year. `daysBetween(from, to)` counts whole days.
+- `CalendarMonth events` (and `DatePicker events`) shows the first title in each day with a `+N` count for more. All titles are added to the day button's description, after any blocked-date reason. `renderDay` still works alongside it.
+- `CalendarAgenda` shows `days` days (default 30) from `from` (default `today`). It is a labelled region with a heading (`headingLevel`, default 2) and an ordered list of days; each day has the next heading level, a `<time>` element, the full date and a relative label from `Intl.RelativeTimeFormat` ("today", "tomorrow", "in 5 days"). Yearly entries show the `repeatsYearly` message. Empty ranges show `emptyMessage` or `agendaEmpty`.
+- With `onSelect`, entries are buttons described by their date. The list is one tab stop; Arrow Up/Down move between entries across days and Home/End jump to the first and last. Without `onSelect` entries are plain text.
+- New locale messages: `repeatsYearly`, `agendaEmpty`. Apps providing a complete `Messages` object must add them.
+- Recurrence beyond yearly (weekly, monthly, "last Friday"), time zones and reminders are application concerns.

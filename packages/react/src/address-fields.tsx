@@ -1,6 +1,6 @@
 'use client';
 import { useId } from 'react';
-import { Field, Input, Select } from './index';
+import { Field, Input, Select } from './forms';
 
 /** Country codes and address text are application-owned; no normalisation is applied. */
 export interface AddressValue {

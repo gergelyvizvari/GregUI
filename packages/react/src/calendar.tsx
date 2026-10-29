@@ -10,7 +10,9 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from 'react';
-import { Field, Icon, IconButton } from './index';
+import { IconButton } from './buttons';
+import { Field } from './forms';
+import { Icon } from './icons';
 
 /** Calendar dates are plain `YYYY-MM-DD` strings; months are `YYYY-MM`. No time zone is applied. */
 export type CalendarDate = string;
@@ -48,8 +50,71 @@ export function todayDate(): CalendarDate {
 }
 const monthOf = (date: CalendarDate): CalendarMonthValue => date.slice(0, 7);
 const weekday = (date: CalendarDate) => new Date(toUTC(date)).getUTCDay();
+/** Whole days from `from` to `to` (negative when `to` is earlier). */
+export const daysBetween = (from: CalendarDate, to: CalendarDate) =>
+  Math.round((toUTC(to) - toUTC(from)) / DAY);
 
-function useDateFormat() {
+/** Something on a date, such as a birthday, anniversary or scheduled send. */
+export interface CalendarEvent {
+  id: string;
+  /** The first occurrence. For a birthday this is the birth date. */
+  date: CalendarDate;
+  /** Short, translated title, for example "Anna's birthday". */
+  title: string;
+  /** `yearly` repeats on the same day every year from `date` onwards. */
+  repeat?: 'yearly';
+  /** Last date a repeating event can occur, inclusive. */
+  until?: CalendarDate;
+}
+export interface CalendarOccurrence<E extends CalendarEvent = CalendarEvent> {
+  event: E;
+  date: CalendarDate;
+  /** Whole years since `event.date`: 0 on the first occurrence, 30 on a 30th birthday. */
+  years: number;
+}
+/** Where 29 February falls in years without one. */
+export type LeapDayRule = 'feb28' | 'mar1';
+
+/** The day `date` falls on in `year`, moving 29 February by `leapDay` in common years. */
+export function yearlyDate(
+  date: CalendarDate,
+  year: number,
+  leapDay: LeapDayRule = 'feb28',
+): CalendarDate {
+  const candidate = `${String(year).padStart(4, '0')}${date.slice(4)}`;
+  if (isCalendarDate(candidate)) return candidate;
+  return `${String(year).padStart(4, '0')}-${leapDay === 'mar1' ? '03-01' : '02-28'}`;
+}
+
+/** Every occurrence of `events` from `from` to `to` (inclusive), sorted by date and then input order. */
+export function occurrencesBetween<E extends CalendarEvent>(
+  events: readonly E[],
+  from: CalendarDate,
+  to: CalendarDate,
+  { leapDay = 'feb28' }: { leapDay?: LeapDayRule } = {},
+): CalendarOccurrence<E>[] {
+  const found: CalendarOccurrence<E>[] = [];
+  const last = Number(to.slice(0, 4));
+  for (const event of events) {
+    if (!isCalendarDate(event.date)) continue;
+    const start = Number(event.date.slice(0, 4));
+    if (event.repeat !== 'yearly') {
+      if (event.date >= from && event.date <= to) found.push({ event, date: event.date, years: 0 });
+      continue;
+    }
+    for (let year = Math.max(start, Number(from.slice(0, 4))); year <= last; year++) {
+      const date = yearlyDate(event.date, year, leapDay);
+      if (date < from || date > to || date < event.date) continue;
+      if (event.until && date > event.until) break;
+      found.push({ event, date, years: year - start });
+    }
+  }
+  // Array.prototype.sort is stable, so same-day events keep their input order.
+  return found.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+}
+
+/** Locale-aware date labels shared by the calendar components. */
+export function useDateFormat() {
   const { locale } = useLocale();
   return useMemo(() => {
     const make = (options: Intl.DateTimeFormatOptions) =>
@@ -59,6 +124,7 @@ function useDateFormat() {
     const medium = make({ day: 'numeric', month: 'short', year: 'numeric' });
     const short = make({ weekday: 'short' });
     const long = make({ weekday: 'long' });
+    const relative = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
     return {
       month: (value: CalendarMonthValue) => month.format(toUTC(`${value}-01`)),
       full: (date: CalendarDate) => full.format(toUTC(date)),
@@ -66,6 +132,8 @@ function useDateFormat() {
       // 2024-01-01 was a Monday, so day index 0..6 maps to Sunday..Saturday from 2023-12-31.
       weekdayShort: (day: number) => short.format(Date.UTC(2023, 11, 31 + day)),
       weekdayLong: (day: number) => long.format(Date.UTC(2023, 11, 31 + day)),
+      /** "today", "tomorrow", "in 5 days". */
+      relativeDays: (days: number) => relative.format(days, 'day'),
     };
   }, [locale]);
 }
@@ -84,6 +152,10 @@ export interface CalendarMonthProps {
   isDateUnavailable?: DateAvailability;
   /** Extra content inside a day, such as a birthday or a scheduled card. Keep it short. */
   renderDay?: (date: CalendarDate) => ReactNode;
+  /** Events shown inside their days and read with the date. Yearly events repeat every year. */
+  events?: readonly CalendarEvent[];
+  /** Where yearly events on 29 February fall in common years. Defaults to 28 February. */
+  leapDay?: LeapDayRule;
   /** 0 = Sunday, 1 = Monday. */
   weekStartsOn?: 0 | 1;
   /** Override "today" (useful for tests and server rendering). */
@@ -103,6 +175,8 @@ export function CalendarMonth({
   max,
   isDateUnavailable,
   renderDay,
+  events,
+  leapDay,
   weekStartsOn = 1,
   today: todayProp,
   autoFocus = false,
@@ -124,6 +198,20 @@ export function CalendarMonth({
     if (max && date > max) return messages.dateAfterMax;
     return isDateUnavailable?.(date) || undefined;
   };
+  const byDate = useMemo(() => {
+    const map = new Map<CalendarDate, string[]>();
+    if (!events?.length) return map;
+    for (const { event, date } of occurrencesBetween(
+      events,
+      first,
+      addDays(addMonths(first, 1), -1),
+      {
+        leapDay,
+      },
+    ))
+      map.set(date, [...(map.get(date) ?? []), event.title]);
+    return map;
+  }, [events, first, leapDay]);
   const start = addDays(first, -((weekday(first) - weekStartsOn + 7) % 7));
   const weeks: CalendarDate[][] = [];
   for (let cursor = start; weeks.length < 6;) {
@@ -213,6 +301,11 @@ export function CalendarMonth({
                 const outOfRange = (!!min && date < min) || (!!max && date > max);
                 const selected = value === date;
                 const extra = renderDay?.(date);
+                const titles = byDate.get(date);
+                const described = [
+                  blocked && `${id}-reason-${date}`,
+                  titles && `${id}-events-${date}`,
+                ].filter(Boolean);
                 return (
                   <td key={date} aria-selected={selected}>
                     <button
@@ -226,7 +319,7 @@ export function CalendarMonth({
                       data-unavailable={blocked ? (outOfRange ? 'range' : 'blocked') : undefined}
                       aria-current={date === today ? 'date' : undefined}
                       aria-label={format.full(date)}
-                      aria-describedby={blocked ? `${id}-reason-${date}` : undefined}
+                      aria-describedby={described.join(' ') || undefined}
                       onFocus={() => setFocused(date)}
                       onKeyDown={(event) => onKeyDown(event, date)}
                       onClick={() => {
@@ -237,6 +330,19 @@ export function CalendarMonth({
                         {Number(date.slice(8))}
                       </span>
                       {extra && <span className="g-calendar-extra">{extra}</span>}
+                      {titles && (
+                        <span className="g-calendar-extra g-calendar-events" aria-hidden="true">
+                          <span className="g-calendar-event-title">{titles[0]}</span>
+                          {titles.length > 1 && (
+                            <span className="g-calendar-more">+{titles.length - 1}</span>
+                          )}
+                        </span>
+                      )}
+                      {titles && (
+                        <span id={`${id}-events-${date}`} className="g-sr-only">
+                          {titles.join(', ')}
+                        </span>
+                      )}
                       {blocked && (
                         <span id={`${id}-reason-${date}`} className="g-sr-only">
                           {blocked}
@@ -272,6 +378,8 @@ export interface DatePickerProps {
   max?: CalendarDate;
   isDateUnavailable?: DateAvailability;
   renderDay?: (date: CalendarDate) => ReactNode;
+  events?: readonly CalendarEvent[];
+  leapDay?: LeapDayRule;
   weekStartsOn?: 0 | 1;
   today?: CalendarDate;
 }
@@ -291,6 +399,8 @@ export function DatePicker({
   max,
   isDateUnavailable,
   renderDay,
+  events,
+  leapDay,
   weekStartsOn,
   today,
 }: DatePickerProps) {
@@ -343,6 +453,8 @@ export function DatePicker({
                 max={max}
                 isDateUnavailable={isDateUnavailable}
                 renderDay={renderDay}
+                events={events}
+                leapDay={leapDay}
                 weekStartsOn={weekStartsOn}
                 today={today}
                 autoFocus
