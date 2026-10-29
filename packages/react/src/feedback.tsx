@@ -21,7 +21,12 @@ export function Badge({
   );
 }
 // Each tone has its own shape so tones never rely on colour alone.
-const alertIcons = { info: 'info', success: 'check', warning: 'warning', danger: 'error' } as const;
+export const alertIcons = {
+  info: 'info',
+  success: 'check',
+  warning: 'warning',
+  danger: 'error',
+} as const;
 export function Alert({
   title,
   children,

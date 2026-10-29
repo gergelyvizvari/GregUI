@@ -1,5 +1,5 @@
 'use client';
-import { useState, type ReactNode } from 'react';
+import React, { useState, type ReactNode } from 'react';
 import { useLocale } from '@gregui/localization';
 import { Button } from './buttons';
 import { Timeline, type TimelineItem } from './data';
@@ -124,47 +124,155 @@ export function NotificationCentre({
     </Card>
   );
 }
+export interface ToastAction {
+  label: string;
+  onAction: () => void;
+  /** Keep the toast after the action runs. By default activating the action dismisses it. */
+  keepOpen?: boolean;
+}
 export interface ToastItem {
   id: string;
   title: string;
   description?: string;
   tone?: 'info' | 'success' | 'warning' | 'danger';
-  action?: { label: string; onAction: () => void };
+  action?: ToastAction;
+  /**
+   * Milliseconds before this toast asks to be dismissed; overrides the stack `duration`.
+   * `0` (or a non-finite value) keeps it until dismissed. Danger toasts ignore it unless
+   * `forceExpiry` is set.
+   */
+  duration?: number;
+  /** Lets a danger toast expire. Errors should normally stay until the person dismisses them. */
+  forceExpiry?: boolean;
 }
-/** Persistent until dismissed; avoids losing information to automatic timeouts. */
-export function ToastStack({
-  items,
-  onDismiss,
-  label,
-}: {
+export interface ToastStackProps {
   items: ToastItem[];
+  /** Called for the dismiss button, the action (unless `keepOpen`) and expiry. Remove the item. */
   onDismiss: (id: string) => void;
   label?: string;
+  /**
+   * Default lifetime in milliseconds for toasts without their own `duration`. Omitted: toasts
+   * never expire. Never applies to danger toasts. Allow enough time to read and act (6000+).
+   */
+  duration?: number;
+}
+const timed = (ms: number | undefined) =>
+  ms !== undefined && Number.isFinite(ms) && ms > 0 ? ms : undefined;
+/** Remaining-time countdown that stops while `paused` and calls `onExpire` once. */
+function useExpiry(duration: number | undefined, paused: boolean, onExpire: () => void) {
+  const state = React.useRef({ duration, remaining: duration ?? 0, expired: false });
+  const expire = React.useRef(onExpire);
+  React.useEffect(() => {
+    expire.current = onExpire;
+  });
+  React.useEffect(() => {
+    const current = state.current;
+    if (current.duration !== duration)
+      Object.assign(current, { duration, remaining: duration ?? 0, expired: false });
+    if (duration === undefined || paused || current.expired) return;
+    const started = Date.now();
+    const timer = setTimeout(() => {
+      current.expired = true;
+      expire.current();
+    }, current.remaining);
+    return () => {
+      clearTimeout(timer);
+      current.remaining = Math.max(0, current.remaining - (Date.now() - started));
+    };
+  }, [duration, paused]);
+}
+function Toast({
+  item,
+  duration,
+  paused,
+  onDismiss,
+}: {
+  item: ToastItem;
+  duration: number | undefined;
+  paused: boolean;
+  onDismiss: (id: string) => void;
 }) {
   const { messages } = useLocale();
+  const tone = item.tone ?? 'info';
+  const lifetime =
+    tone === 'danger' && !item.forceExpiry ? undefined : timed(item.duration ?? duration);
+  useExpiry(lifetime, paused, () => onDismiss(item.id));
   return (
-    <section className="g-toast-stack" aria-label={label ?? messages.notifications}>
-      {items.map((item) => (
-        <Alert key={item.id} title={item.title} tone={item.tone} live>
-          <Stack gap={2}>
-            {item.description && <Text>{item.description}</Text>}
-            <Inline>
-              {item.action && (
-                <Button variant="ghost" size="small" onClick={item.action.onAction}>
-                  {item.action.label}
-                </Button>
-              )}
+    <div className="g-toast" data-timed={lifetime !== undefined || undefined}>
+      <Alert title={item.title} tone={tone} live>
+        <Stack gap={2}>
+          {item.description && <Text>{item.description}</Text>}
+          <Inline>
+            {item.action && (
               <Button
                 variant="ghost"
                 size="small"
-                aria-label={`${messages.dismiss}: ${item.title}`}
-                onClick={() => onDismiss(item.id)}
+                onClick={() => {
+                  item.action?.onAction();
+                  if (!item.action?.keepOpen) onDismiss(item.id);
+                }}
               >
-                {messages.dismiss}
+                {item.action.label}
               </Button>
-            </Inline>
-          </Stack>
-        </Alert>
+            )}
+            <Button
+              variant="ghost"
+              size="small"
+              aria-label={`${messages.dismiss}: ${item.title}`}
+              onClick={() => onDismiss(item.id)}
+            >
+              {messages.dismiss}
+            </Button>
+          </Inline>
+        </Stack>
+      </Alert>
+    </div>
+  );
+}
+/**
+ * Controlled toasts. Persistent until dismissed unless a `duration` is given. Timers pause while
+ * the stack is hovered, contains focus or the page is hidden, then resume with the time left.
+ */
+export function ToastStack({ items, onDismiss, label, duration }: ToastStackProps) {
+  const { messages } = useLocale();
+  const ref = React.useRef<HTMLElement>(null);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  React.useEffect(() => {
+    const update = () => setHidden(document.visibilityState === 'hidden');
+    update();
+    document.addEventListener('visibilitychange', update);
+    return () => document.removeEventListener('visibilitychange', update);
+  }, []);
+  // A focused toast can be removed without a blur event; re-check after the list changes.
+  React.useEffect(() => {
+    if (focused && !ref.current?.contains(document.activeElement)) setFocused(false);
+    // An emptied stack has no area to leave, so a stale hover would pause the next toast.
+    if (items.length === 0) setHovered(false);
+  }, [items, focused]);
+  const paused = hovered || focused || hidden;
+  return (
+    <section
+      ref={ref}
+      className="g-toast-stack"
+      aria-label={label ?? messages.notifications}
+      data-paused={paused || undefined}
+      onPointerEnter={(event) => event.pointerType !== 'touch' && setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocused(false);
+      }}
+    >
+      {items.map((item) => (
+        <Toast
+          key={item.id}
+          item={item}
+          duration={duration}
+          paused={paused}
+          onDismiss={onDismiss}
+        />
       ))}
     </section>
   );
