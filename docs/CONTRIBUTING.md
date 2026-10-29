@@ -10,4 +10,6 @@
 
 Do not publish packages or upload user data as part of ordinary local development. Choose registry/access and application adoption separately.
 
+`npm run check:styles` (part of `npm run check`) also runs `scripts/check-library-styles.mjs`. It counts hard-coded hex colours, `rgb()`/`hsl()` colours with literal numbers and literal `font-size` values in `packages/react/src/styles.css`, and fails when any count rises above `scripts/style-literal-baseline.json`, listing the new lines. Write new rules with `var(--g-…)` colour roles and `var(--g-type-…)` sizes instead (add a semantic token if no role fits), `z-index: var(--g-z-…)` layers and the named `breakpoints` widths. If a literal is genuinely required, run `node scripts/check-library-styles.mjs --update` and justify the higher baseline in the commit message; when you remove literals, run it to lower the baseline. Branches that touch the stylesheet in parallel should not regenerate the baseline to resolve conflicts without re-checking what was added.
+
 The workspace style-boundary script checks CSS files, JSX class/style attributes and common styling imports in the two consumer source directories. It is a useful convention check, not a sandbox against arbitrary JavaScript-generated styles. Add new consumer source roots to the script when adding apps.

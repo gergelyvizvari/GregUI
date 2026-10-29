@@ -5,6 +5,7 @@ import * as AlertPrimitive from '@radix-ui/react-alert-dialog';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 import { useLocale } from '@gregui/localization';
+import { mediaQuery } from '@gregui/tokens';
 import { Button, IconButton } from './buttons';
 import { Alert } from './feedback';
 import { Icon } from './icons';
@@ -79,13 +80,13 @@ export function DialogClose({ children }: { children: ReactNode }) {
 }
 function subscribeToPanelViewport(change: () => void) {
   if (typeof window.matchMedia !== 'function') return () => {};
-  const query = window.matchMedia('(max-width: 760px)');
+  const query = window.matchMedia(mediaQuery('compact'));
   query.addEventListener('change', change);
   return () => query.removeEventListener('change', change);
 }
 function isCompactPanelViewport() {
   return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-    ? window.matchMedia('(max-width: 760px)').matches
+    ? window.matchMedia(mediaQuery('compact')).matches
     : false;
 }
 export interface FloatingPanelProps {

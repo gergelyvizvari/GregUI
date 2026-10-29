@@ -1,4 +1,15 @@
 /* gregUI owns all presentation, including its workbench and consumer layouts. */
+/*
+ * Layering and breakpoints come from @gregui/tokens.
+ * - Stacking: use z-index: var(--g-z-<layer>) (behind, raised, sticky-actions, dropdown, sticky,
+ *   launcher, panel, backdrop, modal, popover, skip-link). Never write a z-index number.
+ * - Viewport widths: custom properties cannot be used in media queries, so queries repeat the
+ *   numbers from `breakpoints` (phone 600, compact 760, medium 960, wide 1200) and name them in a
+ *   comment. Queries marked "off-scale" are older component-specific thresholds kept unchanged
+ *   because moving them would change layout between the two widths; prefer the named set for new rules.
+ * - Colours and font sizes: use var(--g-…) roles and var(--g-type-…) sizes;
+ *   scripts/check-library-styles.mjs fails when hard-coded literals increase.
+ */
 html,
 body,
 #root {
@@ -802,7 +813,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: var(--g-z-behind);
   background: var(--g-surface);
 }
 .g-badge[data-variant='stamp'] {
@@ -1462,11 +1473,11 @@ body {
   position: fixed;
   inset: 0;
   background: #0c132b99;
-  z-index: 100;
+  z-index: var(--g-z-backdrop);
 }
 .g-dialog {
   position: fixed;
-  z-index: 101;
+  z-index: var(--g-z-modal);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -1523,7 +1534,7 @@ body {
 }
 .g-tooltip,
 .g-popover {
-  z-index: 110;
+  z-index: var(--g-z-popover);
   border: 1px solid var(--g-border);
   border-radius: var(--g-radius);
   background: var(--g-surface);
@@ -1644,7 +1655,7 @@ body {
 .g-toolbar[data-sticky='true'] {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: var(--g-z-sticky);
 }
 .g-main {
   flex: 1;
@@ -1678,7 +1689,7 @@ body {
   background: var(--g-surface);
   color: var(--g-text);
   padding: 1rem;
-  z-index: 200;
+  z-index: var(--g-z-skip-link);
 }
 .g-skip:focus {
   clip-path: none;
@@ -1846,17 +1857,17 @@ body {
 .g-grid[data-columns='5'] {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
-@media (max-width: 1200px) {
+@media (max-width: 1200px) /* breakpoints.wide */ {
   .g-grid[data-columns='5'] {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
-@media (max-width: 760px) {
+@media (max-width: 760px) /* breakpoints.compact */ {
   .g-grid[data-columns='5'] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-@media (max-width: 380px) {
+@media (max-width: 380px) /* off-scale: component threshold */ {
   .g-grid[data-columns='5'] {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1917,12 +1928,12 @@ body {
   border-inline-start: 2px solid var(--g-selection);
   padding-inline-start: 1rem;
 }
-@media (min-width: 1500px) {
+@media (min-width: 1500px) /* off-scale: component threshold */ {
   .g-main {
     padding-inline: 4rem;
   }
 }
-@media (max-width: 1150px) {
+@media (max-width: 1150px) /* off-scale: component threshold */ {
   .g-sidebar {
     width: 205px;
   }
@@ -1939,7 +1950,7 @@ body {
     padding-top: 2rem;
   }
 }
-@media (max-width: 760px) {
+@media (max-width: 760px) /* breakpoints.compact */ {
   .g-sidebar {
     display: none;
   }
@@ -2076,7 +2087,7 @@ body {
     transform: scale(1);
   }
 }
-@media (max-width: 760px) {
+@media (max-width: 760px) /* breakpoints.compact */ {
   .g-dialog[data-presentation='dialog'] {
     --g-overlay-from: translateY(12px);
     --g-overlay-to: translateY(0);
@@ -2224,7 +2235,7 @@ body {
 .g-auth-feedback:has(> div:empty):not(:has(.g-alert)) {
   display: none;
 }
-@media (min-width: 960px) {
+@media (min-width: 960px) /* breakpoints.medium */ {
   .g-auth-layout:has(.g-auth-intro) {
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   }
@@ -2399,13 +2410,13 @@ body {
     );
   }
 }
-@media (max-width: 960px) {
+@media (max-width: 960px) /* breakpoints.medium */ {
   .g-page-header[data-editorial='true'] {
     grid-template-columns: minmax(0, 1fr) minmax(180px, 0.65fr);
     column-gap: 1.5rem;
   }
 }
-@media (max-width: 760px) {
+@media (max-width: 760px) /* breakpoints.compact */ {
   .g-page-header[data-editorial='true'] {
     grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
@@ -2686,7 +2697,7 @@ body {
   background: var(--g-surface);
   border-radius: 50%;
   margin-top: 0.3rem;
-  z-index: 1;
+  z-index: var(--g-z-raised);
 }
 .g-timeline [data-status='complete'] .g-timeline-dot {
   background: var(--g-selection);
@@ -2734,7 +2745,7 @@ body {
   inset-inline: 0;
   max-height: 16rem;
   overflow-y: auto;
-  z-index: 10;
+  z-index: var(--g-z-dropdown);
   background: var(--g-surface);
   border: 1px solid var(--g-border);
   box-shadow: var(--g-card-shadow);
@@ -2876,7 +2887,7 @@ body {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
-@media (max-width: 600px) {
+@media (max-width: 600px) /* breakpoints.phone */ {
   .g-list-detail {
     grid-template-columns: 1fr;
   }
@@ -3110,7 +3121,7 @@ body {
 .g-media-copy {
   padding: 1.5rem;
 }
-@media (max-width: 800px) {
+@media (max-width: 800px) /* off-scale: component threshold */ {
   .g-feature-panel {
     grid-template-columns: 1fr;
   }
@@ -3160,7 +3171,7 @@ body {
 .g-feature-panel[data-variant='immersive'] > img {
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: var(--g-z-behind);
   height: 100%;
   object-position: 65% center;
 }
@@ -3242,7 +3253,7 @@ body {
     transform: translateY(-2px);
   }
 }
-@media (max-width: 1000px) {
+@media (max-width: 1000px) /* off-scale: component threshold */ {
   .g-editorial-lead {
     grid-template-columns: 1fr;
   }
@@ -3251,7 +3262,7 @@ body {
     grid-template-columns: 1fr 1fr;
   }
 }
-@media (max-width: 600px) {
+@media (max-width: 600px) /* breakpoints.phone */ {
   .g-feature-panel[data-variant='immersive'] {
     min-height: 380px;
   }
@@ -3409,7 +3420,7 @@ body {
     min-height: 44px;
   }
 }
-@media (max-width: 600px) {
+@media (max-width: 600px) /* breakpoints.phone */ {
   .g-field-editor-controls {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -3512,7 +3523,7 @@ body {
 }
 .g-thumbnail-choice > input {
   position: absolute;
-  z-index: 1;
+  z-index: var(--g-z-raised);
   top: 12px;
   inset-inline-end: 12px;
   width: 20px;
@@ -3942,7 +3953,7 @@ body {
   }
 }
 
-@media (min-width: 48rem) and (pointer: fine) {
+@media (min-width: 48rem) and (pointer: fine) /* off-scale: rem-based */ {
   .g-highlighted-editor[data-size='small'] .g-highlighted-input,
   .g-highlighted-editor[data-size='small'] .g-highlighted-mirror {
     font-size: 0.875rem;
@@ -4040,7 +4051,7 @@ body {
 .g-form-actions {
   position: sticky;
   bottom: 1rem;
-  z-index: 5;
+  z-index: var(--g-z-sticky-actions);
   padding: 1rem 1.25rem;
   background: var(--g-surface);
   border: 1px solid var(--g-line);
@@ -4050,12 +4061,12 @@ body {
 .g-editor-main :where(input, select, textarea, button, a) {
   scroll-margin-block: 5rem 10rem;
 }
-@media (max-width: 1100px) {
+@media (max-width: 1100px) /* off-scale: component threshold */ {
   .g-editor-layout[data-aside='true'] {
     grid-template-columns: minmax(0, 1fr);
   }
 }
-@media (max-width: 600px) {
+@media (max-width: 600px) /* breakpoints.phone */ {
   .g-form-section-heading,
   .g-form-section-body {
     padding: 1rem;
@@ -4123,7 +4134,7 @@ body {
   position: fixed;
   inset-inline-end: max(1.25rem, env(safe-area-inset-left), env(safe-area-inset-right));
   bottom: max(1.25rem, env(safe-area-inset-bottom));
-  z-index: 80;
+  z-index: var(--g-z-launcher);
   max-width: calc(100vw - 2.5rem);
   filter: drop-shadow(0 4px 16px #00000026);
 }
@@ -4131,7 +4142,7 @@ body {
   position: fixed;
   inset-block: 1rem;
   inset-inline-end: 1rem;
-  z-index: 90;
+  z-index: var(--g-z-panel);
   width: min(26rem, calc(100vw - 2rem));
   max-height: calc(100dvh - 2rem);
   display: flex;
@@ -4159,7 +4170,7 @@ body {
   max-height: 100dvh;
   border-radius: 0;
   padding-bottom: env(safe-area-inset-bottom);
-  z-index: 101;
+  z-index: var(--g-z-modal);
 }
 
 /* Reading flow is opt-in; explicit Heading/Text variants retain their visual roles. */
@@ -4304,7 +4315,7 @@ body {
 .g-list-detail > section {
   min-width: 0;
 }
-@media (max-width: 900px) {
+@media (max-width: 900px) /* off-scale: component threshold */ {
   .g-list-detail[data-sticky-navigation='true'] {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -4378,7 +4389,7 @@ body {
   width: 1.25rem;
   height: 1.25rem;
   margin: 0;
-  z-index: 1;
+  z-index: var(--g-z-raised);
   accent-color: var(--g-selection);
 }
 .g-visual-choice-preview {
@@ -5022,7 +5033,7 @@ button.g-agenda-event:hover {
   color: var(--g-text);
 }
 .g-menu {
-  z-index: 110;
+  z-index: var(--g-z-popover);
   min-width: 200px;
   max-width: min(320px, calc(100vw - 2rem));
   max-height: var(--radix-dropdown-menu-content-available-height);

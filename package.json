@@ -15,7 +15,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "check:styles": "node scripts/check-consumer-styles.mjs",
+    "check:styles": "node scripts/check-consumer-styles.mjs && node scripts/check-library-styles.mjs",
     "check": "npm run typecheck && npm run check:styles && npm test && npm run build && npm run docs:styles -- --check",
     "docs:styles": "node scripts/design-docs.mjs",
     "build:packages": "npm run build -w @gregui/tokens && npm run build -w @gregui/localization && npm run build -w @gregui/react",
