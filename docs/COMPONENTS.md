@@ -413,3 +413,31 @@ The playground saves manual category expansion in `localStorage` under `gregui.c
 - `DatePicker` opens the grid in a popover, focuses the current or selected date, closes on selection or Escape and returns focus to the field. `name` adds a hidden input so native forms post the ISO date.
 - New locale messages: `chooseDate`, `previousMonth`, `nextMonth`, `dateBeforeMin`, `dateAfterMax`. Apps providing a complete `Messages` object must add them.
 - Holiday calendars, collection days and print cut-offs are application policy; the components only display them.
+
+### Events, yearly repeats and the agenda
+
+A `CalendarEvent` is `{ id, date, title, repeat?: 'yearly', until? }`. Store the first occurrence as `date` (for a birthday, the birth date); `repeat: 'yearly'` repeats it on the same day every year from then on, up to `until` if set. Extend the type with your own fields (`interface Occasion extends CalendarEvent { kind: 'birthday' }`); the components pass your objects back unchanged.
+
+```tsx
+const occasions = [
+  { id: 'anna', title: "Anna's birthday", date: '1994-12-12', repeat: 'yearly' },
+  { id: 'card', title: 'Post the card', date: '2026-12-10' },
+];
+
+<CalendarMonth label="Send date" month={month} onMonthChange={setMonth} events={occasions} />
+<CalendarAgenda
+  label="Coming up"
+  events={occasions}
+  days={45}
+  onSelect={({ event, date }) => openOccasion(event.id, date)}
+  renderDetail={({ years }) => `Turns ${years}`}
+/>
+```
+
+- `occurrencesBetween(events, from, to)` returns `{ event, date, years }` for every occurrence in the inclusive range, sorted by date and then input order. `years` counts whole years since `event.date` (32 on a 32nd birthday, 0 on the first occurrence). Repeats never appear before `event.date`.
+- 29 February falls on 28 February in common years. Pass `leapDay: 'mar1'` (to `occurrencesBetween`, `CalendarMonth`, `DatePicker` or `CalendarAgenda`) for 1 March. `yearlyDate(date, year, leapDay)` gives the single date for a year. `daysBetween(from, to)` counts whole days.
+- `CalendarMonth events` (and `DatePicker events`) shows the first title in each day with a `+N` count for more. All titles are added to the day button's description, after any blocked-date reason. `renderDay` still works alongside it.
+- `CalendarAgenda` shows `days` days (default 30) from `from` (default `today`). It is a labelled region with a heading (`headingLevel`, default 2) and an ordered list of days; each day has the next heading level, a `<time>` element, the full date and a relative label from `Intl.RelativeTimeFormat` ("today", "tomorrow", "in 5 days"). Yearly entries show the `repeatsYearly` message. Empty ranges show `emptyMessage` or `agendaEmpty`.
+- With `onSelect`, entries are buttons described by their date. The list is one tab stop; Arrow Up/Down move between entries across days and Home/End jump to the first and last. Without `onSelect` entries are plain text.
+- New locale messages: `repeatsYearly`, `agendaEmpty`. Apps providing a complete `Messages` object must add them.
+- Recurrence beyond yearly (weekly, monthly, "last Friday"), time zones and reminders are application concerns.

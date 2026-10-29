@@ -4599,6 +4599,104 @@ body {
 .g-date-picker-popover {
   width: min(340px, calc(100vw - 2rem));
 }
+/* Event titles inside a day; the count of further events stays visible when the title is cut. */
+.g-calendar-events {
+  display: flex;
+  justify-content: center;
+  gap: 0.125rem;
+  color: var(--g-primary);
+}
+.g-calendar-day[data-selected] .g-calendar-events {
+  color: inherit;
+}
+.g-calendar-event-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.g-calendar-more {
+  flex: none;
+  font-weight: 600;
+}
+/* Agenda: upcoming events grouped by day. */
+.g-agenda {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.g-agenda-title {
+  margin: 0;
+  font-family: var(--g-display-font);
+  font-weight: var(--g-display-weight);
+  font-size: var(--g-type-section-size);
+  letter-spacing: var(--g-type-section-tracking);
+}
+.g-agenda-empty {
+  margin: 0;
+  color: var(--g-muted);
+}
+.g-agenda-days,
+.g-agenda-events {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.g-agenda-days {
+  gap: 1rem;
+}
+.g-agenda-events {
+  gap: 0.25rem;
+}
+.g-agenda-date {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.5rem;
+  margin: 0 0 0.375rem;
+  font-size: var(--g-type-small-size);
+  font-weight: 600;
+}
+.g-agenda-relative {
+  font-weight: 400;
+  color: var(--g-muted);
+}
+.g-agenda-day[data-today] .g-agenda-relative {
+  font-weight: 600;
+  color: var(--g-primary);
+}
+.g-agenda-event {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--g-line);
+  border-inline-start: 3px solid var(--g-primary);
+  border-radius: var(--g-control-radius);
+  background: var(--g-surface);
+  color: var(--g-text);
+  font: inherit;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+button.g-agenda-event {
+  cursor: pointer;
+  transition: background-color var(--g-duration-fast) var(--g-ease);
+}
+button.g-agenda-event:hover {
+  background: var(--g-tint);
+}
+.g-agenda-event-title {
+  flex: 1 1 12rem;
+  font-weight: 600;
+}
+.g-agenda-detail,
+.g-agenda-repeat {
+  font-size: var(--g-type-small-size);
+  color: var(--g-muted);
+}
 @media (forced-colors: active) {
   .g-calendar-day[data-selected] {
     background: Highlight;
