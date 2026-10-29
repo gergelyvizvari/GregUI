@@ -22,6 +22,7 @@ import {
   CommandPalette,
   Button,
   LocaleProvider,
+  EmptyState,
 } from '@gregui/react';
 
 const tree = [
@@ -469,4 +470,64 @@ it('keeps a failed member role draft available for retry and clears its error wh
   await user.click(screen.getByRole('button', { name: 'Save changes' }));
   expect(role).toHaveBeenCalledTimes(2);
   expect(screen.getByText('Saved successfully.')).toBeInTheDocument();
+});
+
+it('lets patterns fit the page outline with headingLevel', () => {
+  const noop = vi.fn();
+  render(
+    <>
+      <NotificationCentre
+        title="Inbox"
+        items={[]}
+        onRead={noop}
+        onDismiss={noop}
+        headingLevel={3}
+      />
+      <ProfileSettings
+        title="Profile"
+        value={{ name: '', email: '' }}
+        onChange={noop}
+        onSave={noop}
+        headingLevel={4}
+      />
+      <SecuritySettings title="Security" sessions={[]} onRevoke={noop} headingLevel={3} />
+      <CommentsPanel title="Comments" comments={[]} onSubmit={noop} headingLevel={5} />
+      <ApprovalPanel
+        title="Approval"
+        description=""
+        details={[]}
+        onDecision={noop}
+        headingLevel={6}
+      />
+      <PricingCards
+        label="Plans"
+        plans={[{ id: 'pro', name: 'Pro', price: '£9', description: '', features: [] }]}
+        onSelect={noop}
+        headingLevel={4}
+      />
+      <EmptyState title="Nothing yet" description="" headingLevel={2} />
+    </>,
+  );
+  expect(screen.getByRole('heading', { name: 'Inbox', level: 3 })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Profile', level: 4 })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Security', level: 3 })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Active sessions', level: 4 })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Comments', level: 5 })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Approval', level: 6 })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Pro', level: 4 })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Nothing yet', level: 2 })).toBeInTheDocument();
+});
+
+it('ignores repeat submits while a pattern action is pending', async () => {
+  const user = userEvent.setup();
+  let finish = () => {};
+  const submit = vi.fn(() => new Promise<void>((resolve) => (finish = resolve)));
+  render(<CommentsPanel title="Comments" comments={[]} onSubmit={submit} />);
+  await user.type(screen.getByLabelText('Comment'), 'Hello');
+  const form = screen.getByRole('button', { name: 'Post comment' }).closest('form')!;
+  fireEvent.submit(form);
+  fireEvent.submit(form);
+  expect(submit).toHaveBeenCalledTimes(1);
+  finish();
+  await waitFor(() => expect(screen.getByLabelText('Comment')).toHaveValue(''));
 });

@@ -10,6 +10,7 @@ import { Alert } from './feedback';
 import { Icon } from './icons';
 import { Inline, Stack } from './layout';
 import { PortalFrame } from './theme';
+import { useAsyncAction } from './use-async-action';
 interface OverlayProps {
   size?: 'medium' | 'large';
   trigger: ReactNode;
@@ -185,37 +186,19 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   const { messages } = useLocale();
   const [open, setOpen] = useState(false);
-  const [pending, setPending] = useState(false);
-  const [failed, setFailed] = useState(false);
-  const locked = useRef(false);
-  const mounted = useRef(true);
+  const { pending, failed, run, reset, locked } = useAsyncAction();
   const content = useRef<HTMLDivElement>(null);
   const action = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-  useEffect(() => {
     if (open && failed && !pending) action.current?.focus();
   }, [open, failed, pending]);
-  async function confirm() {
-    if (locked.current) return;
-    locked.current = true;
-    setPending(true);
-    setFailed(false);
-    // Keep focus in the modal while both actions are disabled.
-    content.current?.focus();
-    try {
+  function confirm() {
+    void run(async () => {
+      // Keep focus in the modal while both actions are disabled.
+      content.current?.focus();
       await onConfirm();
-      if (mounted.current) setOpen(false);
-    } catch {
-      if (mounted.current) setFailed(true);
-    } finally {
-      locked.current = false;
-      if (mounted.current) setPending(false);
-    }
+      setOpen(false);
+    });
   }
   return (
     <AlertPrimitive.Root
@@ -223,7 +206,7 @@ export function ConfirmDialog({
       onOpenChange={(next) => {
         if (locked.current) return;
         setOpen(next);
-        setFailed(false);
+        reset();
       }}
     >
       <AlertPrimitive.Trigger asChild>{trigger}</AlertPrimitive.Trigger>
@@ -266,7 +249,7 @@ export function ConfirmDialog({
                     tabIndex={0}
                     onClick={(event) => {
                       event.preventDefault();
-                      void confirm();
+                      confirm();
                     }}
                   >
                     {failed ? `${messages.retry}: ${confirmLabel}` : confirmLabel}

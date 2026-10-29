@@ -82,15 +82,18 @@ export function EmptyState({
   title,
   description,
   action,
+  headingLevel = 3,
 }: {
   title: string;
   description: string;
   action?: ReactNode;
+  /** Level of the title heading. Defaults to 3. */
+  headingLevel?: 2 | 3 | 4 | 5 | 6;
 }) {
   return (
     <div className="g-empty">
       <Icon name="layers" />
-      <Heading level={3} size="card">
+      <Heading level={headingLevel} size="card">
         {title}
       </Heading>
       <Text tone="muted">{description}</Text>
