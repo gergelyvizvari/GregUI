@@ -126,3 +126,43 @@ it('locks all login methods while a provider is pending and recovers from reject
   await userEvent.click(screen.getByRole('button', { name: 'Continue with Google' }));
   expect(google).toHaveBeenCalledTimes(1);
 });
+
+describe('application-reported failures', () => {
+  async function submit(onSubmit: () => unknown, error?: string) {
+    const user = userEvent.setup();
+    render(
+      <LoginForm onSubmit={onSubmit as () => undefined} error={error} successMessage="Signed in" />,
+    );
+    await user.type(screen.getByLabelText(/email/i), 'sam@example.com');
+    await user.type(document.querySelector<HTMLInputElement>('input[type="password"]')!, 'pw');
+    await user.click(screen.getByRole('button', { name: /sign in|log in/i }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    return user;
+  }
+  it('keeps values and shows the returned error instead of success', async () => {
+    await submit(vi.fn(async () => ({ error: 'Wrong password' })));
+    expect(await screen.findByText('Wrong password')).toBeInTheDocument();
+    expect(screen.queryByText('Signed in')).toBeNull();
+    expect(screen.getByLabelText(/email/i)).toHaveValue('sam@example.com');
+  });
+  it('shows no success when the callback returns false or the error prop is set', async () => {
+    const onSubmit = vi.fn(async () => false as const);
+    await submit(onSubmit);
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /sign in|log in/i })).toBeEnabled(),
+    );
+    expect(screen.queryByText('Signed in')).toBeNull();
+    expect(screen.getByLabelText(/email/i)).toHaveValue('sam@example.com');
+  });
+  it('hides success while the application error prop is set', async () => {
+    await submit(
+      vi.fn(async () => {}),
+      'Wrong password',
+    );
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /sign in|log in/i })).toBeEnabled(),
+    );
+    expect(screen.getByText('Wrong password')).toBeInTheDocument();
+    expect(screen.queryByText('Signed in')).toBeNull();
+  });
+});

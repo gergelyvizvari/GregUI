@@ -75,7 +75,7 @@ Container supports `size="page"` (default, 1200px), `size="form"` (42rem) or `si
 
 AppShell accepts opt-in `appearance="editorial"` (horizontal desktop masthead) or `"dashboard"` (wider operational sidebar), plus a decorative `brandMark` node. Default styling is unchanged. `PulseMark` is an optional decorative identity mark. `FeaturePanel` accepts `image`, `imageAlt` and copy children, with an opaque copy panel and responsive image column. `MediaCard` accepts the same props for image-led articles. Apps supply meaningful image descriptions (or empty alt for decorative stock), attribution and domain copy. These components use existing theme roles in both modes.
 
-FeaturePanel `variant="immersive"` places an opaque theme-text-colored copy panel inside a full photographic frame; the default split variant is unchanged. EditorialLead pairs a feature with supporting content and collapses responsively. SignalCard marks concise updates; ChipLink supports native links and active state. AccentLink accepts a `palette: {background, text}` six-digit hex pair and rejects contrast below 4.5:1; it is an explicit action palette, separate from the theme primary role used for text links. No arbitrary styles are accepted.
+FeaturePanel `variant="immersive"` places an opaque theme-text-colored copy panel inside a full photographic frame; the default split variant is unchanged. EditorialLead pairs a feature with supporting content and collapses responsively. SignalCard marks concise updates; ChipLink supports native links and active state. AccentLink accepts a `palette: {background, text}` six-digit hex pair and ignores a malformed pair or contrast below 4.5:1, falling back to the theme's action colours with a development warning; it is an explicit action palette, separate from the theme primary role used for text links. No arbitrary styles are accepted.
 
 Dashboard sidebars stay within the dynamic viewport and scroll independently when navigation is long. Navigation items respect density padding while retaining a 44px minimum target. Compose compact navigation groups with Stack gaps; a labelled field beside an action uses Inline align="end" when there is no hint/error beneath the control.
 
@@ -256,7 +256,7 @@ Palette review: Iris and Lagoon retain their existing clean, distinct accents. F
 
 ## Document preview
 
-`DocumentPreview` exports `DocumentPreviewProps` and `DocumentPreviewPage`. Required props are `label`, positive finite `widthMm`/`heightMm`, nonempty `pages`, controlled `pageId`/`onPageChange` and translated `labels` (`page`, `zoom`, `fit`, `guides`). Each page has a unique `id`, `label` and `content`; `pageId` must identify a supplied page. Invalid dimensions, safe-area values or page IDs throw. The application must update pages and selection together. Page content unmounts on side changes: keep editable state in the application.
+`DocumentPreview` exports `DocumentPreviewProps` and `DocumentPreviewPage`. Required props are `label`, positive finite `widthMm`/`heightMm`, nonempty `pages`, controlled `pageId`/`onPageChange` and translated `labels` (`page`, `zoom`, `fit`, `guides`). Each page has a unique `id`, `label` and `content`; Invalid dimensions or an empty `pages` list throw. A `pageId` that matches no page shows the first page, and a safe area that doesn't fit hides the guides; both log a development warning instead of crashing the screen. Page content unmounts on side changes: keep editable state in the application.
 
 The preview owns fit/50/100/150/200-percent zoom and optional guide visibility. Fit shrinks oversized pages to the viewport without enlarging smaller pages. Fixed physical dimensions use CSS's reference conversion of 96 pixels per inch; 100% is not a calibrated physical measurement on the user's screen. Zoom scrolls inside a keyboard-focusable region. A ResizeObserver refits after resizing; it disconnects on unmount. Page geometry is retained on narrow screens; explicit Grid column counts inside document content do not collapse with the surrounding UI. Other responsive components may still depend on the browser viewport, so use simple composition for fixed documents.
 
@@ -367,8 +367,30 @@ ListDetail items now accept optional `group` text. Grouped items render under na
 
 With stickyNavigation, the navigation's maximum height follows its actual viewport position on page scroll, resize and pane-size changes. It leaves bottom padding so the final item and focus outline remain reachable. Narrow screens retain the bounded navigation pane above the detail. The workbench groups its component index by category, puts Foundations and Layout first, and retains search, category filtering, keyboard selection and direct-link/history behavior.
 
-`ListDetail collapsibleGroups` opts grouped navigation into disclosure controls. It defaults to false, preserving existing grouped and flat consumers. With it enabled, categories start collapsed except for the selected item's group. Unselected categories can be opened/closed independently by mouse, Enter or Space; each toggle exposes aria-expanded/aria-controls. The selected category is always open and its toggle is aria-disabled (focusable, with no collapse action). A controlled selection change, search result or direct link opens the relevant category immediately. By default, manual expansion choices remain in memory while the component is mounted, including through filtering; applications may control them as described below. Ungrouped entries remain directly visible. The Components catalog enables this option.
+`ListDetail collapsibleGroups` opts grouped navigation into disclosure controls. It defaults to false, preserving existing grouped and flat consumers. With it enabled, categories start collapsed except for the selected item's group. Unselected categories can be opened/closed independently by mouse, Enter or Space; each toggle exposes aria-expanded/aria-controls. The selected category is always open and its toggle is aria-disabled (focusable, with no collapse action). A controlled selection change, search result or direct link opens the relevant category immediately. By default, manual expansion choices remain in memory while the component is mounted, including through filtering; applications may control them as described below. Ungrouped entries remain directly visible. The Components catalog enables this option. Group titles render as `h2` by default; set `groupHeadingLevel` (2–6) to fit the surrounding page outline.
 
 ListDetail also accepts controlled `expandedGroups?: readonly string[]` and `onExpandedGroupsChange(groups)` for application-owned preferences. These represent manual expansion choices; the selected item's group is still forced open even when absent from the controlled array. Without controlled props, expansion remains local component state. The shared component never reads or writes browser storage.
 
 The playground saves manual category expansion in `localStorage` under `gregui.catalog.groups.v1` as `{ version: 1, expandedGroups: string[] }`. It restores valid preferences when mounting/refreshing and writes only when the user toggles a category. Missing, malformed or unsupported values fall back to collapsed groups plus the selected category. Unknown group names have no visible effect. If storage reads/writes fail, the catalog remains usable with session state. Selected-category visibility never overwrites a saved manual collapse choice. Preferences are local to the browser origin and are not account/device-synchronised.
+
+## Calendar dates
+
+`CalendarMonth` and `DatePicker` work with plain `YYYY-MM-DD` strings (`CalendarDate`) and `YYYY-MM` months. No time zone is applied, so a date never shifts a day when it crosses the server. The helpers `addDays`, `addMonths` (clamps 31 Jan + 1 month to the end of February), `isCalendarDate` and `todayDate` (the browser's local date) are exported.
+
+```tsx
+<DatePicker
+  label="Arrives by"
+  value={date}
+  onChange={setDate}
+  name="arrival"
+  min={earliestDelivery}
+  isDateUnavailable={(d) => postalHolidays[d] ?? (isSunday(d) && 'No deliveries on Sundays')}
+/>
+```
+
+- `isDateUnavailable(date)` returns a short, translated reason or nothing. Blocked dates stay focusable, are announced with their reason and are shown hatched; selecting them does nothing. Dates outside `min`/`max` are only muted and use the `dateBeforeMin`/`dateAfterMax` messages.
+- `CalendarMonth` is controlled by `month`/`onMonthChange` and `value`/`onSelect`. Keyboard: arrows move by day and week, Page Up/Down by month (with Shift by year), Home/End to the week edges. Moving past the month edge calls `onMonthChange`. `renderDay(date)` adds short content (for example a birthday) inside a day; keep it to one word or a badge.
+- `weekStartsOn` is 1 (Monday) by default; pass 0 for Sunday. `today` can be fixed for tests and server rendering.
+- `DatePicker` opens the grid in a popover, focuses the current or selected date, closes on selection or Escape and returns focus to the field. `name` adds a hidden input so native forms post the ISO date.
+- New locale messages: `chooseDate`, `previousMonth`, `nextMonth`, `dateBeforeMin`, `dateAfterMax`. Apps providing a complete `Messages` object must add them.
+- Holiday calendars, collection days and print cut-offs are application policy; the components only display them.

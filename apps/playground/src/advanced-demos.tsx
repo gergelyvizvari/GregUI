@@ -1,4 +1,5 @@
 import { PostcardDemo } from './postcard-demo';
+import { CalendarMonthDemo, DatePickerDemo } from './calendar-demo';
 import { samplePhoto, PhotoCredit } from './sample-media';
 import { TypographyDemo, PageCompositionDemo } from './content-demo';
 import { useEffect, useState, type ReactNode } from 'react';
@@ -615,6 +616,20 @@ export function useAdvancedExamples(): CatalogEntry[] {
       'Application-controlled directory search with aliases, delayed results, error recovery and a persistent selected label.',
       '<Combobox filterMode="external" query={query} onQueryChange={setQuery} options={results} value={value} selectedLabel={label} onChange={select} loading={loading} loadError={error} onRetry={retry} label="Country" />',
       <RemoteChoicesDemo />,
+    ),
+    entry(
+      'Date Picker',
+      'Forms',
+      'Choose one date from a month grid. Apps block dates with a reason, such as postal holidays or print cut-offs.',
+      '<DatePicker label="Arrives by" value={date} onChange={setDate} isDateUnavailable={(d) => holidays[d]} />',
+      <DatePickerDemo />,
+    ),
+    entry(
+      'Calendar Month',
+      'Data display',
+      'A keyboard-accessible month grid with blocked dates and short content per day, such as birthdays.',
+      '<CalendarMonth label="Send date" month={month} onMonthChange={setMonth} value={date} onSelect={setDate} renderDay={(d) => occasions[d]} />',
+      <CalendarMonthDemo />,
     ),
     entry(
       'Date Range Picker',

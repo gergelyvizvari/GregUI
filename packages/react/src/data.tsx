@@ -343,11 +343,11 @@ export function DataTable<T>({
                 {columns.map((c, i) =>
                   i === 0 ? (
                     <th scope="row" key={c.key} data-width={c.width}>
-                      {c.render?.(row) ?? c.value(row)}
+                      {c.render ? c.render(row) : c.value(row)}
                     </th>
                   ) : (
                     <td key={c.key} data-width={c.width}>
-                      {c.render?.(row) ?? c.value(row)}
+                      {c.render ? c.render(row) : c.value(row)}
                     </td>
                   ),
                 )}
@@ -440,6 +440,7 @@ export function ListDetail({
   collapsibleGroups = false,
   expandedGroups,
   onExpandedGroupsChange,
+  groupHeadingLevel = 2,
 }: {
   label: string;
   items: { id: string; label: string; description?: string; group?: string }[];
@@ -450,7 +451,10 @@ export function ListDetail({
   collapsibleGroups?: boolean;
   expandedGroups?: readonly string[];
   onExpandedGroupsChange?: (groups: string[]) => void;
+  /** Heading level for group titles, so the outline fits where the list sits. */
+  groupHeadingLevel?: 2 | 3 | 4 | 5 | 6;
 }) {
+  const GroupHeading = `h${groupHeadingLevel}` as const;
   const navigation = useRef<HTMLElement>(null);
   const groupId = useId();
   const [localExpandedGroups, setLocalExpandedGroups] = useState<Set<string>>(() => new Set());
@@ -530,7 +534,7 @@ export function ListDetail({
             const panelId = `${groupId}-group-${index}`;
             return (
               <li className="g-list-detail-group" key={group}>
-                <h2>
+                <GroupHeading>
                   {collapsibleGroups ? (
                     <button
                       className="g-list-detail-group-toggle"
@@ -553,7 +557,7 @@ export function ListDetail({
                   ) : (
                     group
                   )}
-                </h2>
+                </GroupHeading>
                 <ul id={panelId} aria-label={group} hidden={!open}>
                   {entries.map(renderItem)}
                 </ul>

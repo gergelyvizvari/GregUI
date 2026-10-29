@@ -208,3 +208,13 @@ it('uses provider locale for client sorting with RTL and keeps the sortable head
   expect(screen.getAllByRole('rowheader').map((node) => node.textContent)).toEqual(['z', 'ä']);
   expect(button).toHaveFocus();
 });
+
+it('renders nothing when a column render returns null instead of falling back to the raw value', () => {
+  render(
+    <DataTable
+      {...base}
+      columns={[{ key: 'id', label: 'Name', value: (row) => row.id, render: () => null }]}
+    />,
+  );
+  expect(screen.queryByText('z')).toBeNull();
+});

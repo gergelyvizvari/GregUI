@@ -123,9 +123,14 @@ export type AuthSubmission =
   | { mode: 'forgot-password'; email: string }
   | { mode: 'reset-password'; password: string }
   | { mode: 'verify-email' | 'two-factor'; code: string };
+/**
+ * Return `false` or `{ error }` when the attempt failed without throwing (for example a wrong
+ * password). The form then keeps its values and shows no success message.
+ */
+export type AuthResult = void | false | { error: string };
 export interface AuthFormProps {
   mode: AuthMode;
-  onSubmit: (values: AuthSubmission) => void | Promise<void>;
+  onSubmit: (values: AuthSubmission) => AuthResult | Promise<AuthResult>;
   onNavigate?: (mode: AuthMode) => void;
   onResend?: () => void | Promise<void>;
   onGoogleSignIn?: () => void | Promise<void>;
@@ -196,7 +201,7 @@ function AuthFormScreen({
       ? m.authSendLink
       : titles[mode];
   async function run(
-    operation: () => void | Promise<void>,
+    operation: () => AuthResult | Promise<AuthResult>,
     message: string,
     form?: HTMLFormElement,
     source = 'submit',
@@ -208,7 +213,12 @@ function AuthFormScreen({
     setFailure('');
     setStatus('');
     try {
-      await operation();
+      const result = await operation();
+      if (result === false) return;
+      if (result && typeof result === 'object') {
+        setFailure(result.error || m.authFailure);
+        return;
+      }
       form?.reset();
       setStatus(message);
     } catch {
@@ -271,7 +281,7 @@ function AuthFormScreen({
         </Stack>
         <div ref={feedback} tabIndex={-1} className="g-auth-feedback">
           {(error || failure) && <Alert tone="danger" title={error || failure} live />}
-          <div role="status">{status && <Alert tone="success" title={status} />}</div>
+          <div role="status">{status && !error && <Alert tone="success" title={status} />}</div>
         </div>
         <fieldset disabled={pending} className="g-auth-fields">
           <Stack gap={4}>

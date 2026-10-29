@@ -54,3 +54,22 @@ it('associates validation, submits only the chosen value and locks a disabled gr
   expect(onChange).not.toHaveBeenCalled();
   expect(screen.getByRole('radio', { name: 'Greeting' })).toBeDisabled();
 });
+
+it('announces option status through one persistent live region', () => {
+  const { rerender } = render(
+    <VisualChoiceGroup label="Design" options={options} value="a" onChange={() => {}} />,
+  );
+  const live = screen.getAllByRole('status');
+  expect(live).toHaveLength(1);
+  expect(live[0]).toHaveTextContent('Pending: Generating');
+  rerender(
+    <VisualChoiceGroup
+      label="Design"
+      options={options.map((option) => ({ ...option, status: undefined }))}
+      value="a"
+      onChange={() => {}}
+    />,
+  );
+  expect(screen.getByRole('status')).toBe(live[0]);
+  expect(live[0]).toBeEmptyDOMElement();
+});

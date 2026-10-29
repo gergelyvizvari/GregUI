@@ -187,3 +187,20 @@ it('supports an optional dependent locality without changing existing required a
   await userEvent.type(screen.getByRole('textbox', { name: 'Village' }), 'A');
   expect(changed).toHaveBeenCalledWith({ ...value, dependentLocality: 'A' }, 'dependentLocality');
 });
+
+it('keeps an unlisted saved country selectable so native form posts include it', () => {
+  const { container } = render(
+    <form>
+      <AddressFields
+        label="Address"
+        namePrefix="ship"
+        value={{ ...value, countryCode: 'XK' }}
+        onChange={() => {}}
+        fields={[{ key: 'countryCode', label: 'Country' }]}
+        countries={[{ value: 'GB', label: 'United Kingdom' }]}
+      />
+    </form>,
+  );
+  expect(screen.getByRole('option', { name: 'XK' })).not.toBeDisabled();
+  expect(new FormData(container.querySelector('form')!).get('ship.countryCode')).toBe('XK');
+});

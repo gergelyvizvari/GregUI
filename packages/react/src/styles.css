@@ -207,6 +207,10 @@ body {
   --g-input-focus-ring: 0 0 0 4px var(--g-atmosphere);
   --g-control-border: var(--g-border);
   --g-secondary-border: var(--g-border);
+  --g-secondary-fill: var(--g-surface);
+  /* A quiet surface for chips and borderless secondary actions. */
+  --g-quiet-fill: color-mix(in srgb, var(--g-text) 7%, var(--g-surface));
+  --g-progress-track: color-mix(in srgb, var(--g-text) 10%, var(--g-surface));
   --g-card-art: none;
   --g-nav-radius: 10px;
   --g-nav-shadow: 0 1px 3px rgba(var(--g-shadow-color), 0.06);
@@ -248,6 +252,7 @@ body {
   --g-dialog-border-color: var(--g-border);
   --g-card-border-width: 0px;
   --g-secondary-border: transparent;
+  --g-secondary-fill: var(--g-quiet-fill);
   --g-badge-border: transparent;
   --g-input-border-width: 0 0 1px;
   --g-input-error-width: 0 0 2px;
@@ -508,6 +513,7 @@ body {
   --g-control-border: var(--g-line);
   --g-action-radius: 99px;
   --g-secondary-border: transparent;
+  --g-secondary-fill: var(--g-quiet-fill);
   --g-primary-shadow: none;
   --g-badge-radius: 99px;
   --g-badge-fill: var(--g-background);
@@ -557,12 +563,13 @@ body {
   --g-card-radius: 32px;
   --g-card-border-color: transparent;
   --g-card-shadow:
-    inset 5px 6px 8px var(--g-highlight), inset -6px -7px 10px rgba(var(--g-shadow-color), 0.16),
-    9px 14px 20px -7px rgba(var(--g-shadow-color), 0.24);
+    inset 3px 4px 6px var(--g-highlight), inset -4px -5px 8px rgba(var(--g-shadow-color), 0.09),
+    0 10px 24px -14px rgba(var(--g-shadow-color), 0.22);
   --g-control-radius: 12px;
   --g-action-radius: 14px;
   --g-control-border: transparent;
   --g-secondary-border: transparent;
+  --g-secondary-fill: color-mix(in srgb, var(--g-primary) 9%, var(--g-surface));
   --g-control-fill: var(--g-background);
   --g-control-shadow: inset 0 1px 2px rgba(var(--g-shadow-color), 0.08);
   --g-primary-shadow:
@@ -654,7 +661,7 @@ body {
 .g-button[data-variant='secondary'] {
   background-image: none;
   box-shadow: var(--g-secondary-shadow);
-  background: var(--g-surface);
+  background: var(--g-secondary-fill);
   border-color: var(--g-secondary-border);
   color: var(--g-text);
 }
@@ -685,6 +692,7 @@ body {
   }
   .g-button[data-variant='secondary']:hover:not(:disabled) {
     box-shadow: var(--g-secondary-shadow), var(--g-hover-depth);
+    background-color: color-mix(in srgb, var(--g-text) 5%, var(--g-secondary-fill));
   }
   .g-button[data-variant='ghost']:hover:not(:disabled) {
     box-shadow: none;
@@ -724,6 +732,11 @@ body {
   color: var(--g-muted);
   background: var(--g-badge-fill);
   white-space: nowrap;
+}
+/* Paper badges have no border, so neutral ones get a quiet chip; toned ones keep their outline. */
+.g-theme[data-preset='paper'] .g-badge[data-tone='neutral'] {
+  background: var(--g-quiet-fill);
+  color: var(--g-text);
 }
 .g-badge[data-tone='primary'] {
   color: var(--g-primary);
@@ -866,6 +879,41 @@ body {
   flex: none;
   margin: 0;
 }
+/* Drawn checkbox: native dark-mode boxes render filled grey and read as disabled. */
+.g-checkbox {
+  appearance: none;
+  display: inline-grid;
+  place-content: center;
+  border: 1.5px solid var(--g-border);
+  border-radius: min(calc(var(--g-control-radius) * 0.5), 5px);
+  background: var(--g-surface);
+  cursor: pointer;
+}
+.g-checkbox::before {
+  content: '';
+  width: 0.65rem;
+  height: 0.65rem;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  background: var(--g-onPrimary);
+  transform: scale(0);
+  transition: transform var(--g-duration-fast) var(--g-ease);
+}
+.g-checkbox:checked,
+.g-checkbox:indeterminate {
+  border-color: var(--g-primary);
+  background: var(--g-primary);
+}
+.g-checkbox:checked::before {
+  transform: scale(1);
+}
+.g-checkbox:indeterminate::before {
+  clip-path: inset(40% 0);
+  transform: scale(1);
+}
+.g-checkbox:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .g-check-label:has(input:disabled) {
   cursor: not-allowed;
   opacity: 0.6;
@@ -924,9 +972,10 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 0.8rem;
-  border: 1px solid var(--g-border);
+  border: 1px solid var(--g-line);
   border-inline-start: 3px solid var(--g-primary);
-  border-radius: calc(var(--g-radius) * 0.6);
+  /* Follows the theme's control shape so alerts sit naturally beside cards and fields. */
+  border-radius: var(--g-control-radius);
   background: var(--g-surface);
   padding: 1rem;
   color: var(--g-text);
@@ -992,11 +1041,11 @@ body {
   border: 0;
   border-radius: var(--g-progress-radius);
   overflow: hidden;
-  background: var(--g-background);
+  background: var(--g-progress-track);
   accent-color: var(--g-primary);
 }
 .g-progress::-webkit-progress-bar {
-  background: var(--g-background);
+  background: var(--g-progress-track);
 }
 .g-progress::-webkit-progress-value {
   background: var(--g-primary);
@@ -1624,7 +1673,13 @@ body {
   }
   .g-toolbar {
     flex-wrap: wrap;
-    gap: 0.5rem;
+    justify-content: flex-start;
+    gap: 0.5rem 0.75rem;
+    font-size: var(--g-type-small-size);
+  }
+  /* Secondary toolbar content drops to its own quiet row below menu + breadcrumb. */
+  .g-toolbar > :last-child:not(.g-mobile-nav):not(:nth-child(2)) {
+    flex-basis: 100%;
   }
   .g-toolbar > .g-inline {
     gap: 0.5rem;
@@ -1781,6 +1836,13 @@ body {
   .g-button,
   .g-switch:checked {
     forced-color-adjust: auto;
+  }
+  .g-checkbox:checked,
+  .g-checkbox:indeterminate {
+    background: Highlight;
+  }
+  .g-checkbox::before {
+    background: HighlightText;
   }
   .g-switch::after {
     background: ButtonText;
@@ -4067,8 +4129,17 @@ body {
   font-size: var(--g-type-small-size);
   color: var(--g-muted);
 }
+.g-visual-choice:has(input:disabled) {
+  border-style: dashed;
+  border-color: var(--g-line);
+  background: var(--g-quiet-fill);
+}
 .g-visual-choice:has(input:disabled) .g-visual-choice-preview {
   filter: grayscale(1);
+  opacity: 0.55;
+}
+.g-visual-choice:has(input:disabled) .g-visual-choice-caption > strong {
+  color: var(--g-muted);
 }
 .g-document-preview {
   min-width: 0;
@@ -4316,7 +4387,7 @@ body {
   top: 42mm;
 }
 
-.g-list-detail-group > h2 {
+.g-list-detail-group > :is(h2, h3, h4, h5, h6) {
   margin: 1.25rem 0 0.5rem;
   padding-block-end: 0.4rem;
   border-bottom: 1px solid var(--g-line);
@@ -4324,7 +4395,7 @@ body {
   color: var(--g-muted);
   letter-spacing: 0.04em;
 }
-.g-list-detail-group:first-child > h2 {
+.g-list-detail-group:first-child > :is(h2, h3, h4, h5, h6) {
   margin-block-start: 0.25rem;
 }
 .g-list-detail-group > ul {
@@ -4351,4 +4422,131 @@ body {
 .g-list-detail-group-toggle[aria-disabled='true'] {
   cursor: default;
   color: var(--g-primary);
+}
+/* Calendar: a month grid and the date field that opens it. */
+.g-calendar {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.g-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.g-theme[dir='rtl'] .g-calendar-header .g-icon {
+  transform: scaleX(-1);
+}
+.g-calendar-title {
+  margin: 0;
+  font-family: var(--g-display-font);
+  font-weight: var(--g-display-weight);
+  font-size: var(--g-type-section-size);
+  letter-spacing: var(--g-type-section-tracking);
+}
+.g-calendar-grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2px;
+  table-layout: fixed;
+}
+.g-calendar-grid th {
+  padding-block: 0.25rem;
+  font-size: var(--g-type-caption-size);
+  font-weight: 600;
+  color: var(--g-muted);
+  text-align: center;
+}
+.g-calendar-grid td {
+  padding: 0;
+  vertical-align: top;
+}
+.g-calendar-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.375rem 0.125rem;
+  border: 1px solid transparent;
+  border-radius: var(--g-control-radius);
+  background: transparent;
+  color: var(--g-text);
+  font-variant-numeric: tabular-nums;
+  transition: background-color var(--g-duration-fast) var(--g-ease);
+}
+.g-calendar-day:hover:not([aria-disabled='true']) {
+  background: var(--g-tint);
+}
+.g-calendar-day[data-today] .g-calendar-number {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-thickness: 2px;
+}
+.g-calendar-day[data-selected] {
+  background: var(--g-primary);
+  color: var(--g-onPrimary);
+}
+.g-calendar-day[data-selected]:hover {
+  background: var(--g-primary);
+}
+.g-calendar-day[aria-disabled='true'] {
+  color: var(--g-muted);
+  cursor: not-allowed;
+}
+/* Dates the app blocks for a reason are hatched; dates outside min/max are only muted. */
+.g-calendar-day[data-unavailable='blocked'] {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 5px,
+    color-mix(in srgb, var(--g-text) 6%, transparent) 5px 6px
+  );
+}
+.g-calendar-day[data-unavailable='blocked'] .g-calendar-number {
+  text-decoration-line: line-through;
+}
+.g-calendar-day[data-unavailable='blocked'][data-today] .g-calendar-number {
+  text-decoration-line: underline line-through;
+}
+.g-calendar-extra {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  font-size: var(--g-type-caption-size);
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.g-calendar-note {
+  min-height: 1.5em;
+  margin: 0;
+  font-size: var(--g-type-small-size);
+  color: var(--g-muted);
+}
+.g-date-picker-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  text-align: start;
+  cursor: pointer;
+}
+.g-date-picker-trigger[data-empty] > span {
+  color: var(--g-muted);
+}
+.g-date-picker-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.g-date-picker-popover {
+  width: min(340px, calc(100vw - 2rem));
+}
+@media (forced-colors: active) {
+  .g-calendar-day[data-selected] {
+    background: Highlight;
+    color: HighlightText;
+  }
 }

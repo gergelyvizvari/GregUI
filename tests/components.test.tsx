@@ -11,6 +11,7 @@ import {
   DialogClose,
   ConfirmDialog,
   Tabs,
+  Checkbox,
 } from '@gregui/react';
 import { createTheme } from '@gregui/tokens';
 describe('interaction contracts', () => {
@@ -98,4 +99,9 @@ describe('interaction contracts', () => {
     expect(screen.getByRole('tab', { name: 'Second' })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tabpanel')).toHaveTextContent('Second panel');
   });
+});
+
+it('merges a Checkbox hint with the aria-describedby the app passes in', () => {
+  render(<Checkbox label="Terms" hint="Required" aria-describedby="terms-help" id="terms" />);
+  expect(screen.getByRole('checkbox')).toHaveAttribute('aria-describedby', 'terms-help terms-hint');
 });

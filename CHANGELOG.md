@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added `CalendarMonth` and `DatePicker` for single dates, with blocked dates that explain why, `min`/`max`, per-day content, Monday or Sunday week starts and plain `YYYY-MM-DD` values. Added `calendar` and `chevron-back` icons and five locale messages.
+- Design fixes: borderless secondary buttons get a quiet fill (Paper, Bloom, Clay), alerts follow the theme's control radius, progress bars always show their track, Paper badges get a chip, checkboxes are drawn so unchecked boxes no longer look disabled in dark mode, disabled visual choices are dashed and dimmed, and the mobile toolbar keeps the menu beside the breadcrumb. Paper headings are serif, Bloom and Clay headings rounded, and Clay shadows are softer.
+- Fixed Combobox Enter (now submits the form until the user types or arrows), auth success showing next to an app error (`onSubmit` may return `false` or `{ error }`), DocumentPreview and AccentLink crashing on bad runtime input, AddressFields dropping an unlisted country from form posts, and several smaller issues. Added `ListDetail groupHeadingLevel`.
+
 - Scoped Workspace and Bloom dashboard navigation colours to dashboard shells, preserving readable theme colours in editorial/public headers. No API change. Verified with CityLink public branding and Chromium accessibility tests.
 
 - Improved usability: explicit current-plan badges/outlines and shared pricing request locking, stronger row/list selection, combobox selection checks and keyboard scrolling, action-menu dismissal/focus return, file clearing, and locked role/privacy controls with save confirmation.

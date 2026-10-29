@@ -119,3 +119,17 @@ it('reports controlled expansion choices without hiding the selected group or ch
   expect(change).toHaveBeenLastCalledWith([]);
   expect(screen.getByRole('button', { name: 'Actions' })).toHaveAttribute('aria-expanded', 'true');
 });
+
+it('renders group titles at the requested heading level', () => {
+  render(
+    <ListDetail
+      label="Index"
+      items={[{ id: 'button', label: 'Button', group: 'Actions' }]}
+      onSelect={() => {}}
+      groupHeadingLevel={3}
+    >
+      Detail
+    </ListDetail>,
+  );
+  expect(screen.getByRole('heading', { name: 'Actions', level: 3 })).toBeInTheDocument();
+});
