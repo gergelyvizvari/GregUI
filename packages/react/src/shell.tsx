@@ -1,11 +1,17 @@
 'use client';
-import React, { useId, type ReactNode, type ComponentPropsWithoutRef } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useId,
+  type ReactNode,
+  type ComponentPropsWithoutRef,
+} from 'react';
 import { useLocale } from '@gregui/localization';
 import type { Clean } from './internal-types';
 import { IconButton } from './buttons';
 import { Icon, IconName } from './icons';
 import { Inline, Stack } from './layout';
-import { Drawer } from './overlays';
+import { Drawer, Tooltip } from './overlays';
 import { Heading, Text } from './typography';
 export function PageHeader({
   eyebrow,
@@ -50,13 +56,19 @@ export function PageHeader({
     </header>
   );
 }
+const SidebarContext = createContext({ collapsed: false });
+/** Whether navigation is rendered in the collapsed AppShell rail (icons only). */
+export function useSidebarCollapsed() {
+  return useContext(SidebarContext).collapsed;
+}
 export function NavItem({
   active = false,
   icon,
   children,
   ...props
 }: Clean<ComponentPropsWithoutRef<'button'>> & { active?: boolean; icon?: IconName }) {
-  return (
+  const collapsed = useSidebarCollapsed();
+  const button = (
     <button
       {...props}
       type="button"
@@ -64,11 +76,18 @@ export function NavItem({
       aria-current={active ? 'page' : undefined}
     >
       {icon && <Icon name={icon} />}
-      <span>{children}</span>
+      <span className="g-nav-text">{children}</span>
       {active && <span className="g-nav-dot" />}
     </button>
   );
+  return collapsed && typeof children === 'string' ? (
+    <Tooltip label={children}>{button}</Tooltip>
+  ) : (
+    button
+  );
 }
+const railContext = { collapsed: true };
+const drawerContext = { collapsed: false };
 export function AppShell({
   brand,
   subtitle,
@@ -80,7 +99,16 @@ export function AppShell({
   appearance = 'standard',
   stickyToolbar = false,
   brandMark,
+  sidebarCollapsible = false,
+  sidebarCollapsed,
+  defaultSidebarCollapsed = false,
+  onSidebarCollapsedChange,
 }: {
+  /** Adds a control that shrinks the desktop sidebar to an icon rail. */
+  sidebarCollapsible?: boolean;
+  sidebarCollapsed?: boolean;
+  defaultSidebarCollapsed?: boolean;
+  onSidebarCollapsedChange?: (collapsed: boolean) => void;
   appearance?: 'standard' | 'editorial' | 'dashboard';
   stickyToolbar?: boolean;
   brandMark?: ReactNode;
@@ -92,9 +120,16 @@ export function AppShell({
   toolbar?: ReactNode;
   children: ReactNode;
 }) {
-  const { messages } = useLocale();
+  const { messages, direction } = useLocale();
   const mainId = useId();
   const [navOpen, setNavOpen] = React.useState(false);
+  const [ownCollapsed, setOwnCollapsed] = React.useState(defaultSidebarCollapsed);
+  const collapsible = sidebarCollapsible && appearance !== 'editorial';
+  const collapsed = collapsible && (sidebarCollapsed ?? ownCollapsed);
+  const toggleCollapsed = () => {
+    setOwnCollapsed(!collapsed);
+    onSidebarCollapsedChange?.(!collapsed);
+  };
   React.useEffect(() => {
     if (viewKey) window.scrollTo(0, 0);
   }, [viewKey]);
@@ -103,7 +138,7 @@ export function AppShell({
       <a className="g-skip" href={`#${mainId}`}>
         {messages.skipToContent}
       </a>
-      <aside className="g-sidebar">
+      <aside className="g-sidebar" data-collapsed={collapsed || undefined}>
         <div className="g-brand">
           {brandMark ?? (
             <span className="g-brand-mark">
@@ -118,9 +153,24 @@ export function AppShell({
               </Text>
             )}
           </Stack>
+          {collapsible && (
+            <div className="g-sidebar-toggle">
+              <IconButton
+                variant="ghost"
+                size="small"
+                label={collapsed ? messages.expandSidebar : messages.collapseSidebar}
+                aria-expanded={!collapsed}
+                onClick={toggleCollapsed}
+              >
+                <Icon name={collapsed !== (direction === 'rtl') ? 'chevron' : 'chevron-back'} />
+              </IconButton>
+            </div>
+          )}
         </div>
         <nav className="g-nav" aria-label={messages.navigation}>
-          {nav}
+          <SidebarContext.Provider value={collapsed ? railContext : drawerContext}>
+            {nav}
+          </SidebarContext.Provider>
         </nav>
         {footer && <div className="g-sidebar-footer">{footer}</div>}
       </aside>
@@ -142,7 +192,10 @@ export function AppShell({
                 className="g-nav"
                 aria-label={messages.navigation}
                 onClick={(event) => {
-                  if ((event.target as HTMLElement).closest('button')) setNavOpen(false);
+                  // Destinations close the drawer; disclosure and menu buttons keep it open.
+                  const target = (event.target as HTMLElement).closest('a[href], button');
+                  if (target && !target.matches('[aria-expanded], [aria-haspopup]'))
+                    setNavOpen(false);
                 }}
               >
                 {nav}

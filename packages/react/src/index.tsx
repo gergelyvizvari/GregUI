@@ -25,7 +25,19 @@ export {
   ErrorSummary,
 } from './feedback';
 export { DescriptionList, Table } from './tables';
-export { Breadcrumbs, Tabs } from './navigation';
+export { type BreadcrumbItem, type BreadcrumbsProps, Breadcrumbs, Tabs } from './navigation';
+export {
+  type MenuEntry,
+  type MenuActionItem,
+  type MenuCheckboxItem,
+  type MenuRadioGroup,
+  type MenuGroup,
+  type MenuSubmenu,
+  type MenuSeparator,
+  type MenuProps,
+  Menu,
+} from './menu';
+export { type SideNavItem, type SideNavSection, type SideNavProps, SideNav } from './side-nav';
 export {
   Dialog,
   Drawer,
@@ -38,7 +50,7 @@ export {
   Tooltip,
   Popover,
 } from './overlays';
-export { PageHeader, NavItem, AppShell } from './shell';
+export { PageHeader, NavItem, AppShell, useSidebarCollapsed } from './shell';
 export {
   PreviewStage,
   PreviewComposition,

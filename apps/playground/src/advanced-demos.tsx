@@ -1,4 +1,5 @@
 import { PostcardDemo } from './postcard-demo';
+import { BreadcrumbsDemo, MenuDemo, SideNavDemo } from './navigation-demo';
 import { CalendarAgendaDemo, CalendarMonthDemo, DatePickerDemo } from './calendar-demo';
 import { samplePhoto, PhotoCredit } from './sample-media';
 import { TypographyDemo, PageCompositionDemo } from './content-demo';
@@ -679,6 +680,27 @@ export function useAdvancedExamples(): CatalogEntry[] {
         <ActionMenu label="Project actions" actions={actions} />
         <Text>{action}</Text>
       </Stack>,
+    ),
+    entry(
+      'Menu',
+      'Navigation',
+      'Dropdown menu with menu semantics: arrow keys, typeahead and Escape. Supports links, shortcuts, checkbox and radio items, groups and submenus.',
+      '<Menu trigger={<IconButton label="Actions">…</IconButton>} items={[{ id: "rename", label: "Rename", onSelect }, { type: "separator", id: "s" }, { type: "submenu", id: "export", label: "Export as", items }]} />',
+      <MenuDemo />,
+    ),
+    entry(
+      'Breadcrumbs',
+      'Navigation',
+      'Location trail with a localized landmark name. maxItems hides the middle behind a "Show full path" button; onNavigate lets the app route links.',
+      '<Breadcrumbs items={[{ label: "Clients", href: "/clients" }, { label: "Northwind" }]} maxItems={3} onNavigate={route} />',
+      <BreadcrumbsDemo />,
+    ),
+    entry(
+      'Side Navigation',
+      'Navigation',
+      'Headed sections and nested, collapsible groups. The current page opens its ancestors. In a collapsible AppShell it becomes an icon rail with group menus.',
+      '<SideNav sections={[{ id: "work", title: "Work", items }]} value={current} onNavigate={(item, event) => route(item, event)} />',
+      <SideNavDemo />,
     ),
     entry(
       'Command Palette',

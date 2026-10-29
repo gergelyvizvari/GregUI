@@ -843,6 +843,7 @@ function App() {
       <ThemeProvider theme={workbenchTheme}>
         <AppShell
           viewKey={page}
+          sidebarCollapsible
           brand="gregUI"
           subtitle="Interface atelier"
           nav={navigation.map((n) => (
