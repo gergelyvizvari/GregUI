@@ -2944,13 +2944,13 @@ body {
 .g-banner[data-sticky='true'] {
   position: sticky;
   top: 0;
-  z-index: 21;
+  z-index: var(--g-z-sticky-banner);
 }
 /* In AppShell the area wrapper sticks instead, so the banner stays within the workspace. */
 .g-shell-banner:has(> .g-banner[data-sticky='true']) {
   position: sticky;
   top: 0;
-  z-index: 21;
+  z-index: var(--g-z-sticky-banner);
 }
 .g-shell-banner:has(> .g-banner[data-sticky='true']) + .g-toolbar[data-sticky='true'] {
   top: var(--g-shell-banner-size, 0px);

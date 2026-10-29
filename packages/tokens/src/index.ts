@@ -640,6 +640,8 @@ export const zIndex = {
   dropdown: 10,
   /** Sticky toolbar at the top of a scrolling region. */
   sticky: 20,
+  /** Sticky page banner, kept above a sticky toolbar that scrolls under it. */
+  stickyBanner: 21,
   /** Floating panel launcher button. */
   launcher: 80,
   /** Non-modal floating panel (desktop inspector). */
