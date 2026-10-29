@@ -23,6 +23,9 @@ test('date picker opens a month grid, skips nothing silently and returns the cho
     const grid = page.getByRole('grid', { name: /^Arrives by, / });
     await expect(grid).toBeVisible();
     await expect(grid.locator('button[tabindex="0"]')).toBeFocused();
+    // Contrast is meaningful once the popover's entrance fade has finished; mid-fade, axe
+    // blends the dark popover with the light workbench card behind it.
+    await expect(page.getByRole('dialog', { name: 'Arrives by' })).toHaveCSS('opacity', '1');
     expect((await axe(page)).violations).toEqual([]);
     // Too-soon dates are blocked with a reason rather than hidden.
     await expect(grid.locator('[aria-disabled="true"]').first()).toBeVisible();
