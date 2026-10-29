@@ -1,6 +1,8 @@
 name: Quality
 on:
+  # Branch pushes are covered by pull_request; running both doubled every PR run.
   push:
+    branches: [main]
   pull_request:
 concurrency:
   group: quality-${{ github.ref }}

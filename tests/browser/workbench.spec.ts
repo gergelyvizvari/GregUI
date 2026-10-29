@@ -367,6 +367,8 @@ test('onboarding validates, retains fields, retries saves and completes', async 
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
   await expect(page.getByLabel('Product updates')).toBeChecked();
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  // The wizard focuses the step heading after rendering; wait so that jump can't eat the next click.
+  await expect(page.getByRole('heading', { name: 'Review', exact: true })).toBeFocused();
   await page.getByLabel('Simulate a save failure').check();
   await page.getByRole('button', { name: 'Create workspace', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText('Could not continue');
