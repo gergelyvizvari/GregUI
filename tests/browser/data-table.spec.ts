@@ -11,7 +11,9 @@ test('remote records support paging, sorting, selection, loading and retry in bo
       await page.getByRole('button', { name: 'Open navigation' }).click();
     await page.getByRole('button', { name: 'Components', exact: true }).first().click();
     await page.getByLabel('Find a component').fill('Remote records');
-    const table = page.getByRole('region', { name: 'Remote records', exact: true });
+    const table = page
+      .getByRole('region', { name: 'Component preview', exact: true })
+      .getByRole('region', { name: 'Remote records', exact: true });
     await expect(table).toHaveAttribute('aria-busy', 'false');
     await page.getByLabel('Select row Customer portal').check();
     const next = page.getByRole('button', { name: 'Next', exact: true });

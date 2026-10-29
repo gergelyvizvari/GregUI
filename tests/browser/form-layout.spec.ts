@@ -9,6 +9,7 @@ test('document editor preserves inputs and fits light and dark viewports', async
     await page.getByRole('button', { name: 'Patterns', exact: true }).first().click();
     await page.getByRole('tab', { name: 'Document editor', exact: true }).click();
     const editor = page.getByRole('tabpanel', { name: 'Document editor' });
+    await expect(editor).toHaveCSS('opacity', '1');
     await editor.getByLabel('Title', { exact: true }).fill('Saved in the application');
     expect(
       (await new AxeBuilder({ page }).include('.g-editor-layout').analyze()).violations,

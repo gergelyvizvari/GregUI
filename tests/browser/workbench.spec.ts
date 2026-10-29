@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { featuredPresets, presetInfo, presets } from '@gregui/tokens';
 async function navigate(page: Page, name: string) {
   if (await page.getByRole('button', { name: 'Open navigation' }).isVisible())
     await page.getByRole('button', { name: 'Open navigation' }).click();
@@ -20,11 +21,12 @@ test('default view is accessible and fits narrow screens', async ({ page }, test
     fullPage: true,
   });
 });
-test('featured presets and dark mode preserve accessible rendered content', async ({
-  page,
-}, testInfo) => {
-  await page.goto('/');
-  for (const name of ['Paper', 'Workspace', 'Bloom', 'Clay', 'Neumorphic', 'Glass', 'Flat']) {
+for (const preset of featuredPresets) {
+  test(`featured preset ${preset} and dark mode preserve accessible rendered content`, async ({
+    page,
+  }, testInfo) => {
+    await page.goto('/');
+    const name = presetInfo[preset].name;
     await page.getByRole('button', { name: new RegExp(`^${name} `) }).click();
     for (const dark of [false, true]) {
       await page.getByRole('switch', { name: 'Dark mode' }).setChecked(dark);
@@ -57,8 +59,8 @@ test('featured presets and dark mode preserve accessible rendered content', asyn
           path: `test-results/preset-${name.toLowerCase()}-${dark ? 'dark' : 'light'}.png`,
         });
     }
-  }
-});
+  });
+}
 test('theme editing supports undo, local drafts, validated import and export', async ({ page }) => {
   await page.goto('/');
   await navigate(page, 'Theme studio');
@@ -291,29 +293,15 @@ test('optional social login providers support configuration, failure and retry',
   });
 });
 
-test('editorial authentication inherits every material in light and dark', async ({
-  page,
-}, testInfo) => {
-  await page.goto('/');
-  for (const preset of [
-    'Flat',
-    'Glass',
-    'Soft',
-    'Elevated',
-    'Outline',
-    'Editorial',
-    'Porcelain',
-    'Aurora',
-    'Studio',
-    'Canvas',
-    'Joyful',
-    'Professional',
-    'Clay',
-    'Neumorphic',
-  ]) {
+for (const preset of presets) {
+  test(`editorial authentication inherits every material in light and dark (${preset})`, async ({
+    page,
+  }, testInfo) => {
+    await page.goto('/');
     for (const dark of [false, true]) {
+      await navigate(page, 'Authentication');
+      await page.getByLabel('Preview style').selectOption(preset);
       await navigate(page, 'Overview');
-      await page.getByRole('button', { name: new RegExp(`^${preset} `) }).click();
       await page.getByRole('switch', { name: 'Dark mode' }).setChecked(dark);
       await navigate(page, 'Authentication');
       const results = await new AxeBuilder({ page })
@@ -326,8 +314,8 @@ test('editorial authentication inherits every material in light and dark', async
           .locator('.g-auth-layout')
           .screenshot({ path: `test-results/material-auth-${preset.toLowerCase()}.png` });
     }
-  }
-});
+  });
+}
 
 test('authentication style selector updates the shared theme without resetting the form', async ({
   page,
@@ -351,10 +339,9 @@ test('authentication style selector updates the shared theme without resetting t
     fullPage: true,
   });
   await navigate(page, 'Overview');
-  await expect(page.getByRole('button', { name: /^Soft Clay/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(
+    page.locator('.g-theme[data-preset="soft"] [aria-label="Component preview"]'),
+  ).toBeVisible();
   await navigate(page, 'Authentication');
   await expect(page.getByLabel('Preview style')).toHaveValue('soft');
 });
@@ -397,30 +384,20 @@ test('onboarding validates, retains fields, retries saves and completes', async 
   await expect(page.getByRole('status').filter({ hasText: 'Workspace ready' })).toBeVisible();
 });
 
-test('new workflow components support every material and paginated content', async ({ page }) => {
-  await page.goto('/');
-  for (const preset of [
-    'Flat',
-    'Glass',
-    'Soft',
-    'Elevated',
-    'Outline',
-    'Editorial',
-    'Porcelain',
-    'Aurora',
-    'Studio',
-    'Canvas',
-    'Joyful',
-    'Professional',
-    'Clay',
-    'Neumorphic',
-  ]) {
+for (const preset of presets) {
+  test(`new workflow components support every material and paginated content (${preset})`, async ({
+    page,
+  }) => {
+    await page.goto('/');
     for (const dark of [false, true]) {
+      await navigate(page, 'Authentication');
+      await page.getByLabel('Preview style').selectOption(preset);
       await navigate(page, 'Overview');
-      await page.getByRole('button', { name: new RegExp(`^${preset} `) }).click();
       await page.getByRole('switch', { name: 'Dark mode' }).setChecked(dark);
       await navigate(page, 'Patterns');
       await page.getByRole('tab', { name: 'Onboarding' }).click();
+      // Contrast is meaningful once the tab's entrance fade has finished.
+      await expect(page.getByRole('tabpanel')).toHaveCSS('opacity', '1');
       const results = await new AxeBuilder({ page })
         .include('.g-wizard')
         .include('.g-stepper')
@@ -428,19 +405,19 @@ test('new workflow components support every material and paginated content', asy
         .analyze();
       expect(results.violations, `${preset} ${dark}`).toEqual([]);
     }
-  }
-  await navigate(page, 'Components');
-  await page.getByLabel('Find a component').fill('Pagination');
-  await page.getByRole('button', { name: 'Next', exact: true }).click();
-  await expect(page.getByRole('rowheader', { name: 'Help centre' })).toBeVisible();
-  await page.getByRole('button', { name: 'Page 3', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Next', exact: true })).toBeDisabled();
-  await expect(page.getByRole('rowheader', { name: 'Member area' })).toBeVisible();
-  const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
-    .analyze();
-  expect(results.violations).toEqual([]);
-});
+    await navigate(page, 'Components');
+    await page.getByLabel('Find a component').fill('Pagination');
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await expect(page.getByRole('rowheader', { name: 'Help centre' })).toBeVisible();
+    await page.getByRole('button', { name: 'Page 3', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Next', exact: true })).toBeDisabled();
+    await expect(page.getByRole('rowheader', { name: 'Member area' })).toBeVisible();
+    const results = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+      .analyze();
+    expect(results.violations).toEqual([]);
+  });
+}
 
 test('expanded catalog has accessible responsive examples for all twenty additions', async ({
   page,
@@ -548,34 +525,19 @@ test('composed panels perform local profile, team, discussion and approval actio
   await expect(page.getByText('Decision recorded.')).toBeVisible();
 });
 
-test('expanded catalog retains contrast across all materials and modes', async ({
-  page,
-}, testInfo) => {
-  test.skip(
-    testInfo.project.name !== 'chromium',
-    'Material matrix is covered once; interactions run in every browser.',
-  );
-  test.setTimeout(120000);
-  await page.goto('/');
-  for (const preset of [
-    'Flat',
-    'Glass',
-    'Soft',
-    'Elevated',
-    'Outline',
-    'Editorial',
-    'Porcelain',
-    'Aurora',
-    'Studio',
-    'Canvas',
-    'Joyful',
-    'Professional',
-    'Clay',
-    'Neumorphic',
-  ]) {
+for (const preset of presets) {
+  test(`expanded catalog retains contrast across all materials and modes (${preset})`, async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'chromium',
+      'Material matrix is covered once; interactions run in every browser.',
+    );
+    await page.goto('/');
     for (const dark of [false, true]) {
+      await navigate(page, 'Authentication');
+      await page.getByLabel('Preview style').selectOption(preset);
       await navigate(page, 'Overview');
-      await page.getByRole('button', { name: new RegExp(`^${preset} `) }).click();
       await page.getByRole('switch', { name: 'Dark mode' }).setChecked(dark);
       await navigate(page, 'Components');
       const results = await new AxeBuilder({ page })
@@ -583,39 +545,28 @@ test('expanded catalog retains contrast across all materials and modes', async (
         .analyze();
       expect(results.violations, `${preset} ${dark}`).toEqual([]);
     }
-  }
-  await page.getByLabel('Preview style').selectOption('soft');
-  await page.getByLabel('Find a component').fill('Tree View');
-  await expect(page.locator('.g-theme[data-preset="soft"] [role="tree"]')).toBeVisible();
-  await page.setViewportSize({ width: 320, height: 720 });
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.screenshot({ path: 'test-results/tree-mobile-320.png', fullPage: true });
-});
+    await navigate(page, 'Authentication');
+    await page.getByLabel('Preview style').selectOption('soft');
+    await navigate(page, 'Components');
+    await page.getByLabel('Find a component').fill('Tree View');
+    await expect(page.locator('.g-theme[data-preset="soft"] [role="tree"]')).toBeVisible();
+    await page.setViewportSize({ width: 320, height: 720 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await page.screenshot({ path: testInfo.outputPath('tree-mobile-320.png'), fullPage: true });
+  });
+}
 
-test('pricing makes current and recommended plans distinct in every theme', async ({
-  page,
-}, testInfo) => {
-  test.setTimeout(90000);
-  await page.goto('/');
-  for (const preset of [
-    'Flat',
-    'Glass',
-    'Soft',
-    'Elevated',
-    'Outline',
-    'Editorial',
-    'Porcelain',
-    'Aurora',
-    'Studio',
-    'Canvas',
-    'Joyful',
-    'Professional',
-    'Clay',
-    'Neumorphic',
-  ]) {
+for (const preset of presets) {
+  test(`pricing makes current and recommended plans distinct in every theme (${preset})`, async ({
+    page,
+  }, testInfo) => {
+    await page.goto('/');
     for (const dark of [false, true]) {
+      await navigate(page, 'Authentication');
+      await page.getByLabel('Preview style').selectOption(preset);
       await navigate(page, 'Overview');
-      await page.getByRole('button', { name: new RegExp(`^${preset} `) }).click();
       await page.getByRole('switch', { name: 'Dark mode' }).setChecked(dark);
       await navigate(page, 'Components');
       await page.getByLabel('Find a component').fill('Pricing Cards');
@@ -634,14 +585,14 @@ test('pricing makes current and recommended plans distinct in every theme', asyn
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
       );
-      if (preset === 'Soft' && !dark)
+      if (preset === 'soft' && !dark)
         await page.screenshot({
           path: `test-results/pricing-usability-${testInfo.project.name}.png`,
           fullPage: true,
         });
     }
-  }
-});
+  });
+}
 test('selection cues, action dismissal and file clearing are usable in the catalog', async ({
   page,
 }) => {
