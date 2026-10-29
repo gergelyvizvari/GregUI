@@ -5309,3 +5309,305 @@ button.g-agenda-event:hover {
     outline: 2px solid Highlight;
   }
 }
+
+/* Segmented control: native radios over drawn segments. The selected segment is filled, bold and,
+   in forced colours, outlined and underlined, so selection never relies on colour alone. */
+.g-segmented-field {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--g-field-gap);
+}
+.g-segmented-field > legend {
+  padding: 0;
+  margin-bottom: var(--g-field-gap);
+}
+.g-segmented {
+  --g-segment-height: calc(var(--g-control-height) - 8px);
+  display: inline-flex;
+  align-self: flex-start;
+  max-width: 100%;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--g-control-border);
+  border-radius: var(--g-control-radius);
+  background: var(--g-control-fill);
+  box-shadow: var(--g-control-shadow);
+}
+.g-segmented[data-size='small'] {
+  --g-segment-height: calc(var(--g-button-small-height) - 8px);
+}
+.g-segmented[data-full-width='true'] {
+  display: flex;
+  align-self: stretch;
+}
+.g-segmented[data-invalid] {
+  border-color: var(--g-danger);
+}
+.g-segment {
+  position: relative;
+  display: flex;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.g-segmented[data-full-width='true'] > .g-segment {
+  flex: 1 1 0;
+}
+.g-segment-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.g-segment-face {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 0;
+  min-height: var(--g-segment-height);
+  padding: 0 var(--g-button-padding-x);
+  border: 1px solid transparent;
+  border-radius: max(calc(var(--g-control-radius) - 3px), 0px);
+  color: var(--g-text);
+  font-size: var(--g-type-small-size);
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+  transition:
+    background-color var(--g-duration) var(--g-ease),
+    color var(--g-duration) var(--g-ease);
+}
+.g-segment-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.g-segment-face > .g-icon {
+  flex: none;
+  width: 1.1em;
+  height: 1.1em;
+}
+.g-segment-input:not(:checked):not(:disabled):hover + .g-segment-face {
+  background: var(--g-tint);
+}
+.g-segment-input:checked + .g-segment-face {
+  background: var(--g-selection);
+  border-color: var(--g-selection);
+  color: var(--g-onSelection);
+  font-weight: 700;
+}
+.g-segment-input:focus-visible + .g-segment-face {
+  outline: 2px solid var(--g-focus);
+  outline-offset: 2px;
+}
+.g-segment-input:disabled {
+  cursor: not-allowed;
+}
+.g-segment-input:disabled + .g-segment-face {
+  opacity: 0.5;
+}
+.g-segmented-field:disabled .g-segmented {
+  opacity: 0.6;
+}
+
+/* Slider: a styled native range input. --g-slider-fill is the value's position on the track. */
+.g-slider-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.g-slider-value {
+  font-size: var(--g-type-small-size);
+  font-variant-numeric: tabular-nums;
+  color: var(--g-text);
+}
+.g-slider {
+  --g-slider-thumb: calc(var(--g-control-height) * 0.45);
+  --g-slider-track: 0.375rem;
+  --g-slider-direction: to right;
+  position: relative;
+  min-width: 0;
+}
+.g-theme[dir='rtl'] .g-slider {
+  --g-slider-direction: to left;
+}
+.g-slider-input {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: var(--g-control-height);
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.g-slider-input::-webkit-slider-runnable-track {
+  height: var(--g-slider-track);
+  border-radius: 99px;
+  background: linear-gradient(
+    var(--g-slider-direction),
+    var(--g-selection) var(--g-slider-fill),
+    var(--g-progress-track) var(--g-slider-fill)
+  );
+}
+.g-slider-input::-moz-range-track {
+  height: var(--g-slider-track);
+  border-radius: 99px;
+  background: linear-gradient(
+    var(--g-slider-direction),
+    var(--g-selection) var(--g-slider-fill),
+    var(--g-progress-track) var(--g-slider-fill)
+  );
+}
+.g-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  width: var(--g-slider-thumb);
+  height: var(--g-slider-thumb);
+  margin-top: calc((var(--g-slider-track) - var(--g-slider-thumb)) / 2);
+  border: 2px solid var(--g-selection);
+  border-radius: 50%;
+  background: var(--g-surface);
+  box-shadow: var(--g-actions-depth);
+}
+.g-slider-input::-moz-range-thumb {
+  box-sizing: border-box;
+  width: var(--g-slider-thumb);
+  height: var(--g-slider-thumb);
+  border: 2px solid var(--g-selection);
+  border-radius: 50%;
+  background: var(--g-surface);
+  box-shadow: var(--g-actions-depth);
+}
+.g-slider-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.g-slider-input[aria-invalid='true']::-webkit-slider-thumb {
+  border-color: var(--g-danger);
+}
+.g-slider-input[aria-invalid='true']::-moz-range-thumb {
+  border-color: var(--g-danger);
+}
+.g-slider-marks {
+  position: relative;
+  /* Marks line up with the thumb centre, which travels inside half a thumb of each edge. */
+  margin-inline: calc(var(--g-slider-thumb) / 2);
+  min-height: 1.75rem;
+}
+.g-slider-mark {
+  position: absolute;
+  top: 0;
+  inset-inline-start: var(--g-slider-mark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  translate: -50% 0;
+  color: var(--g-muted);
+  font-size: var(--g-type-caption-size);
+  white-space: nowrap;
+}
+.g-theme[dir='rtl'] .g-slider-mark {
+  translate: 50% 0;
+}
+/* End marks align their labels inward so they stay inside the field. */
+.g-slider-mark[data-edge='start'] {
+  align-items: flex-start;
+  translate: 0 0;
+}
+.g-slider-mark[data-edge='end'] {
+  align-items: flex-end;
+  translate: -100% 0;
+}
+.g-theme[dir='rtl'] .g-slider-mark[data-edge='end'] {
+  translate: 100% 0;
+}
+.g-slider-mark::before {
+  content: '';
+  height: 0.375rem;
+  margin-bottom: 0.125rem;
+  border-inline-start: 1px solid currentColor;
+}
+.g-slider-mark[data-active] {
+  color: var(--g-text);
+}
+
+/* Number field: a text input with decrement and increment buttons at the inline end. */
+.g-number-field {
+  display: flex;
+  gap: 0.375rem;
+  min-width: 0;
+}
+.g-number-input {
+  flex: 1;
+  font-variant-numeric: tabular-nums;
+}
+.g-number-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--g-control-height);
+  min-height: var(--g-control-height);
+  padding: 0;
+  border: 1px solid var(--g-secondary-border);
+  border-radius: var(--g-action-radius);
+  background: var(--g-secondary-fill);
+  box-shadow: var(--g-secondary-shadow);
+  color: var(--g-text);
+}
+.g-number-step:not(:disabled):hover {
+  background: var(--g-quiet-fill);
+}
+.g-number-step:disabled {
+  opacity: 0.5;
+}
+
+@media (any-pointer: coarse) {
+  .g-segment-face {
+    min-height: max(var(--g-segment-height), 2.75rem);
+  }
+  .g-slider-input {
+    height: max(var(--g-control-height), 2.75rem);
+  }
+  .g-number-step {
+    width: max(var(--g-control-height), 2.75rem);
+    min-height: max(var(--g-control-height), 2.75rem);
+  }
+}
+@media (forced-colors: active) {
+  .g-segmented {
+    border: 1px solid;
+  }
+  .g-segment-face {
+    border: 0;
+  }
+  .g-segment-input:checked + .g-segment-face {
+    outline: 2px solid;
+    outline-offset: -3px;
+    text-decoration: underline;
+  }
+  .g-segment-input:focus-visible + .g-segment-face {
+    outline-offset: 2px;
+  }
+  .g-slider-input::-webkit-slider-runnable-track {
+    background: none;
+    border: 1px solid;
+  }
+  .g-slider-input::-moz-range-track {
+    background: none;
+    border: 1px solid;
+  }
+  .g-number-step {
+    border: 1px solid;
+  }
+}

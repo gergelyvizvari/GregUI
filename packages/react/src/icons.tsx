@@ -21,6 +21,7 @@ export type IconName =
   | 'chevron-back'
   | 'calendar'
   | 'plus'
+  | 'minus'
   | 'edit'
   | 'save'
   | 'home'
@@ -113,6 +114,7 @@ const paths: Record<IconName, ReactNode> = {
     </>
   ),
   plus: <path d="M12 4v16M4 12h16" />,
+  minus: <path d="M4 12h16" />,
   edit: (
     <>
       <path d="m16 3 5 5-12 12-6 1 1-6Z" />
