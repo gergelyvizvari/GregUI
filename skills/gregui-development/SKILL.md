@@ -11,7 +11,7 @@ Applications own domain data, copy, validation and event handlers. gregUI owns p
 
 Packages are `@gregui/tokens`, `@gregui/localization` and `@gregui/react`. Consumer apps resolve built exports: rebuild packages after library changes. Keep public declarations, package exports and consumer examples aligned.
 
-For the visual rules of a style, read `docs/styles/<preset>.md`, or `designMarkdown(theme)` output for a custom theme. Resolve palette colours through `createTheme` or `applyPalette`; `paletteOptions[].preset` is only a suggested material and does not identify the palette colours. Use the exported preset and palette lists for choices.
+For the visual rules of a style, read `docs/styles/<preset>.md`, or `designMarkdown(theme)` output for a custom theme. Resolve palette colours through `createTheme` or `applyPalette`; `paletteOptions[].preset` is only a suggested material and does not identify the palette colours. Use the exported preset and palette lists for choices. Set `accent: 'restrained'` on a theme to keep `primary` to the main action, links and focus.
 
 Themes use version 1 JSON with strict role/value validation. Parse external themes before applying them. A schema-valid draft may fail contrast; exported themes must pass the declared pair checks. Color checks are not a certification. Preserve theme and locale through portals; check dark mode and RTL when changing overlays. Avoid translucent essential surfaces whose contrast depends on an unknown backdrop.
 

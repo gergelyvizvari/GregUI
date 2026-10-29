@@ -23,6 +23,7 @@ const presets = [
   'professional',
   'clay',
   'neumorphic',
+  'cream',
 ];
 
 test('typography and native reading content reflow across all presets, modes and enlarged text', async ({

@@ -30,6 +30,7 @@ import {
   IconButton,
   Button,
   Badge,
+  Postmark,
   Text,
   Heading,
   Stack,
@@ -581,6 +582,11 @@ function App() {
         </Field>
       </Grid>
       <Switch
+        label="Restrained accent"
+        checked={theme.accent === 'restrained'}
+        onChange={(e) => edit({ ...theme, accent: e.target.checked ? 'restrained' : 'expressive' })}
+      />
+      <Switch
         label="Reduce motion"
         checked={theme.motion === 'reduced'}
         onChange={(e) => edit({ ...theme, motion: e.target.checked ? 'reduced' : 'standard' })}
@@ -1099,7 +1105,7 @@ function App() {
                   <Section title="Behavior first">
                     <Alert title="A style never changes the interaction">
                       Keyboard controls, names, validation and focus behavior stay consistent across
-                      all fifteen presets.
+                      all sixteen presets.
                     </Alert>
                     <Text size="small" tone="muted">
                       Reduced motion and forced colors are supported independently of the visual
@@ -1848,6 +1854,26 @@ function ComponentCatalog({
             ]}
           />
         </Stack>
+      ),
+    },
+    {
+      name: 'Stamps, labels & postmarks',
+      category: 'Data display',
+      description:
+        'Tactile details for postcards and greetings. Stamp and label badges keep their text; postmarks are decorative ink and never represent real postage.',
+      api: '<Badge variant="stamp" tone="primary">First class</Badge>',
+      demo: (
+        <Inline>
+          <Badge variant="stamp" tone="primary">
+            First class
+          </Badge>
+          <Badge variant="stamp">Greetings</Badge>
+          <Badge variant="label">Fragile</Badge>
+          <Badge variant="label" tone="success">
+            Delivered
+          </Badge>
+          <Postmark place="Szeged" date="29 Oct" detail="2026" />
+        </Inline>
       ),
     },
     {

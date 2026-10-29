@@ -49,6 +49,7 @@ function ThemeFrame({
       className={`g-theme${portal ? ' g-portal' : ''}`}
       data-preset={theme.preset}
       data-mode={theme.mode}
+      data-accent={theme.accent ?? 'expressive'}
       data-density={theme.density}
       data-motion={theme.motion}
       style={themeVariables(theme) as CSSProperties}
@@ -243,12 +244,15 @@ export function Divider() {
 export function Badge({
   children,
   tone = 'neutral',
+  variant = 'standard',
 }: {
   children: ReactNode;
   tone?: 'neutral' | 'primary' | 'success' | 'warning' | 'danger';
+  /** `stamp` has a perforated stamp edge; `label` is a punched, pointed luggage-label tag. */
+  variant?: 'standard' | 'stamp' | 'label';
 }) {
   return (
-    <span className="g-badge" data-tone={tone}>
+    <span className="g-badge" data-tone={tone} data-variant={variant}>
       {children}
     </span>
   );
@@ -1338,6 +1342,7 @@ export function PresetOption({
         className="g-theme g-preset-art"
         data-preset={preset}
         data-mode={mode}
+        data-accent={sample.accent ?? 'expressive'}
         style={themeVariables(sample) as CSSProperties}
         aria-hidden="true"
       >
@@ -1618,6 +1623,7 @@ export {
 } from './address-fields';
 
 export { MailFace, type MailFaceProps } from './mail-face';
+export { Postmark, type PostmarkProps } from './postmark';
 
 export {
   CalendarMonth,

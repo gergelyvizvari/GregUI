@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added ideas from Refero styles. Themes take an optional `accent: 'restrained'` that keeps the primary colour to the main action, links and focus. Added the warm editorial **Cream** preset and Cream & vermilion palette, restrained by default. Added `Badge variant="stamp" | "label"`, a decorative `Postmark` and an optional `MailFace postmark` slot. Existing theme JSON needs no migration.
 - Added style guides: `designMarkdown(theme)` and `presetGuides` in `@gregui/tokens` write a DESIGN.md (colour roles in both modes, checked contrast, type, spacing, motion and rules) that AI coding tools can follow. Generated guides for the featured presets live in `docs/styles/`, `npm run check` keeps them current, and the workbench has Export DESIGN.md.
 - Added `CalendarMonth` and `DatePicker` for single dates, with blocked dates that explain why, `min`/`max`, per-day content, Monday or Sunday week starts and plain `YYYY-MM-DD` values. Added `calendar` and `chevron-back` icons and five locale messages.
 - Design fixes: borderless secondary buttons get a quiet fill (Paper, Bloom, Clay), alerts follow the theme's control radius, progress bars always show their track, Paper badges get a chip, checkboxes are drawn so unchecked boxes no longer look disabled in dark mode, disabled visual choices are dashed and dimmed, and the mobile toolbar keeps the menu beside the breadcrumb. Paper headings are serif, Bloom and Clay headings rounded, and Clay shadows are softer.

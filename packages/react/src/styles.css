@@ -49,8 +49,8 @@ body {
   cursor: not-allowed;
 }
 .g-theme ::selection {
-  background: var(--g-primary);
-  color: var(--g-onPrimary);
+  background: var(--g-selection);
+  color: var(--g-onSelection);
 }
 .g-stack {
   display: flex;
@@ -136,7 +136,7 @@ body {
   color: var(--g-muted);
 }
 .g-text[data-tone='primary'] {
-  color: var(--g-primary);
+  color: var(--g-selection);
 }
 .g-text[data-tone='danger'] {
   color: var(--g-danger);
@@ -199,8 +199,11 @@ body {
   --g-actions-depth: 0 6px 24px rgba(var(--g-shadow-color), 0.12);
   --g-hover-filter: none;
   --g-hover-depth: 0 5px 12px rgba(var(--g-shadow-color), 0.12);
+  /* Selected and decorative colour. Restrained accents switch it to ink; actions, links and focus keep primary. */
+  --g-selection: var(--g-primary);
+  --g-onSelection: var(--g-onPrimary);
   --g-mini-rail-bg: var(--g-background);
-  --g-mini-rail-ink: var(--g-primary);
+  --g-mini-rail-ink: var(--g-selection);
   --g-input-border-width: 1px;
   --g-input-error-width: 2px;
   --g-input-radius: var(--g-control-radius);
@@ -245,7 +248,12 @@ body {
   --g-art-radius: 5%;
   --g-art-angle: -18deg;
   --g-art-shadow: none;
-  --g-art-fill: var(--g-primary);
+  --g-art-fill: var(--g-selection);
+}
+.g-theme[data-accent='restrained'] {
+  --g-selection: var(--g-text);
+  --g-onSelection: var(--g-surface);
+  --g-input-focus-ring: 0 0 0 3px color-mix(in srgb, var(--g-focus) 22%, transparent);
 }
 .g-theme[data-preset='paper'] {
   --g-dialog-border-width: 1px;
@@ -277,7 +285,7 @@ body {
     radial-gradient(ellipse at 8% 48%, rgba(167, 198, 191, 0.2), transparent 78%),
     radial-gradient(
       ellipse at 85% 92%,
-      color-mix(in srgb, var(--g-primary) 8%, transparent),
+      color-mix(in srgb, var(--g-selection) 8%, transparent),
       transparent 76%
     ),
     linear-gradient(160deg, rgba(255, 255, 255, 0.34), transparent 80%);
@@ -289,7 +297,7 @@ body {
     130deg,
     var(--g-highlight),
     var(--g-atmosphere) 40%,
-    var(--g-primary)
+    var(--g-selection)
   );
   --g-art-shadow:
     inset 1px 1px 0 var(--g-highlight), 10px 18px 24px rgba(var(--g-shadow-color), 0.12);
@@ -321,7 +329,7 @@ body {
     radial-gradient(ellipse at 8% 48%, rgba(167, 198, 191, 0.09), transparent 78%),
     radial-gradient(
       ellipse at 85% 92%,
-      color-mix(in srgb, var(--g-primary) 7%, transparent),
+      color-mix(in srgb, var(--g-selection) 7%, transparent),
       transparent 76%
     );
   --g-showcase-surface: var(--g-background);
@@ -468,7 +476,7 @@ body {
     radial-gradient(ellipse at 0% 0%, var(--g-atmosphere), transparent 65%),
     radial-gradient(ellipse at 100% 100%, var(--g-tint), transparent 60%);
   --g-art-radius: 35% 65% 55% 45%;
-  --g-art-fill: linear-gradient(135deg, var(--g-primary), var(--g-surface));
+  --g-art-fill: linear-gradient(135deg, var(--g-selection), var(--g-surface));
   --g-art-shadow: 0 12px 32px var(--g-atmosphere);
   --g-hover-transform: translateY(-2px);
 }
@@ -500,6 +508,29 @@ body {
   --g-art-fill: var(--g-surface);
   --g-art-shadow: 5px 6px 0 var(--g-border);
   --g-hover-transform: translate(-1px, -1px);
+}
+/* Warm editorial stock: fine rules, soft corners and no material depth. */
+.g-theme[data-preset='cream'] {
+  --g-card-radius: var(--g-radius);
+  --g-card-border-color: var(--g-line);
+  --g-card-shadow: 0 1px 0 var(--g-line);
+  --g-dialog-border-width: 1px;
+  --g-dialog-border-color: var(--g-border);
+  --g-secondary-border: transparent;
+  --g-secondary-fill: var(--g-quiet-fill);
+  --g-badge-radius: 99px;
+  --g-badge-border: transparent;
+  --g-badge-fill: var(--g-quiet-fill);
+  --g-nav-shadow: none;
+  --g-hover-depth: none;
+  --g-hover-transform: none;
+  --g-hover-filter: brightness(0.96);
+  --g-popover-depth: 0 10px 30px -12px rgba(var(--g-shadow-color), 0.22);
+  --g-button-tracking: 0.01em;
+  --g-art-radius: 4%;
+  --g-art-angle: -4deg;
+  --g-art-fill: var(--g-surface);
+  --g-art-shadow: 4px 4px 0 var(--g-line);
 }
 
 /* Material styles: these change the whole component language, not just radius. */
@@ -569,7 +600,7 @@ body {
   --g-action-radius: 14px;
   --g-control-border: transparent;
   --g-secondary-border: transparent;
-  --g-secondary-fill: color-mix(in srgb, var(--g-primary) 9%, var(--g-surface));
+  --g-secondary-fill: color-mix(in srgb, var(--g-selection) 9%, var(--g-surface));
   --g-control-fill: var(--g-background);
   --g-control-shadow: inset 0 1px 2px rgba(var(--g-shadow-color), 0.08);
   --g-primary-shadow:
@@ -739,8 +770,8 @@ body {
   color: var(--g-text);
 }
 .g-badge[data-tone='primary'] {
-  color: var(--g-primary);
-  border-color: var(--g-primary);
+  color: var(--g-selection);
+  border-color: var(--g-selection);
 }
 .g-badge[data-tone='success'] {
   color: var(--g-success);
@@ -753,6 +784,159 @@ body {
 .g-badge[data-tone='danger'] {
   color: var(--g-danger);
   border-color: var(--g-danger);
+}
+/*
+ * Stamp and label shapes are cut from a ::before layer on the surface colour, so text keeps its
+ * checked contrast; a drop-shadow on the badge outlines the cut silhouette.
+ */
+.g-badge:is([data-variant='stamp'], [data-variant='label']) {
+  position: relative;
+  isolation: isolate;
+  border: 0;
+  background: transparent;
+  text-transform: uppercase;
+  filter: drop-shadow(0 0 0.6px var(--g-border))
+    drop-shadow(0 1px 1.5px rgba(var(--g-shadow-color), 0.16));
+}
+.g-badge:is([data-variant='stamp'], [data-variant='label'])::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--g-surface);
+}
+.g-badge[data-variant='stamp'] {
+  --g-perforation: 4px;
+  padding: calc(var(--g-perforation) + 0.4rem) calc(var(--g-perforation) + 0.65rem);
+  border-radius: 0;
+  letter-spacing: 0.08em;
+}
+/* Holes centre on the outer edge; the opaque padding-box layer keeps the face solid. */
+.g-badge[data-variant='stamp']::before {
+  border: var(--g-perforation) solid transparent;
+  -webkit-mask:
+    radial-gradient(
+        var(--g-perforation) at var(--g-perforation) var(--g-perforation),
+        #0000 97%,
+        #000
+      )
+      calc(var(--g-perforation) * -1) calc(var(--g-perforation) * -1) /
+      calc(var(--g-perforation) * 2) calc(var(--g-perforation) * 2) round,
+    linear-gradient(#000 0 0) padding-box;
+  mask:
+    radial-gradient(
+        var(--g-perforation) at var(--g-perforation) var(--g-perforation),
+        #0000 97%,
+        #000
+      )
+      calc(var(--g-perforation) * -1) calc(var(--g-perforation) * -1) /
+      calc(var(--g-perforation) * 2) calc(var(--g-perforation) * 2) round,
+    linear-gradient(#000 0 0) padding-box;
+}
+.g-badge[data-variant='stamp']::after {
+  content: '';
+  position: absolute;
+  inset: calc(var(--g-perforation) + 2px);
+  border: 1px solid currentColor;
+  pointer-events: none;
+}
+/* Label: a luggage tag pointing to the inline start with a punched eyelet. */
+.g-badge[data-variant='label'] {
+  --g-label-point: 0.7rem;
+  padding-block: 0.25rem;
+  padding-inline: calc(var(--g-label-point) + 0.55rem) 0.65rem;
+  letter-spacing: 0.06em;
+}
+.g-badge[data-variant='label'][data-tone='neutral'] {
+  color: var(--g-text);
+}
+.g-badge[data-variant='label']::before {
+  border-radius: 0 3px 3px 0;
+  clip-path: polygon(var(--g-label-point) 0, 100% 0, 100% 100%, var(--g-label-point) 100%, 0 50%);
+  -webkit-mask: radial-gradient(
+    circle at calc(var(--g-label-point) * 0.85) 50%,
+    #0000 2.5px,
+    #000 3px
+  );
+  mask: radial-gradient(circle at calc(var(--g-label-point) * 0.85) 50%, #0000 2.5px, #000 3px);
+}
+.g-theme[dir='rtl'] .g-badge[data-variant='label']::before {
+  border-radius: 3px 0 0 3px;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--g-label-point)) 0,
+    100% 50%,
+    calc(100% - var(--g-label-point)) 100%,
+    0 100%
+  );
+  -webkit-mask: radial-gradient(
+    circle at calc(100% - var(--g-label-point) * 0.85) 50%,
+    #0000 2.5px,
+    #000 3px
+  );
+  mask: radial-gradient(
+    circle at calc(100% - var(--g-label-point) * 0.85) 50%,
+    #0000 2.5px,
+    #000 3px
+  );
+}
+/* Postmark: decorative ink ring with optional wavy cancellation lines. */
+.g-postmark {
+  --g-postmark-ink: var(--g-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--g-postmark-ink);
+  font-family: var(--g-font);
+  line-height: 1.1;
+}
+.g-postmark[data-tilt='true'] {
+  transform: rotate(-8deg);
+}
+.g-postmark-ring {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.15rem;
+  width: 5.5rem;
+  aspect-ratio: 1;
+  padding: 0.5rem;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+  text-align: center;
+}
+.g-postmark-place {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.g-postmark-date {
+  padding-block: 0.15rem;
+  border-block: 1px solid currentColor;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.g-postmark-detail {
+  font-size: 0.5625rem;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.g-postmark-waves {
+  width: 4.5rem;
+  height: 2.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
 }
 .g-code {
   font-family: ui-monospace, monospace;
@@ -875,7 +1059,7 @@ body {
 .g-check-label input[type='radio'] {
   width: 1.125rem;
   height: 1.125rem;
-  accent-color: var(--g-primary);
+  accent-color: var(--g-selection);
   flex: none;
   margin: 0;
 }
@@ -894,14 +1078,14 @@ body {
   width: 0.65rem;
   height: 0.65rem;
   clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-  background: var(--g-onPrimary);
+  background: var(--g-onSelection);
   transform: scale(0);
   transition: transform var(--g-duration-fast) var(--g-ease);
 }
 .g-checkbox:checked,
 .g-checkbox:indeterminate {
-  border-color: var(--g-primary);
-  background: var(--g-primary);
+  border-color: var(--g-selection);
+  background: var(--g-selection);
 }
 .g-checkbox:checked::before {
   transform: scale(1);
@@ -948,12 +1132,12 @@ body {
     background-color var(--g-duration) var(--g-ease);
 }
 .g-switch:checked {
-  background: var(--g-primary);
-  border-color: var(--g-primary);
+  background: var(--g-selection);
+  border-color: var(--g-selection);
 }
 .g-switch:checked::after {
   transform: translateX(1.15rem);
-  background: var(--g-onPrimary);
+  background: var(--g-onSelection);
 }
 .g-switch:disabled {
   opacity: 0.5;
@@ -973,7 +1157,7 @@ body {
   align-items: flex-start;
   gap: 0.8rem;
   border: 1px solid var(--g-line);
-  border-inline-start: 3px solid var(--g-primary);
+  border-inline-start: 3px solid var(--g-selection);
   /* Follows the theme's control shape so alerts sit naturally beside cards and fields. */
   border-radius: var(--g-control-radius);
   background: var(--g-surface);
@@ -982,7 +1166,7 @@ body {
 }
 .g-alert > .g-icon {
   margin-top: 0.15rem;
-  color: var(--g-primary);
+  color: var(--g-selection);
 }
 .g-alert[data-tone='success'] {
   border-inline-start-color: var(--g-success);
@@ -1042,17 +1226,17 @@ body {
   border-radius: var(--g-progress-radius);
   overflow: hidden;
   background: var(--g-progress-track);
-  accent-color: var(--g-primary);
+  accent-color: var(--g-selection);
 }
 .g-progress::-webkit-progress-bar {
   background: var(--g-progress-track);
 }
 .g-progress::-webkit-progress-value {
-  background: var(--g-primary);
+  background: var(--g-selection);
   border-radius: var(--g-progress-radius);
 }
 .g-progress::-moz-progress-bar {
-  background: var(--g-primary);
+  background: var(--g-selection);
   border-radius: var(--g-progress-radius);
 }
 .g-skeleton {
@@ -1171,8 +1355,8 @@ body {
   background: var(--g-tab-fill);
   border-start-start-radius: var(--g-control-radius);
   border-start-end-radius: var(--g-control-radius);
-  border-bottom-color: var(--g-primary);
-  color: var(--g-primary);
+  border-bottom-color: var(--g-selection);
+  color: var(--g-selection);
 }
 .g-tab-content {
   padding-top: 1.5rem;
@@ -1336,7 +1520,7 @@ body {
   border-radius: var(--g-nav-radius);
   box-shadow: var(--g-nav-shadow);
   background: var(--g-surface);
-  color: var(--g-primary);
+  color: var(--g-selection);
   font-weight: 650;
 }
 .g-nav-dot {
@@ -1445,8 +1629,8 @@ body {
   box-shadow: 0 8px 18px rgba(var(--g-shadow-color), 0.09);
 }
 .g-preset-option[aria-pressed='true'] {
-  border-color: var(--g-primary);
-  box-shadow: 0 0 0 1px var(--g-primary);
+  border-color: var(--g-selection);
+  box-shadow: 0 0 0 1px var(--g-selection);
 }
 .g-preset-label {
   display: flex;
@@ -1495,7 +1679,7 @@ body {
 .g-mini-dot {
   width: 6px;
   height: 6px;
-  background: var(--g-primary);
+  background: var(--g-selection);
   border-radius: 50%;
 }
 .g-mini-input {
@@ -1527,7 +1711,7 @@ body {
   width: 21px;
   height: 12px;
   border-radius: 99px;
-  background: var(--g-primary);
+  background: var(--g-selection);
   padding: 2px;
 }
 .g-mini-toggle::after {
@@ -1535,7 +1719,7 @@ body {
   display: block;
   width: 8px;
   height: 8px;
-  background: var(--g-onPrimary);
+  background: var(--g-onSelection);
   border-radius: 50%;
   margin-inline-start: auto;
 }
@@ -1639,7 +1823,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  border-inline-start: 2px solid var(--g-primary);
+  border-inline-start: 2px solid var(--g-selection);
   padding-inline-start: 1rem;
 }
 @media (min-width: 1500px) {
@@ -2074,7 +2258,7 @@ body {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--g-primary);
+  background: var(--g-selection);
 }
 .g-art-baseline span:last-child {
   margin-inline-start: auto;
@@ -2114,7 +2298,7 @@ body {
 }
 .g-theme[data-preset='flat'] .g-art-object > span:nth-child(even) {
   background: var(--g-surface);
-  border-color: var(--g-primary);
+  border-color: var(--g-selection);
 }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .g-theme[data-motion='standard'] .g-theme-artwork:hover .g-art-object > span {
@@ -2280,7 +2464,7 @@ body {
 }
 .g-stepper li[aria-current='step'],
 .g-stepper li[data-complete='true'] {
-  border-color: var(--g-primary);
+  border-color: var(--g-selection);
 }
 .g-step-number {
   display: grid;
@@ -2292,9 +2476,9 @@ body {
   font-size: 0.875rem;
 }
 .g-stepper li[aria-current='step'] .g-step-number {
-  background: var(--g-primary);
-  color: var(--g-onPrimary);
-  border-color: var(--g-primary);
+  background: var(--g-selection);
+  color: var(--g-onSelection);
+  border-color: var(--g-selection);
 }
 .g-step-label {
   display: block;
@@ -2371,8 +2555,8 @@ body {
   overflow-wrap: anywhere;
 }
 .g-tree [aria-selected='true'] > .g-tree-item {
-  background: var(--g-primary);
-  color: var(--g-onPrimary);
+  background: var(--g-selection);
+  color: var(--g-onSelection);
 }
 .g-tree-marker {
   flex: 0 0 1rem;
@@ -2407,17 +2591,17 @@ body {
 .g-timeline-dot {
   flex: 0 0 0.85rem;
   height: 0.85rem;
-  border: 2px solid var(--g-primary);
+  border: 2px solid var(--g-selection);
   background: var(--g-surface);
   border-radius: 50%;
   margin-top: 0.3rem;
   z-index: 1;
 }
 .g-timeline [data-status='complete'] .g-timeline-dot {
-  background: var(--g-primary);
+  background: var(--g-selection);
 }
 .g-timeline [data-status='current'] .g-timeline-dot {
-  outline: 2px solid var(--g-primary);
+  outline: 2px solid var(--g-selection);
   outline-offset: 3px;
 }
 .g-timeline time {
@@ -2485,8 +2669,8 @@ body {
   cursor: pointer;
 }
 .g-choice-list [data-active='true'] {
-  background: var(--g-primary);
-  color: var(--g-onPrimary);
+  background: var(--g-selection);
+  color: var(--g-onSelection);
 }
 .g-choice-list [aria-disabled='true'] {
   color: var(--g-muted);
@@ -2522,13 +2706,13 @@ body {
   height: 48px;
   border-radius: 50%;
   background: var(--g-background);
-  color: var(--g-primary);
+  color: var(--g-selection);
 }
 .g-upload input::file-selector-button {
   font: inherit;
   font-weight: 600;
-  color: var(--g-onPrimary);
-  background: var(--g-primary);
+  color: var(--g-onSelection);
+  background: var(--g-selection);
   border: 0;
   border-radius: var(--g-control-radius);
   padding: 12px 16px;
@@ -2574,8 +2758,8 @@ body {
   margin-top: 0.5rem;
 }
 .g-list-detail > nav .g-list-detail-item > button[aria-current='true'] {
-  border-color: var(--g-primary);
-  box-shadow: inset 3px 0 var(--g-primary);
+  border-color: var(--g-selection);
+  box-shadow: inset 3px 0 var(--g-selection);
 }
 .g-list-detail > nav .g-list-detail-item > button span {
   color: var(--g-muted);
@@ -2637,7 +2821,7 @@ body {
   position: relative;
 }
 .g-pricing-card[data-current='true'] {
-  outline: 3px solid var(--g-primary);
+  outline: 3px solid var(--g-selection);
   outline-offset: -3px;
 }
 .g-plan-badges {
@@ -2660,17 +2844,17 @@ body {
   background: var(--g-background);
 }
 .g-data-table tr[data-selected='true'] > :first-child {
-  box-shadow: inset 3px 0 var(--g-primary);
+  box-shadow: inset 3px 0 var(--g-selection);
 }
 .g-list-detail > nav .g-list-detail-item > button[aria-current='true'] {
-  background: var(--g-primary);
-  color: var(--g-onPrimary);
+  background: var(--g-selection);
+  color: var(--g-onSelection);
 }
 .g-list-detail > nav .g-list-detail-item > button[aria-current='true'] span {
   color: inherit;
 }
 .g-theme[dir='rtl'] .g-data-table tr[data-selected='true'] > :first-child {
-  box-shadow: inset -3px 0 var(--g-primary);
+  box-shadow: inset -3px 0 var(--g-selection);
 }
 
 .g-image-region {
@@ -2729,7 +2913,7 @@ body {
   width: 40px;
   height: 40px;
   flex: none;
-  fill: var(--g-primary);
+  fill: var(--g-selection);
   background: var(--g-background);
   border-radius: 12px;
 }
@@ -2756,7 +2940,7 @@ body {
 .g-app-shell[data-appearance='dashboard'] .g-nav-item[aria-current='page'] {
   background: var(--g-background);
   color: var(--g-text);
-  border-inline-start: 3px solid var(--g-primary);
+  border-inline-start: 3px solid var(--g-selection);
 }
 .g-app-shell[data-appearance='editorial'] {
   display: block;
@@ -2923,7 +3107,7 @@ body {
   outline-offset: 4px;
 }
 .g-signal-card {
-  border-inline-start: 3px solid var(--g-primary);
+  border-inline-start: 3px solid var(--g-selection);
   padding: 0.3rem 0 0.3rem 1rem;
 }
 .g-chip-link {
@@ -3177,8 +3361,8 @@ body {
   caret-color: var(--g-text);
 }
 .g-highlighted-input::selection {
-  background: var(--g-primary);
-  color: var(--g-onPrimary);
+  background: var(--g-selection);
+  color: var(--g-onSelection);
 }
 .g-highlighted-editor:has(.g-highlighted-input:disabled) .g-highlighted-mirror {
   opacity: 0.6;
@@ -3225,11 +3409,11 @@ body {
     box-shadow var(--g-duration);
 }
 .g-thumbnail-choice:hover {
-  border-color: var(--g-primary);
+  border-color: var(--g-selection);
   box-shadow: 0 3px 12px rgba(var(--g-shadow-color), 0.1);
 }
 .g-thumbnail-choice[data-checked='true'] {
-  border-color: color-mix(in srgb, var(--g-primary) 45%, var(--g-line));
+  border-color: color-mix(in srgb, var(--g-selection) 45%, var(--g-line));
 }
 .g-thumbnail-choice:focus-within {
   outline: 2px solid var(--g-primary);
@@ -3243,7 +3427,7 @@ body {
   width: 20px;
   height: 20px;
   margin: 0;
-  accent-color: var(--g-primary);
+  accent-color: var(--g-selection);
   box-shadow: 0 0 0 4px var(--g-surface);
   border-radius: 4px;
   cursor: pointer;
@@ -3632,23 +3816,23 @@ body {
   transition: background-color 140ms ease;
 }
 .g-data-table tr[data-selected='true'] {
-  background: color-mix(in srgb, var(--g-primary) 9%, var(--g-surface));
+  background: color-mix(in srgb, var(--g-selection) 9%, var(--g-surface));
 }
 .g-data-table tr[data-active='true'] > :first-child {
-  box-shadow: inset 3px 0 var(--g-primary);
+  box-shadow: inset 3px 0 var(--g-selection);
 }
 .g-theme[dir='rtl'] .g-data-table tr[data-active='true'] > :first-child {
-  box-shadow: inset -3px 0 var(--g-primary);
+  box-shadow: inset -3px 0 var(--g-selection);
 }
 .g-data-table tr[data-active='true'] {
-  background: color-mix(in srgb, var(--g-primary) 5%, var(--g-surface));
+  background: color-mix(in srgb, var(--g-selection) 5%, var(--g-surface));
 }
 .g-data-table tr[data-selected='true'][data-active='true'] {
-  background: color-mix(in srgb, var(--g-primary) 12%, var(--g-surface));
+  background: color-mix(in srgb, var(--g-selection) 12%, var(--g-surface));
 }
 @media (hover: hover) and (pointer: fine) {
   .g-data-table tbody tr:not([data-selected='true']):not([data-active='true']):hover {
-    background: color-mix(in srgb, var(--g-primary) 3%, var(--g-surface));
+    background: color-mix(in srgb, var(--g-selection) 3%, var(--g-surface));
   }
   .g-button:hover:not(:disabled) {
     transform: none;
@@ -3736,7 +3920,7 @@ body {
   min-width: 0;
 }
 .g-form-section-number {
-  color: var(--g-primary);
+  color: var(--g-selection);
   background: var(--g-background);
   border: 1px solid var(--g-line);
   border-radius: 50%;
@@ -3949,7 +4133,7 @@ body {
   margin-block: 0.5em;
 }
 .g-prose :where(blockquote) {
-  border-inline-start: 3px solid var(--g-primary);
+  border-inline-start: 3px solid var(--g-selection);
   padding-inline-start: 1em;
   margin-inline: 0;
   color: var(--g-muted);
@@ -4087,7 +4271,7 @@ body {
   cursor: pointer;
 }
 .g-visual-choice:has(input:checked) {
-  border-color: var(--g-primary);
+  border-color: var(--g-selection);
 }
 .g-visual-choice:has(input:focus-visible) {
   outline: 2px solid var(--g-focus);
@@ -4104,7 +4288,7 @@ body {
   height: 1.25rem;
   margin: 0;
   z-index: 1;
-  accent-color: var(--g-primary);
+  accent-color: var(--g-selection);
 }
 .g-visual-choice-preview {
   display: grid;
@@ -4387,6 +4571,25 @@ body {
   top: 42mm;
 }
 
+/* Ring sits at the postage box's lower-left corner; cancellation lines run across the box. */
+.g-mail-postmark {
+  position: absolute;
+  top: 24mm;
+  right: 15mm;
+  pointer-events: none;
+}
+.g-mail-postmark .g-postmark {
+  --g-postmark-ink: #4a4a4a;
+}
+.g-mail-postmark .g-postmark-ring {
+  width: 18mm;
+  padding: 1.5mm;
+}
+.g-mail-postmark .g-postmark-waves {
+  width: 18mm;
+  height: 9mm;
+}
+
 .g-list-detail-group > :is(h2, h3, h4, h5, h6) {
   margin: 1.25rem 0 0.5rem;
   padding-block-end: 0.4rem;
@@ -4421,7 +4624,7 @@ body {
 }
 .g-list-detail-group-toggle[aria-disabled='true'] {
   cursor: default;
-  color: var(--g-primary);
+  color: var(--g-selection);
 }
 /* Calendar: a month grid and the date field that opens it. */
 .g-calendar {
@@ -4487,11 +4690,11 @@ body {
   text-decoration-thickness: 2px;
 }
 .g-calendar-day[data-selected] {
-  background: var(--g-primary);
-  color: var(--g-onPrimary);
+  background: var(--g-selection);
+  color: var(--g-onSelection);
 }
 .g-calendar-day[data-selected]:hover {
-  background: var(--g-primary);
+  background: var(--g-selection);
 }
 .g-calendar-day[aria-disabled='true'] {
   color: var(--g-muted);

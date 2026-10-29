@@ -9,6 +9,8 @@ export interface MailFaceProps {
   postageLabel: string;
   message?: { label: string; content: ReactNode };
   sender?: { label: string; content: ReactNode };
+  /** Decorative mark over the postage corner, usually a Postmark. Hidden from assistive technology. */
+  postmark?: ReactNode;
 }
 /** Mailing-face screen composition. Place in a zero-padding DocumentPreview page. */
 export function MailFace({
@@ -18,6 +20,7 @@ export function MailFace({
   postageLabel,
   message,
   sender,
+  postmark,
 }: MailFaceProps) {
   return (
     <div
@@ -42,6 +45,11 @@ export function MailFace({
       <div className="g-mail-postage" aria-hidden="true">
         {postageLabel}
       </div>
+      {postmark && (
+        <div className="g-mail-postmark" aria-hidden="true">
+          {postmark}
+        </div>
+      )}
       <section className="g-mail-recipient" aria-label={recipient.label} dir="auto">
         {recipient.content}
       </section>
