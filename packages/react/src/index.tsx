@@ -32,6 +32,13 @@ export {
 } from './avatar';
 export { Field, Input, Textarea, Select, TextField, Checkbox, Switch, RadioGroup } from './forms';
 export {
+  SegmentedControl,
+  type SegmentedControlProps,
+  type SegmentedControlOption,
+} from './segmented-control';
+export { Slider, type SliderProps, type SliderMark } from './slider';
+export { NumberField, type NumberFieldProps } from './number-field';
+export {
   Badge,
   Alert,
   Status,

@@ -105,6 +105,11 @@ export const english = {
   statusBusy: 'busy',
   statusOffline: 'offline',
   morePeople: 'more people',
+  numberIncrease: 'Increase',
+  numberDecrease: 'Decrease',
+  numberInvalid: 'Enter a number.',
+  numberTooLow: 'Enter {min} or more.',
+  numberTooHigh: 'Enter {max} or less.',
 };
 export type Messages = typeof english;
 /** Hungarian package messages. Uses the informal register common in Hungarian product UI. */
@@ -213,6 +218,11 @@ export const hungarian: Messages = {
   statusBusy: 'elfoglalt',
   statusOffline: 'nem elérhető',
   morePeople: 'további személy',
+  numberIncrease: 'Növelés',
+  numberDecrease: 'Csökkentés',
+  numberInvalid: 'Adj meg egy számot.',
+  numberTooLow: 'Az érték legalább {min} legyen.',
+  numberTooHigh: 'Az érték legfeljebb {max} lehet.',
 };
 const catalogs: Record<string, Messages> = { en: english, hu: hungarian };
 /** Built-in package messages for a BCP 47 locale's language, falling back to English. */

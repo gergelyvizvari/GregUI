@@ -56,6 +56,9 @@ import {
   Checkbox,
   Switch,
   RadioGroup,
+  SegmentedControl,
+  Slider,
+  NumberField,
   Alert,
   Status,
   Progress,
@@ -1550,6 +1553,9 @@ function ComponentCatalog({
     return () => window.removeEventListener('popstate', back);
   }, [onSearchChange]);
   const [radio, setRadio] = useState('monthly');
+  const [view, setView] = useState('list');
+  const [volume, setVolume] = useState(0.6);
+  const [quantity, setQuantity] = useState<number | null>(2);
   const [value, setValue] = useState('');
   const [action, setAction] = useState('');
   const entries: {
@@ -1693,6 +1699,111 @@ function ComponentCatalog({
             ]}
             value={radio}
             onChange={setRadio}
+          />
+        </Stack>
+      ),
+    },
+    {
+      name: 'Segmented control',
+      category: 'Forms',
+      description:
+        'One choice among two to five short options. Arrow keys move and select (reversed in RTL); Home and End jump to the ends.',
+      api: '<SegmentedControl label="View" options={[{ value: "list", label: "List", icon: "menu" }]} value={view} onValueChange={setView} />',
+      demo: (
+        <Stack>
+          <SegmentedControl
+            label="View"
+            options={[
+              { value: 'list', label: 'List', icon: 'menu' },
+              { value: 'grid', label: 'Grid', icon: 'grid' },
+              { value: 'calendar', label: 'Calendar', icon: 'calendar' },
+            ]}
+            value={view}
+            onValueChange={setView}
+          />
+          <Text size="small" tone="muted" role="status">
+            Showing the {view} view.
+          </Text>
+          <SegmentedControl
+            label="Period"
+            hint="Year view is not available on this plan."
+            size="small"
+            fullWidth
+            options={[
+              { value: 'day', label: 'Day' },
+              { value: 'week', label: 'Week' },
+              { value: 'month', label: 'Month' },
+              { value: 'year', label: 'Year', disabled: true },
+            ]}
+            defaultValue="week"
+          />
+        </Stack>
+      ),
+    },
+    {
+      name: 'Slider',
+      category: 'Forms',
+      description:
+        'A native range input with a formatted value, optional labelled marks, hints and errors.',
+      api: '<Slider label="Volume" value={volume} onValueChange={setVolume} formatOptions={{ style: "percent" }} min={0} max={1} step={0.05} />',
+      demo: (
+        <Stack>
+          <Slider
+            label="Volume"
+            min={0}
+            max={1}
+            step={0.05}
+            value={volume}
+            onValueChange={setVolume}
+            formatOptions={{ style: 'percent' }}
+          />
+          <Slider
+            label="Delivery budget"
+            hint="Marks are reference points; the step is £5."
+            min={0}
+            max={100}
+            step={5}
+            defaultValue={40}
+            formatOptions={{ style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }}
+            marks={[
+              { value: 0, label: 'Free' },
+              { value: 50, label: 'Standard' },
+              { value: 100, label: 'Express' },
+            ]}
+          />
+          <Slider label="Locked setting" defaultValue={30} disabled />
+        </Stack>
+      ),
+    },
+    {
+      name: 'Number field',
+      category: 'Forms',
+      description:
+        'Locale-aware numeric entry: typed text is kept until blur, ArrowUp/ArrowDown and PageUp/PageDown step, and out-of-range values are flagged.',
+      api: '<NumberField label="Quantity" value={quantity} onValueChange={setQuantity} min={1} max={20} />',
+      demo: (
+        <Stack>
+          <NumberField
+            label="Quantity"
+            hint="Between 1 and 20."
+            min={1}
+            max={20}
+            value={quantity}
+            onValueChange={setQuantity}
+          />
+          <NumberField
+            label="Price"
+            formatOptions={{ style: 'currency', currency: 'GBP' }}
+            min={0}
+            step={0.5}
+            defaultValue={12.5}
+          />
+          <NumberField
+            label="Discount"
+            formatOptions={{ style: 'percent' }}
+            min={0}
+            max={1}
+            defaultValue={0.1}
           />
         </Stack>
       ),
