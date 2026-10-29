@@ -13,7 +13,47 @@ import {
   designMarkdown,
   presetGuides,
   themeVariables,
+  zIndex,
+  breakpoints,
+  mediaQuery,
 } from '@gregui/tokens';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+describe('layering and breakpoint tokens', () => {
+  const css = readFileSync(join(process.cwd(), 'packages/react/src/styles.css'), 'utf8');
+  it('keeps the stacking order and emits one variable per layer', () => {
+    const order = Object.values(zIndex);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+    expect(zIndex.modal).toBeGreaterThan(zIndex.backdrop);
+    expect(zIndex.popover).toBeGreaterThan(zIndex.modal);
+    expect(zIndex.skipLink).toBe(Math.max(...order));
+    const vars = themeVariables(createTheme());
+    expect(vars['--g-z-sticky-actions']).toBe('5');
+    expect(vars['--g-z-skip-link']).toBe('200');
+    expect(Object.keys(vars).filter((name) => name.startsWith('--g-z-'))).toHaveLength(
+      order.length,
+    );
+  });
+  it('library CSS uses only defined layer variables, never numeric z-index', () => {
+    const vars = themeVariables(createTheme());
+    const rules = css.replace(/\/\*[\s\S]*?\*\//g, '');
+    const values = [...rules.matchAll(/z-index:\s*([^;]+);/g)].map((match) => match[1].trim());
+    expect(values.length).toBeGreaterThan(0);
+    for (const value of values) {
+      expect(value).toMatch(/^var\(--g-z-[a-z-]+\)$/);
+      expect(vars).toHaveProperty(value.slice(4, -1));
+    }
+  });
+  it('builds max-width media queries from named breakpoints', () => {
+    expect(mediaQuery('compact')).toBe('(max-width: 760px)');
+    expect(Object.values(breakpoints)).toEqual(
+      [...Object.values(breakpoints)].sort((a, b) => a - b),
+    );
+    for (const [name, width] of Object.entries(breakpoints))
+      expect(css).toContain(`width: ${width}px) /* breakpoints.${name} */`);
+  });
+});
 describe('theme contract', () => {
   it('matches reference black/white contrast', () =>
     expect(contrast('#000000', '#ffffff')).toBe(21));
@@ -28,14 +68,56 @@ describe('theme contract', () => {
     copy.colors.primary = '#000000';
     expect(original.colors.primary).not.toBe(copy.colors.primary);
   });
-  it('rejects CSS injection, missing roles, unknown fields and future schemas', () => {
+  it('rejects CSS injection, missing roles and future schema versions', () => {
     const theme = createTheme();
     expect(() =>
       parseTheme({ ...theme, colors: { ...theme.colors, primary: 'red; position:fixed' } }),
     ).toThrow();
     expect(() => parseTheme({ ...theme, colors: {} })).toThrow();
-    expect(() => parseTheme({ ...theme, extra: true })).toThrow();
-    expect(() => parseTheme({ ...theme, version: 2 })).toThrow();
+    expect(() => parseTheme({ ...theme, version: 2 })).toThrow(/version/);
+    expect(() => parseTheme({ ...theme, version: 2, futureSetting: 'x' })).toThrow(/version/);
+  });
+  it('ignores unknown top-level properties from newer builds and drops them', () => {
+    const theme = createTheme('glass', 'dark', 'plum');
+    const saved = JSON.parse(
+      JSON.stringify({ ...theme, elevation: 'deep', layout: { gutter: 4 }, __proto__x: 1 }),
+    );
+    const parsed = parseTheme(saved);
+    expect(parsed).toEqual(theme);
+    expect(Object.keys(parsed).sort()).toEqual(Object.keys(theme).sort());
+    // Exports contain only what this build understands, and round trip unchanged.
+    const exported = exportTheme(parsed);
+    expect(exported).not.toContain('elevation');
+    expect(parseTheme(JSON.parse(exported))).toEqual(theme);
+    expect(getPalette(parsed)).toBe('plum');
+    expect(switchMode(parsed, 'light')).toEqual(createTheme('glass', 'light', 'plum'));
+  });
+  it('ignores unknown colour roles but still requires every known role as six-digit hex', () => {
+    const theme = createTheme('flat');
+    const parsed = parseTheme({
+      ...theme,
+      colors: { ...theme.colors, info: '#123456', highlight: 'not-a-colour' },
+    });
+    expect(parsed.colors).toEqual(theme.colors);
+    expect(Object.keys(parsed.colors)).toHaveLength(Object.keys(theme.colors).length);
+    expect(Object.keys(themeVariables(parsed))).not.toContain('--g-info');
+    expect(applyPalette(parsed, 'coral').colors).toEqual(
+      createTheme('flat', 'light', 'coral').colors,
+    );
+    const { danger: _danger, ...missing } = theme.colors;
+    expect(() => parseTheme({ ...theme, colors: { ...missing, info: '#123456' } })).toThrow(
+      /danger/,
+    );
+    expect(() => parseTheme({ ...theme, colors: { ...theme.colors, text: '#fff' } })).toThrow(
+      /text must be a six-digit hex/,
+    );
+  });
+  it('still validates every known property when unknown ones are present', () => {
+    const theme = { ...createTheme(), futureSetting: true };
+    expect(() => parseTheme({ ...theme, density: 'roomy' })).toThrow(/density/);
+    expect(() => parseTheme({ ...theme, name: '' })).toThrow(/name/);
+    const { motion: _motion, ...withoutMotion } = theme;
+    expect(() => parseTheme(withoutMotion)).toThrow(/motion/);
   });
   it('allows invalid-contrast drafts but blocks their export', () => {
     const theme = createTheme();

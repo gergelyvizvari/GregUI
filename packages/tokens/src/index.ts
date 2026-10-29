@@ -625,6 +625,55 @@ export const typography = {
   card: { fontSize: '1rem', lineHeight: '1.15', letterSpacing: '-0.01em' },
 } as const;
 export type TypographyRole = keyof typeof typography;
+/**
+ * Stacking layers, lowest first. Theme-invariant; emitted as `--g-z-<kebab-name>` by
+ * `themeVariables`, so every themed root and portal frame has them. Use these instead of numbers.
+ */
+export const zIndex = {
+  /** Decorative layer behind its own content (badge stamp, immersive panel image). */
+  behind: -1,
+  /** Lifts an element above its siblings (timeline dot, focused choice input). */
+  raised: 1,
+  /** Sticky form action bar at the bottom of a long form. */
+  stickyActions: 5,
+  /** In-flow dropdown list anchored to its field (Combobox choices). */
+  dropdown: 10,
+  /** Sticky toolbar at the top of a scrolling region. */
+  sticky: 20,
+  /** Floating panel launcher button. */
+  launcher: 80,
+  /** Non-modal floating panel (desktop inspector). */
+  panel: 90,
+  /** Modal backdrop. */
+  backdrop: 100,
+  /** Modal dialog, drawer and modal floating panel. */
+  modal: 101,
+  /** Popover and menu content, above modals that open them. */
+  popover: 110,
+  /** Skip link, above everything when focused. */
+  skipLink: 200,
+} as const;
+export type ZIndexLayer = keyof typeof zIndex;
+/**
+ * Named viewport widths in CSS pixels, used as `max-width` limits (`compact` means "this width or
+ * narrower"). CSS custom properties cannot be used in media queries, so styles.css repeats these
+ * numbers; script code should use `mediaQuery('compact')` etc. instead of literal queries.
+ */
+export const breakpoints = {
+  /** Phones: single-column layouts and stacked toolbars. */
+  phone: 600,
+  /** Small tablets and narrow windows: drawers replace side panels and inspectors. */
+  compact: 760,
+  /** Tablets and split screens: multi-column layouts collapse. */
+  medium: 960,
+  /** Laptops: wide workbench grids reduce columns. */
+  wide: 1200,
+} as const;
+export type Breakpoint = keyof typeof breakpoints;
+/** `(max-width: <n>px)` for a named breakpoint, for `window.matchMedia`. */
+export function mediaQuery(breakpoint: Breakpoint): string {
+  return `(max-width: ${breakpoints[breakpoint]}px)`;
+}
 
 export function themeVariables(theme: Theme): Record<string, string> {
   const vars: Record<string, string> = {};
@@ -633,6 +682,8 @@ export function themeVariables(theme: Theme): Record<string, string> {
     vars[`--g-type-${role}-line-height`] = spec.lineHeight;
     vars[`--g-type-${role}-tracking`] = spec.letterSpacing;
   }
+  for (const [layer, value] of Object.entries(zIndex))
+    vars[`--g-z-${layer.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`] = String(value);
   for (const role of colorRoles) vars[`--g-${role}`] = theme.colors[role];
   const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ');
   const night = theme.mode === 'dark';
@@ -757,26 +808,27 @@ export function checkContrast(theme: Theme): ContrastCheck[] {
     };
   });
 }
+/**
+ * Validates untrusted theme JSON and returns a fresh, normalised version 1 theme.
+ *
+ * Forward compatibility: a theme saved by a newer build of the same schema version may carry
+ * top-level properties or colour roles this build does not know. Those are ignored and dropped
+ * from the result instead of rejected, so the theme still loads. Every property this build knows
+ * must still be present (accent stays optional) and valid, and every known colour role must be a
+ * six-digit hex colour.
+ *
+ * Unknown values are dropped rather than passed through so the result is exactly `Theme`: nothing
+ * unvalidated reaches `themeVariables`, CSS export or `designMarkdown`, and `exportTheme` writes
+ * only what this build understands. Re-exporting from an older build therefore loses the newer
+ * build's extra settings, which fall back to their defaults when reopened in the newer build.
+ * A change that older builds must not silently ignore needs a new `version`, which stays rejected.
+ */
 export function parseTheme(input: unknown): Theme {
   if (!input || typeof input !== 'object' || Array.isArray(input))
     throw new Error('Theme must be a JSON object.');
   const source = input as Record<string, unknown>;
   // The short-lived Mono material is now Paper; preserve saved custom colours.
   const v = source.preset === 'mono' ? { ...source, preset: 'paper' } : source;
-  const exactKeys = [
-    'version',
-    'name',
-    'preset',
-    'mode',
-    'density',
-    'radius',
-    'font',
-    'motion',
-    'colors',
-    'accent',
-  ];
-  if (Object.keys(v).some((k) => !exactKeys.includes(k)))
-    throw new Error('Theme contains unsupported properties.');
   if (v.version !== 1) throw new Error('Unsupported theme version. Expected version 1.');
   if (typeof v.name !== 'string' || !v.name.trim() || v.name.length > 80)
     throw new Error('Theme name must contain 1–80 characters.');
@@ -796,11 +848,7 @@ export function parseTheme(input: unknown): Theme {
   if (!v.colors || typeof v.colors !== 'object' || Array.isArray(v.colors))
     throw new Error('Theme colors are required.');
   const colors = v.colors as Record<string, unknown>;
-  if (
-    Object.keys(colors).length !== colorRoles.length ||
-    Object.keys(colors).some((k) => !colorRoles.includes(k as ColorRole))
-  )
-    throw new Error('Theme must contain exactly the supported color roles.');
+  // Unknown roles (from a newer build) are ignored; every known role is still required.
   for (const role of colorRoles)
     if (typeof colors[role] !== 'string' || !/^#[\da-f]{6}$/i.test(colors[role] as string))
       throw new Error(`${role} must be a six-digit hex color.`);
