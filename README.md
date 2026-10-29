@@ -79,7 +79,7 @@ Import the stylesheet once, at the application root. Packages ship ESM and TypeS
 
 Use `parseTheme(JSON.parse(input))` before applying externally supplied theme JSON. `exportTheme` rejects schemas or checked color pairs that fail validation; export is not accessibility certification. Changing light/dark mode with `switchMode` uses the matching palette's light/dark colours. Custom colours fall back to the preset's defaults; other theme properties are preserved.
 
-Each preset has its own default palette and component treatment: forest Flat, plum Glass, clay Soft, blue Elevated and ink/cream Outline. See the [visual direction](docs/DESIGN.md). The workbench loads the complete preset when selected; Undo restores your previous custom draft.
+Each preset has its own default palette and component treatment: forest Flat, plum Glass, clay Soft, blue Elevated and ink/cream Outline. See the [visual direction](docs/DESIGN.md) and the generated per-preset [style guides](docs/styles/README.md). The workbench loads the complete preset when selected; Undo restores your previous custom draft.
 
 Apps own domain content, state, routing, validation rules and data processing. gregUI owns styling and shared interaction behavior. Compose Stack, Inline, Grid, Split, Container, Card and page/overlay primitives; extend the package for missing variants. No application CSS, arbitrary style props or class overrides. `npm run check:styles` enforces common violations in this workspace; replicate the policy in each consuming repository.
 

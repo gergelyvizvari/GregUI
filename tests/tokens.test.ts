@@ -10,6 +10,8 @@ import {
   paletteOptions,
   applyPalette,
   getPalette,
+  designMarkdown,
+  presetGuides,
 } from '@gregui/tokens';
 describe('theme contract', () => {
   it('matches reference black/white contrast', () =>
@@ -85,4 +87,31 @@ it('keeps Pure white neutral and newly added accent palettes distinct', () => {
   expect(white.colors.primary).toBe('#303030');
   const accents = ['coral', 'citrus', 'mint', 'violet'] as const;
   expect(new Set(accents.map((id) => applyPalette(white, id).colors.primary)).size).toBe(4);
+});
+
+describe('designMarkdown', () => {
+  it('describes a built-in palette in both modes with its setup call and checked contrast', () => {
+    const md = designMarkdown(createTheme('paper', 'light', 'coral'));
+    expect(md).toContain('# Paper · Coral');
+    expect(md).toContain("createTheme('paper', 'light', 'coral')");
+    const light = createTheme('paper', 'light', 'coral').colors.primary;
+    const dark = createTheme('paper', 'dark', 'coral').colors.primary;
+    expect(md).toContain(`| \`primary\` | \`${light}\` | \`${dark}\` |`);
+    expect(md).toContain('| onPrimary / primary | 4.5:1 |');
+    expect(md).not.toContain('(fails)');
+    expect(md).not.toContain('## Theme JSON');
+  });
+  it('embeds custom themes as JSON and flags failing pairs instead of throwing', () => {
+    const theme = createTheme('flat');
+    theme.colors.muted = '#bbbbbb';
+    const md = designMarkdown(theme);
+    expect(md).toContain('# Flat · Custom');
+    expect(md).toContain('parseTheme(themeJson)');
+    expect(md).toContain('(fails)');
+    expect(md).toContain('"muted": "#bbbbbb"');
+    expect(md).not.toContain('| Dark |');
+  });
+  it('has a guide for every preset', () => {
+    for (const preset of presets) expect(presetGuides[preset].rules.length).toBeGreaterThan(0);
+  });
 });

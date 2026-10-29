@@ -91,6 +91,7 @@ import {
   checkContrast,
   parseTheme,
   exportTheme,
+  designMarkdown,
   colorRoles,
   presets,
   featuredPresets,
@@ -397,15 +398,14 @@ function App() {
       setNotice('Previous theme restored.');
     }
   }
-  function download(format: 'json' | 'css') {
+  function download(format: 'json' | 'css' | 'md') {
     try {
-      const data = exportTheme(theme, format);
-      const url = URL.createObjectURL(
-        new Blob([data], { type: format === 'json' ? 'application/json' : 'text/css' }),
-      );
+      const data = format === 'md' ? designMarkdown(theme) : exportTheme(theme, format);
+      const type = { json: 'application/json', css: 'text/css', md: 'text/markdown' }[format];
+      const url = URL.createObjectURL(new Blob([data], { type }));
       const anchor = document.createElement('a');
       anchor.href = url;
-      anchor.download = `gregui-theme.${format}`;
+      anchor.download = format === 'md' ? 'DESIGN.md' : `gregui-theme.${format}`;
       anchor.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
       setNotice(
@@ -708,6 +708,9 @@ function App() {
       </Dialog>
       <Button variant="secondary" onClick={() => download('css')} disabled={failures.length > 0}>
         Export CSS tokens
+      </Button>
+      <Button variant="secondary" onClick={() => download('md')} disabled={failures.length > 0}>
+        Export DESIGN.md
       </Button>
       <Button
         variant="ghost"

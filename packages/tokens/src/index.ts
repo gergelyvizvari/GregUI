@@ -755,3 +755,243 @@ export function exportTheme(theme: Theme, format: 'json' | 'css' = 'json'): stri
     .map(([k, v]) => `  ${k}: ${v};`)
     .join('\n')}\n}\n`;
 }
+/** Art direction per preset, written for people and AI tools building with a style. */
+export const presetGuides: Record<
+  Preset,
+  { character: string; useFor: string; rules: readonly string[] }
+> = {
+  paper: {
+    character:
+      'Ink on paper: white or warm-white planes, near-black type, a serif display face and square corners. Colour comes from the chosen accent only.',
+    useFor:
+      'Stationery, editorial products and print-related tools where the content is the colour.',
+    rules: [
+      'Let whitespace and type size carry hierarchy before reaching for colour.',
+      'Secondary actions have a soft fill and no border.',
+    ],
+  },
+  joyful: {
+    character:
+      'Fresh, bright colour with rounded display type and generous rounded shapes. Friendly without being childish.',
+    useFor: 'Consumer apps, greetings, onboarding and anything that should feel welcoming.',
+    rules: [
+      'Use Badge and VisualChoiceGroup for colour moments rather than tinting whole sections.',
+      'Keep long reading text on plain surfaces.',
+    ],
+  },
+  professional: {
+    character:
+      'A clear working surface: square corners, compact rhythm, quick motion and colourful details on a calm base.',
+    useFor: 'Dashboards, admin tools and data-heavy workflows.',
+    rules: [
+      'Prefer compact density for tables and dense forms.',
+      'Reserve the primary colour for the main action and current selection.',
+    ],
+  },
+  clay: {
+    character:
+      'Puffy, sculpted forms with soft tinted surfaces, rounded display type and gentle depth.',
+    useFor: 'Playful consumer products, creative tools and craft or gifting experiences.',
+    rules: [
+      'Group related content in cards; avoid stacking many raised layers.',
+      'Keep text on solid surfaces so contrast stays predictable.',
+    ],
+  },
+  neumorphic: {
+    character:
+      'Raised surfaces and recessed controls on one tonal plane, separated by light and shadow.',
+    useFor: 'Small control panels and settings screens with few elements.',
+    rules: [
+      'Fields keep visible borders; never rely on shadows alone to show a boundary.',
+      'Avoid long lists and dense tables in this style.',
+    ],
+  },
+  flat: {
+    character: 'Clean planes, restrained corners, fine borders and minimal elevation.',
+    useFor: 'General-purpose products that should feel direct and fast.',
+    rules: ['Separate regions with spacing and borders rather than shadows.'],
+  },
+  glass: {
+    character:
+      'Layered translucent panels over an atmospheric backdrop, with rim highlights and rounded actions.',
+    useFor: 'Media, showcase and immersive experiences.',
+    rules: [
+      'Keep inputs, overlays and essential text on opaque surfaces.',
+      'Check text contrast against the real backdrop before shipping.',
+    ],
+  },
+  soft: {
+    character: 'Warm tonal planes, opposing soft shadows, inset fields and a serif display face.',
+    useFor: 'Wellness, lifestyle and calm reading experiences.',
+    rules: ['Use fewer, larger surfaces; soft depth gets muddy when nested.'],
+  },
+  elevated: {
+    character: 'Floating cards over a quiet background, polished action buttons and clear depth.',
+    useFor: 'SaaS products where panels, popovers and dialogs need clear layering.',
+    rules: ['Use elevation to show layering (page, card, overlay), not decoration.'],
+  },
+  outline: {
+    character:
+      'Graphic structure: hard borders, offset shadows, squared corners and uppercase actions.',
+    useFor: 'Bold brands, portfolios and products with a print or poster feel.',
+    rules: ['Keep labels short; uppercase actions get hard to read when long.'],
+  },
+  editorial: {
+    character: 'Serif display type, fine rules and a magazine-like reading rhythm.',
+    useFor: 'Content-led products, stories, journals and long-form reading.',
+    rules: ['Use Heading sizes and rules for hierarchy; keep decoration out of body text.'],
+  },
+  porcelain: {
+    character: 'Polished curves with a satin, softly lit surface.',
+    useFor: 'Premium consumer products and beauty or fashion brands.',
+    rules: ['Keep layouts sparse so the polished surfaces have room.'],
+  },
+  aurora: {
+    character: 'Luminous edges and flowing colour around calm content areas.',
+    useFor: 'Launch pages and showcase moments rather than everyday tools.',
+    rules: ['Keep the luminous treatment to framing; content stays on plain surfaces.'],
+  },
+  studio: {
+    character: 'Precise lines, square corners, quick motion and quiet depth.',
+    useFor: 'Creative and professional tools where precision matters.',
+    rules: ['Align to the spacing scale strictly; this style shows misalignment.'],
+  },
+  canvas: {
+    character: 'Tactile paper surfaces and playful shapes.',
+    useFor: 'Education, hobby and craft products.',
+    rules: ['Mix shapes sparingly; one playful element per view is enough.'],
+  },
+};
+const roleUse: Record<ColorRole, string> = {
+  background: 'Page canvas behind everything',
+  surface: 'Cards, fields, menus and dialogs',
+  text: 'Body text and headings',
+  muted: 'Secondary text, hints and captions',
+  border: 'Field and control boundaries',
+  primary: 'Main action, links and current selection',
+  onPrimary: 'Text and icons on primary',
+  focus: 'Keyboard focus ring',
+  success: 'Positive status text',
+  warning: 'Caution status text',
+  danger: 'Errors and destructive actions',
+};
+/**
+ * Writes a DESIGN.md for a theme: the guide AI coding tools and people follow to build in this style.
+ * Built-in palettes include both modes; custom colours describe the theme's current mode only.
+ */
+export function designMarkdown(theme: Theme): string {
+  const valid = parseTheme(theme);
+  const info = presetInfo[valid.preset];
+  const guide = presetGuides[valid.preset];
+  const palette = getPalette(valid);
+  const modes: Mode[] = palette ? ['light', 'dark'] : [valid.mode];
+  const themes = modes.map((mode) => (mode === valid.mode ? valid : switchMode(valid, mode)));
+  const vars = themeVariables(valid);
+  const paletteName = palette ? paletteOptions.find((o) => o.id === palette)!.name : 'Custom';
+  const row = (cells: string[]) => `| ${cells.join(' | ')} |`;
+  const table = (head: string[], rows: string[][]) =>
+    [row(head), row(head.map(() => '---')), ...rows.map(row)].join('\n');
+  const capital = (mode: Mode) => mode[0]!.toUpperCase() + mode.slice(1);
+  const usesDefaults =
+    palette &&
+    JSON.stringify({ ...valid, name: '' }) ===
+      JSON.stringify({ ...createTheme(valid.preset, valid.mode, palette), name: '' });
+  const setup = usesDefaults
+    ? `const theme = createTheme('${valid.preset}', '${valid.mode}', '${palette}');`
+    : `// Save the theme JSON below as theme.json.\nconst theme = parseTheme(themeJson);`;
+  return [
+    `# ${info.name} · ${paletteName}`,
+    '',
+    `> ${info.description}. ${guide.character}`,
+    '',
+    `**Use it for:** ${guide.useFor}`,
+    '',
+    'This file describes a gregUI theme for people and AI coding tools. Build screens only from `@gregui/react` components; this style comes from the theme, not from app CSS.',
+    '',
+    '## Apply it',
+    '',
+    '```tsx',
+    "import '@gregui/react/styles.css';",
+    "import { LocaleProvider, ThemeProvider } from '@gregui/react';",
+    `import { ${usesDefaults ? 'createTheme' : 'parseTheme'} } from '@gregui/tokens';`,
+    '',
+    setup,
+    '// <LocaleProvider locale="en-GB"><ThemeProvider theme={theme}>…</ThemeProvider></LocaleProvider>',
+    '```',
+    '',
+    '## Colour roles',
+    '',
+    'Use roles through component props such as `tone` and `variant`. Never hard-code these values in an app.',
+    '',
+    table(
+      ['Role', ...modes.map(capital), 'Use'],
+      colorRoles.map((role) => [
+        `\`${role}\``,
+        ...themes.map((t) => `\`${t.colors[role]}\``),
+        roleUse[role],
+      ]),
+    ),
+    '',
+    '## Checked contrast',
+    '',
+    table(
+      ['Pair', 'Minimum', ...modes.map(capital)],
+      checkContrast(valid).map((check, i) => [
+        check.label,
+        `${check.minimum}:1`,
+        ...themes.map((t) => {
+          const c = checkContrast(t)[i]!;
+          return `${c.ratio.toFixed(2)}:1${c.pass ? '' : ' (fails)'}`;
+        }),
+      ]),
+    ),
+    '',
+    '## Shape and density',
+    '',
+    `- Corners: ${valid.radius} (\`${vars['--g-radius']}\`).`,
+    `- Density: ${valid.density}. Controls are \`${vars['--g-control-height']}\` tall; set \`density: 'compact'\` for dense tools.`,
+    '',
+    '## Typography',
+    '',
+    `- Body font: \`${vars['--g-font']}\`.`,
+    `- Display font: \`${vars['--g-display-font']}\`, weight ${vars['--g-display-weight']}.`,
+    '- Use `Heading` sizes and `Text` sizes rather than custom font settings.',
+    '',
+    table(
+      ['Role', 'Size', 'Line height', 'Tracking'],
+      Object.entries(typography).map(([role, spec]) => [
+        `\`${role}\``,
+        `\`${spec.fontSize}\``,
+        spec.lineHeight,
+        spec.letterSpacing,
+      ]),
+    ),
+    '',
+    '## Spacing',
+    '',
+    'Layout components (`Stack`, `Inline`, `Grid`) take a `gap` step from this scale.',
+    '',
+    table(
+      ['Step', 'Value'],
+      Object.entries(spacing).map(([step, value]) => [step, `\`${value}\``]),
+    ),
+    '',
+    '## Motion',
+    '',
+    valid.motion === 'reduced'
+      ? '- Motion is reduced: transitions are off.'
+      : `- Controls ${vars['--g-duration']}, entrances ${vars['--g-duration-enter']}, press feedback ${vars['--g-duration-fast']}. The system reduced-motion setting turns them off.`,
+    '',
+    '## Rules',
+    '',
+    ...guide.rules.map((rule) => `- ${rule}`),
+    '- One primary button per view; other actions use `secondary` or `ghost`.',
+    '- Show status with `Alert`, `Badge` and `tone`, never colour alone.',
+    '- No `className`, `style` or app CSS. If a variant is missing, extend gregUI instead.',
+    '- Check light and dark mode, keyboard focus and right-to-left layout for new screens.',
+    ...(usesDefaults
+      ? []
+      : ['', '## Theme JSON', '', '```json', JSON.stringify(valid, null, 2), '```']),
+    '',
+  ].join('\n');
+}
