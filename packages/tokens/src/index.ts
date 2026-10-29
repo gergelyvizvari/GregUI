@@ -608,18 +608,27 @@ export function themeVariables(theme: Theme): Record<string, string> {
     clay: [240, 340],
     neumorphic: [200, 280],
   };
+  // Display type is a large part of each style's character, so presets differ here, not just in shape.
+  const serifDisplay = '"Iowan Old Style", "Palatino Linotype", Charter, Georgia, serif';
+  const roundedDisplay = 'ui-rounded, "SF Pro Rounded", "Nunito", "Avenir Next", var(--g-font)';
   vars['--g-display-font'] =
-    theme.font === 'system' && ['soft', 'editorial'].includes(theme.preset)
-      ? 'Georgia, "Times New Roman", serif'
-      : 'var(--g-font)';
+    theme.font === 'system' && ['soft', 'editorial', 'paper'].includes(theme.preset)
+      ? serifDisplay
+      : theme.font !== 'mono' && ['joyful', 'clay'].includes(theme.preset)
+        ? roundedDisplay
+        : 'var(--g-font)';
   vars['--g-art-spread'] = theme.motion === 'reduced' ? '17px' : '23px';
   vars['--g-icon-shift'] = theme.motion === 'reduced' ? '0px' : '2px';
   vars['--g-art-lift'] = theme.motion === 'reduced' ? '10px' : '15px';
-  vars['--g-display-weight'] = ['soft', 'editorial'].includes(theme.preset)
+  vars['--g-display-weight'] = ['soft', 'editorial', 'paper'].includes(theme.preset)
     ? '400'
-    : theme.preset === 'outline'
+    : ['outline', 'flat'].includes(theme.preset)
       ? '750'
-      : '550';
+      : ['joyful', 'clay'].includes(theme.preset)
+        ? '650'
+        : theme.preset === 'glass'
+          ? '480'
+          : '550';
   vars['--g-duration'] = theme.motion === 'reduced' ? '0ms' : `${rhythms[theme.preset][0]}ms`;
   vars['--g-duration-fast'] = theme.motion === 'reduced' ? '0ms' : '120ms';
   vars['--g-duration-enter'] = theme.motion === 'reduced' ? '0ms' : `${rhythms[theme.preset][1]}ms`;

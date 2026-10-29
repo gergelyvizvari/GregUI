@@ -67,10 +67,20 @@ it('server renders translated controls, page direction and no guides when not co
   expect(html).toContain('Nagyítás');
   expect(html).not.toContain('type="checkbox"');
 });
-it('rejects impossible physical dimensions and missing controlled pages', () => {
+it('rejects impossible dimensions but recovers from a stale page or an oversized safe area', () => {
   expect(() => renderToString(<DocumentPreview {...props} widthMm={0} />)).toThrow(/dimensions/);
-  expect(() => renderToString(<DocumentPreview {...props} safeAreaMm={60} />)).toThrow(/safe area/);
-  expect(() => renderToString(<DocumentPreview {...props} pageId="missing" />)).toThrow(/pageId/);
+  expect(() => renderToString(<DocumentPreview {...props} pages={[]} />)).toThrow(/page/);
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  vi.stubGlobal('ResizeObserver', undefined);
+  const { rerender } = render(<DocumentPreview {...props} pageId="back" />);
+  rerender(<DocumentPreview {...props} pageId="back" pages={[props.pages[0]!]} />);
+  expect(screen.getByText('Artwork')).toBeInTheDocument();
+  expect(screen.getByLabelText('Side')).toHaveValue('front');
+  expect(warn).toHaveBeenCalledWith(expect.stringMatching(/pageId "back"/));
+  rerender(<DocumentPreview {...props} safeAreaMm={60} />);
+  expect(screen.queryByLabelText('Safe area')).not.toBeInTheDocument();
+  expect(warn).toHaveBeenCalledWith(expect.stringMatching(/safe area/));
+  warn.mockRestore();
 });
 
 it('renders two named document panels in reading order with optional decorative fold guidance', () => {

@@ -21,6 +21,10 @@ export interface DocumentPreviewProps {
   safeAreaMm?: number;
   labels: { page: string; zoom: string; fit: string; guides: string };
 }
+const warn = (message: string) => {
+  if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') return;
+  console.warn(message);
+};
 /** Screen proofing only. The application owns composition, asset quality and print/export. */
 export function DocumentPreview({
   label,
@@ -43,21 +47,34 @@ export function DocumentPreview({
     if (!element) return;
     const update = () => setAvailable(Math.max(0, element.clientWidth - 32));
     update();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', update);
+      return () => window.removeEventListener('resize', update);
+    }
     const observer = new ResizeObserver(update);
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
   if (![widthMm, heightMm].every((n) => Number.isFinite(n) && n > 0))
     throw new Error('DocumentPreview dimensions must be positive finite millimetres.');
-  if (
-    safeAreaMm !== undefined &&
-    (!Number.isFinite(safeAreaMm) ||
-      safeAreaMm < 0 ||
-      safeAreaMm * 2 >= Math.min(widthMm, heightMm))
-  )
-    throw new Error('DocumentPreview safe area must fit inside the page.');
-  const page = pages.find((item) => item.id === pageId);
-  if (!page) throw new Error('DocumentPreview pageId must identify a supplied page.');
+  if (!pages.length) throw new Error('DocumentPreview needs at least one page.');
+  // Runtime data (a removed page, a typed safe area) must not take the whole screen down.
+  const safeAreaValid =
+    safeAreaMm === undefined ||
+    (Number.isFinite(safeAreaMm) &&
+      safeAreaMm >= 0 &&
+      safeAreaMm * 2 < Math.min(widthMm, heightMm));
+  const safeArea = safeAreaValid ? safeAreaMm : undefined;
+  const requested = pages.find((item) => item.id === pageId);
+  const page = requested ?? pages[0]!;
+  const problem = !requested
+    ? `DocumentPreview pageId "${pageId}" is not a supplied page; showing the first page.`
+    : !safeAreaValid
+      ? 'DocumentPreview safe area must fit inside the page; guides are hidden.'
+      : '';
+  useEffect(() => {
+    if (problem) warn(problem);
+  }, [problem]);
   const width = (widthMm * 96) / 25.4;
   const height = (heightMm * 96) / 25.4;
   const scale = zoom === 'fit' ? (available ? Math.min(1, available / width) : 1) : Number(zoom);
@@ -68,7 +85,7 @@ export function DocumentPreview({
           {(field) => (
             <Select
               {...field}
-              value={pageId}
+              value={page.id}
               onChange={(event) => onPageChange(event.target.value)}
             >
               {pages.map((item) => (
@@ -90,7 +107,7 @@ export function DocumentPreview({
             </Select>
           )}
         </Field>
-        {safeAreaMm !== undefined && (
+        {safeArea !== undefined && (
           <Checkbox
             label={labels.guides}
             checked={guides}
@@ -118,14 +135,14 @@ export function DocumentPreview({
                 width,
                 height,
                 transform: `scale(${scale})`,
-                '--g-document-safe': `${safeAreaMm ?? 0}mm`,
+                '--g-document-safe': `${safeArea ?? 0}mm`,
               } as CSSProperties
             }
           >
             <div className="g-document-content" key={page.id}>
               {page.content}
             </div>
-            {guides && safeAreaMm !== undefined && (
+            {guides && safeArea !== undefined && (
               <div className="g-document-guides" aria-hidden="true" />
             )}
           </div>

@@ -94,9 +94,13 @@ export function AddressFields({
           return (
             <div
               key={field.key}
-              data-wide={['countryCode', 'recipient', 'addressLine1', 'addressLine2'].includes(
-                field.key,
-              )}
+              data-wide={[
+                'countryCode',
+                'recipient',
+                'addressLine1',
+                'addressLine2',
+                'dependentLocality',
+              ].includes(field.key)}
             >
               <Field
                 id={`${id}-${field.key}`}
@@ -117,9 +121,8 @@ export function AddressFields({
                       <option value="">{field.placeholder ?? field.label}</option>
                       {value.countryCode &&
                         !countries.some((country) => country.value === value.countryCode) && (
-                          <option value={value.countryCode} disabled>
-                            {value.countryCode}
-                          </option>
+                          // Kept selectable: browsers leave disabled options out of form posts.
+                          <option value={value.countryCode}>{value.countryCode}</option>
                         )}
                       {countries.map((country) => (
                         <option

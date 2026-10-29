@@ -350,6 +350,8 @@ export type IconName =
   | 'code'
   | 'external'
   | 'chevron'
+  | 'chevron-back'
+  | 'calendar'
   | 'plus'
   | 'edit'
   | 'save';
@@ -404,6 +406,13 @@ const paths: Record<IconName, ReactNode> = {
   code: <path d="m8 6-6 6 6 6m8-12 6 6-6 6m-5 3 2-18" />,
   external: <path d="M14 3h7v7m0-7-11 11M10 3H3v18h18v-7" />,
   chevron: <path d="m8 4 8 8-8 8" />,
+  'chevron-back': <path d="m16 4-8 8 8 8" />,
+  calendar: (
+    <>
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M3 10h18M8 3v4m8-4v4" />
+    </>
+  ),
   plus: <path d="M12 4v16M4 12h16" />,
   edit: (
     <>
@@ -537,7 +546,9 @@ export function Checkbox({
           id={id}
           type="checkbox"
           className="g-checkbox"
-          aria-describedby={hint ? `${id}-hint` : props['aria-describedby']}
+          aria-describedby={
+            [props['aria-describedby'], hint && `${id}-hint`].filter(Boolean).join(' ') || undefined
+          }
         />
         <span className={hideLabel ? 'g-sr-only' : undefined}>{label}</span>
       </label>
@@ -1526,17 +1537,23 @@ export function AccentLink({
   palette: { background: string; text: string };
   children: ReactNode;
 }) {
-  if (
-    ![palette.background, palette.text].every((value) => /^#[\da-f]{6}$/i.test(value)) ||
-    contrast(palette.background, palette.text) < 4.5
-  )
-    throw new Error('AccentLink requires a valid, readable color pair.');
+  // An unreadable or malformed pair falls back to the theme's action colours instead of throwing.
+  const readable =
+    [palette.background, palette.text].every((value) => /^#[\da-f]{6}$/i.test(value)) &&
+    contrast(palette.background, palette.text) >= 4.5;
+  if (!readable && !(typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'))
+    console.warn('AccentLink needs a valid, readable color pair; using theme colors.');
   return (
     <a
       className="g-accent-link"
       href={href}
       style={
-        { '--g-action-fill': palette.background, '--g-action-ink': palette.text } as CSSProperties
+        readable
+          ? ({
+              '--g-action-fill': palette.background,
+              '--g-action-ink': palette.text,
+            } as CSSProperties)
+          : undefined
       }
     >
       {children}
@@ -1601,3 +1618,17 @@ export {
 } from './address-fields';
 
 export { MailFace, type MailFaceProps } from './mail-face';
+
+export {
+  CalendarMonth,
+  DatePicker,
+  addDays,
+  addMonths,
+  isCalendarDate,
+  todayDate,
+  type CalendarDate,
+  type CalendarMonthValue,
+  type CalendarMonthProps,
+  type DateAvailability,
+  type DatePickerProps,
+} from './calendar';

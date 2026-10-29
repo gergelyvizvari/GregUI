@@ -8,7 +8,8 @@ export default defineConfig({
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    // WebKit on CI runs the long theme sweeps 2-4x slower than Chromium; 30s timed out at random.
+    { name: 'webkit', timeout: 90_000, use: { ...devices['Desktop Safari'] } },
     { name: 'mobile', use: { ...devices['iPhone 13'], defaultBrowserType: 'chromium' } },
   ],
   webServer: {

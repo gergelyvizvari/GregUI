@@ -215,3 +215,21 @@ function typeContracts() {
   return [external, local];
 }
 void typeContracts;
+
+it('lets Enter submit the surrounding form until the user types or moves to an option', async () => {
+  const user = userEvent.setup();
+  const onChange = vi.fn();
+  const onSubmit = vi.fn((event: React.FormEvent) => event.preventDefault());
+  render(
+    <form onSubmit={onSubmit}>
+      <Combobox {...base} value="fr" onChange={onChange} />
+    </form>,
+  );
+  await user.tab();
+  await user.keyboard('{Enter}');
+  expect(onChange).not.toHaveBeenCalled();
+  expect(onSubmit).toHaveBeenCalledTimes(1);
+  await user.keyboard('Fra{Enter}');
+  expect(onChange).toHaveBeenLastCalledWith('fr');
+  expect(onSubmit).toHaveBeenCalledTimes(1);
+});

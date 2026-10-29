@@ -67,7 +67,10 @@ export function Combobox({
         );
   const available = loading || loadError ? [] : results;
   const enabled = available.filter((option) => !option.disabled);
-  const current = enabled.find((option) => option.value === activeValue) ?? enabled[0];
+  // Only typing or arrow keys make an option active, so Enter on a freshly focused field still submits its form.
+  const current =
+    enabled.find((option) => option.value === activeValue) ??
+    (query !== null ? enabled[0] : undefined);
   const activeId = expanded && current ? `${id}-${options.indexOf(current)}` : undefined;
   const list = useRef<HTMLUListElement>(null);
   const input = useRef<HTMLInputElement>(null);
@@ -153,9 +156,9 @@ export function Combobox({
                 setActiveValue(
                   (e.key === 'Home' ? enabled[0] : enabled[enabled.length - 1])?.value ?? null,
                 );
-              } else if (e.key === 'Enter' && expanded) {
+              } else if (e.key === 'Enter' && expanded && current) {
                 e.preventDefault();
-                if (current) choose(current);
+                choose(current);
               }
             }}
           />

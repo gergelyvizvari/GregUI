@@ -102,15 +102,18 @@ export function VisualChoiceGroup({
               {option.description && (
                 <span id={`${id}-${index}-description`}>{option.description}</span>
               )}
-              {option.status && (
-                <span id={`${id}-${index}-status`} role="status">
-                  {option.status}
-                </span>
-              )}
+              {option.status && <span id={`${id}-${index}-status`}>{option.status}</span>}
             </span>
           </label>
         ))}
       </div>
+      {/* One persistent live region, so status changes are announced reliably. */}
+      <p className="g-sr-only" role="status">
+        {options
+          .filter((option) => option.status)
+          .map((option) => `${option.label}: ${option.status}`)
+          .join('. ')}
+      </p>
       {error && (
         <p id={`${id}-error`} className="g-visual-choice-error" role="alert">
           {error}

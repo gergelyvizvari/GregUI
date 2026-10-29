@@ -12,6 +12,11 @@ export const english = {
   startDate: 'Start date',
   endDate: 'End date',
   dateRangeError: 'End date must be on or after the start date.',
+  chooseDate: 'Choose a date',
+  previousMonth: 'Previous month',
+  nextMonth: 'Next month',
+  dateBeforeMin: 'Too early to choose',
+  dateAfterMax: 'Too late to choose',
   dropFiles: 'Choose files or drop them here.',
   fileError: 'Check the file type, size and number of files.',
   notifications: 'Notifications',
@@ -103,11 +108,12 @@ const LocaleContext = createContext<LocaleValue>({
   timeZone: 'UTC',
   messages: english,
 });
+const noOverrides: Partial<Messages> = {};
 export function LocaleProvider({
   locale = 'en-GB',
   direction = 'ltr',
   timeZone = 'UTC',
-  messages = {},
+  messages = noOverrides,
   children,
 }: {
   locale?: string;
