@@ -99,3 +99,14 @@ it('locks pending completion and offers retry after failure', async () => {
   expect(complete).toHaveBeenCalledTimes(2);
   await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument());
 });
+
+it('renders step titles at the requested heading level', () => {
+  render(
+    <Wizard
+      headingLevel={2}
+      onComplete={vi.fn()}
+      steps={[{ value: 'a', label: 'Details', content: 'Fill in' }]}
+    />,
+  );
+  expect(screen.getByRole('heading', { name: 'Details', level: 2 })).toBeInTheDocument();
+});

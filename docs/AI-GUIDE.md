@@ -76,7 +76,7 @@ Paths below are relative to `packages/react/src/`. All listed components are exp
 
 Use the exported lists rather than hard-coded choices. Currently there are fifteen `presets`, seven `featuredPresets` and sixteen `paletteOptions`. Workspace's stable ID is `professional`; Bloom's is `joyful`. Retain legacy preset IDs when reading saved preferences. A display-name change is not a schema migration.
 
-Theme JSON is version 1. Pass external JSON through `parseTheme` before applying it. Schema validity and contrast validity are separate: `exportTheme` rejects failing declared colour pairs. `applyPalette` changes colours; `switchMode` preserves other theme properties and uses recognised palette colours, with preset defaults for custom colours. Keep parsing, all presets, modes and exports aligned when adding a token.
+Theme JSON is version 1. Pass external JSON through `parseTheme` before applying it. Schema validity and contrast validity are separate: `exportTheme` rejects failing declared colour pairs. `applyPalette` changes colours; `switchMode` preserves other theme properties, moves the closest built-in palette (or preset defaults) to the new mode and keeps hand-picked colour roles that still pass `checkContrast` there. Keep parsing, all presets, modes and exports aligned when adding a token.
 
 Wrap consumers in LocaleProvider and ThemeProvider, as shown in README. Set locale, timezone and direction explicitly where needed; LocaleProvider defaults to `en-GB`, `UTC` and `ltr` and does not infer RTL from the locale. Keep server/client inputs consistent. Package messages are replaceable; application content requires its own translation. Do not promise that every display name is translated automatically.
 

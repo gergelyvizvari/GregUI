@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added `headingLevel` (2–6) to the titled patterns, `PricingCards` plan names, `Wizard` step titles, `AuthForm` and `EmptyState`, so they fit any page outline. Defaults are unchanged.
+- `switchMode` now keeps hand-picked colours that still pass the contrast checks in the new mode, instead of resetting custom themes to the style defaults.
+- Async actions in the patterns, Wizard, AuthForm and ConfirmDialog now share one internal `useAsyncAction` hook (pending, failure, duplicate-submit lock and unmount safety). No API change.
+
 - Added style guides: `designMarkdown(theme)` and `presetGuides` in `@gregui/tokens` write a DESIGN.md (colour roles in both modes, checked contrast, type, spacing, motion and rules) that AI coding tools can follow. Generated guides for the featured presets live in `docs/styles/`, `npm run check` keeps them current, and the workbench has Export DESIGN.md.
 - Added `CalendarMonth` and `DatePicker` for single dates, with blocked dates that explain why, `min`/`max`, per-day content, Monday or Sunday week starts and plain `YYYY-MM-DD` values. Added `calendar` and `chevron-back` icons and five locale messages.
 - Design fixes: borderless secondary buttons get a quiet fill (Paper, Bloom, Clay), alerts follow the theme's control radius, progress bars always show their track, Paper badges get a chip, checkboxes are drawn so unchecked boxes no longer look disabled in dark mode, disabled visual choices are dashed and dimmed, and the mobile toolbar keeps the menu beside the breadcrumb. Paper headings are serif, Bloom and Clay headings rounded, and Clay shadows are softer.
