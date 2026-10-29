@@ -27,7 +27,12 @@ import {
   PulseMark,
   NavItem,
   Icon,
+  iconNames,
   IconButton,
+  Avatar,
+  AvatarGroup,
+  Kbd,
+  VisuallyHidden,
   Button,
   Badge,
   Postmark,
@@ -1817,6 +1822,10 @@ function ComponentCatalog({
           <Alert title="Review required" tone="warning">
             Check your details before continuing.
           </Alert>
+          <Alert title="Payment failed" tone="danger">
+            Your card was declined.
+          </Alert>
+          <Alert title="New version available">Reload to update.</Alert>
         </Stack>
       ),
     },
@@ -1852,6 +1861,73 @@ function ComponentCatalog({
               { term: 'Region', description: 'United Kingdom' },
             ]}
           />
+        </Stack>
+      ),
+    },
+    {
+      name: 'Avatar',
+      category: 'Data display',
+      description:
+        'A person as an image or initials. Presence has its own shape and is part of the accessible name. Use decorative when the name is shown beside it.',
+      api: '<Avatar name="Alex Morgan" src={url} status="online" />',
+      demo: (
+        <Stack>
+          <Inline>
+            <Avatar name="Alex Morgan" size="small" />
+            <Avatar name="Vizvári Gergely" status="online" />
+            <Avatar name="Sam Taylor" status="away" />
+            <Avatar name="Priya Shah" status="busy" />
+            <Avatar name="Jordan Lee" size="large" status="offline" />
+          </Inline>
+          <AvatarGroup
+            label="Project members"
+            max={4}
+            people={[
+              { id: 'alex', name: 'Alex Morgan' },
+              { id: 'sam', name: 'Sam Taylor' },
+              { id: 'priya', name: 'Priya Shah' },
+              { id: 'jordan', name: 'Jordan Lee' },
+              { id: 'kim', name: 'Kim Novak' },
+              { id: 'ola', name: 'Ola Berg' },
+            ]}
+          />
+        </Stack>
+      ),
+    },
+    {
+      name: 'Icons',
+      category: 'Data display',
+      description:
+        'Decorative line icons on a 24px stroke grid; the adjacent text carries meaning. Pass SVG children to Icon for an application-specific glyph, and that element to any icon prop.',
+      api: '<Icon name="settings" />  ·  <Icon><path d="M4 12h16" /></Icon>',
+      demo: (
+        <Grid columns="auto" gap={3}>
+          {iconNames.map((name) => (
+            <Inline key={name} gap={2}>
+              <Icon name={name} />
+              <Text as="span" size="small">
+                {name}
+              </Text>
+            </Inline>
+          ))}
+        </Grid>
+      ),
+    },
+    {
+      name: 'Keyboard keys & hidden text',
+      category: 'Data display',
+      description:
+        'Kbd shows a key or combination; the application owns the shortcut. VisuallyHidden adds context for assistive technology only.',
+      api: '<Kbd keys={["Ctrl", "K"]} />  ·  <VisuallyHidden>unread messages</VisuallyHidden>',
+      demo: (
+        <Stack>
+          <Text>
+            Open the command palette with <Kbd keys={['Ctrl', 'K']} />, or press <Kbd>/</Kbd> to
+            search.
+          </Text>
+          <Text>
+            3<VisuallyHidden> unread messages</VisuallyHidden>
+          </Text>
         </Stack>
       ),
     },

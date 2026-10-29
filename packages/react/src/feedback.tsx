@@ -20,6 +20,8 @@ export function Badge({
     </span>
   );
 }
+// Each tone has its own shape so tones never rely on colour alone.
+const alertIcons = { info: 'info', success: 'check', warning: 'warning', danger: 'error' } as const;
 export function Alert({
   title,
   children,
@@ -37,7 +39,7 @@ export function Alert({
       data-tone={tone}
       role={live ? (tone === 'danger' ? 'alert' : 'status') : undefined}
     >
-      <Icon name={tone === 'success' ? 'check' : 'shield'} />
+      <Icon name={alertIcons[tone]} />
       <Stack gap={1}>
         <Text weight="strong">{title}</Text>
         {children && <div className="g-alert-description">{children}</div>}

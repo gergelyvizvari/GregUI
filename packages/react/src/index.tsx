@@ -10,9 +10,26 @@ export {
 export { createTheme, type Theme } from '@gregui/tokens';
 export { useTheme, ThemeProvider } from './theme';
 export { Stack, Inline, Grid, Split, Container, Card, Section } from './layout';
-export { Text, Heading, Prose, Divider, Link, Code, CodeBlock } from './typography';
+export {
+  Text,
+  Heading,
+  Prose,
+  Divider,
+  Link,
+  Code,
+  CodeBlock,
+  VisuallyHidden,
+  Kbd,
+} from './typography';
 export { Button, IconButton } from './buttons';
-export { type IconName, Icon } from './icons';
+export { type IconName, type IconSource, Icon, iconNames } from './icons';
+export {
+  type AvatarProps,
+  type AvatarStatus,
+  type AvatarGroupProps,
+  Avatar,
+  AvatarGroup,
+} from './avatar';
 export { Field, Input, Textarea, Select, TextField, Checkbox, Switch, RadioGroup } from './forms';
 export {
   Badge,
@@ -50,7 +67,7 @@ export {
   Tooltip,
   Popover,
 } from './overlays';
-export { PageHeader, NavItem, AppShell, useSidebarCollapsed } from './shell';
+export { PageHeader, NavItem, AppShell, SkipLink, useSidebarCollapsed } from './shell';
 export {
   PreviewStage,
   PreviewComposition,
