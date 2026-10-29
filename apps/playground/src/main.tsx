@@ -315,9 +315,7 @@ function LocalePreview({
       messages={
         language === 'ar'
           ? { close: 'إغلاق', required: 'مطلوب', loading: 'جار التحميل' }
-          : language === 'hu'
-            ? { close: 'Bezárás', required: 'kötelező', loading: 'Betöltés' }
-            : {}
+          : undefined
       }
     >
       <ThemeProvider theme={theme}>{children}</ThemeProvider>

@@ -1,5 +1,12 @@
 'use client';
-export { LocaleProvider, useLocale, useFormat } from '@gregui/localization';
+export {
+  LocaleProvider,
+  useLocale,
+  useFormat,
+  english,
+  hungarian,
+  messagesFor,
+} from '@gregui/localization';
 export { createTheme, type Theme } from '@gregui/tokens';
 export { useTheme, ThemeProvider } from './theme';
 export { Stack, Inline, Grid, Split, Container, Card, Section } from './layout';
