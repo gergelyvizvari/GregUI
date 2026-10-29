@@ -7,6 +7,7 @@ import {
   DocumentPreview,
   DocumentSpread,
   LocaleProvider,
+  documentImageDpi,
   type DocumentPreviewProps,
 } from '@gregui/react';
 const disconnect = vi.fn();
@@ -81,6 +82,119 @@ it('rejects impossible dimensions but recovers from a stale page or an oversized
   expect(screen.queryByLabelText('Safe area')).not.toBeInTheDocument();
   expect(warn).toHaveBeenCalledWith(expect.stringMatching(/safe area/));
   warn.mockRestore();
+});
+
+it('grows the sheet by the bleed and draws trim, crop marks and the safe area inside the trim', async () => {
+  const { container } = render(
+    <DocumentPreview
+      {...props}
+      bleedMm={3}
+      pages={[
+        { id: 'front', label: 'Front', padding: 'bleed', content: 'Artwork' },
+        { id: 'back', label: 'Back', padding: 'none', content: 'Message' },
+      ]}
+    />,
+  );
+  const sheet = container.querySelector<HTMLElement>('.g-document-sheet')!;
+  // 154 × 111 mm at CSS's 96 px per inch.
+  expect(parseFloat(sheet.style.width)).toBeCloseTo((154 * 96) / 25.4);
+  expect(parseFloat(sheet.style.height)).toBeCloseTo((111 * 96) / 25.4);
+  expect(sheet.style.getPropertyValue('--g-document-bleed')).toBe('3mm');
+  expect(sheet).toHaveAttribute('data-padding', 'bleed');
+  expect(container.querySelector('.g-document-trim')).toBeNull();
+  await userEvent.setup().click(screen.getByLabelText('Safe area'));
+  const trim = container.querySelector('.g-document-trim')!;
+  expect(trim).toHaveAttribute('aria-hidden', 'true');
+  expect(
+    [...trim.querySelectorAll('.g-document-crop')].map((mark) => mark.getAttribute('data-corner')),
+  ).toEqual(['top-left', 'top-right', 'bottom-left', 'bottom-right']);
+  expect(container.querySelector('.g-document-guides')).toBeInTheDocument();
+  // The caption keeps naming the trimmed size.
+  expect(screen.getByRole('region', { name: 'Front · 148 × 105 mm' })).toBeInTheDocument();
+});
+
+it('offers guides for bleed alone and ignores an invalid bleed', () => {
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  const { container, rerender } = render(
+    <DocumentPreview {...props} safeAreaMm={undefined} bleedMm={3} />,
+  );
+  expect(screen.getByLabelText('Safe area')).toBeInTheDocument();
+  rerender(<DocumentPreview {...props} safeAreaMm={undefined} bleedMm={-2} />);
+  expect(screen.queryByLabelText('Safe area')).not.toBeInTheDocument();
+  expect(
+    container
+      .querySelector<HTMLElement>('.g-document-sheet')!
+      .style.getPropertyValue('--g-document-bleed'),
+  ).toBe('0mm');
+  expect(warn).toHaveBeenCalledWith(expect.stringMatching(/bleed/));
+  warn.mockRestore();
+});
+
+it('computes effective density from the axis that limits a cover-fit image', () => {
+  expect(documentImageDpi({ widthPx: 1800, heightPx: 1800 }, 152.4, 101.6)).toBe(300);
+  expect(documentImageDpi({ widthPx: 1200, heightPx: 801 }, 154, 111)).toBe(183);
+});
+
+it('warns about low-resolution images on the shown page using translated copy', async () => {
+  const resolution = {
+    title: 'Image may print blurry',
+    describe: ({ label, dpi, minimumDpi }: { label: string; dpi: number; minimumDpi: number }) =>
+      `${label}: ${dpi} dpi, needs ${minimumDpi}`,
+  };
+  const pages = [
+    {
+      id: 'front',
+      label: 'Front',
+      padding: 'bleed' as const,
+      content: 'Artwork',
+      images: [
+        { label: 'Lake photo', widthPx: 1200, heightPx: 801 },
+        { label: 'Sharp logo', widthPx: 1200, heightPx: 1200, widthMm: 40, heightMm: 40 },
+        { label: 'Loading', widthPx: 0, heightPx: 0 },
+      ],
+    },
+    { id: 'back', label: 'Back', content: 'Message' },
+  ];
+  function Fixture({ minimumDpi }: { minimumDpi?: number }) {
+    const [pageId, onPageChange] = useState('front');
+    return (
+      <DocumentPreview
+        {...props}
+        bleedMm={3}
+        pages={pages}
+        pageId={pageId}
+        onPageChange={onPageChange}
+        imageResolution={{ ...resolution, minimumDpi }}
+      />
+    );
+  }
+  const { rerender } = render(<Fixture />);
+  expect(screen.getByText('Image may print blurry')).toBeInTheDocument();
+  expect(screen.getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+    'Lake photo: 183 dpi, needs 300',
+  ]);
+  rerender(<Fixture minimumDpi={150} />);
+  expect(screen.queryByText('Image may print blurry')).not.toBeInTheDocument();
+  rerender(<Fixture />);
+  await userEvent.setup().selectOptions(screen.getByLabelText('Side'), 'back');
+  expect(screen.queryByText('Image may print blurry')).not.toBeInTheDocument();
+});
+
+it('does not check images unless resolution copy is supplied', () => {
+  render(
+    <DocumentPreview
+      {...props}
+      pages={[
+        {
+          id: 'front',
+          label: 'Front',
+          content: 'A',
+          images: [{ label: 'Tiny', widthPx: 10, heightPx: 10 }],
+        },
+      ]}
+    />,
+  );
+  expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
 });
 
 it('renders two named document panels in reading order with optional decorative fold guidance', () => {

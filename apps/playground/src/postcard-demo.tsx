@@ -79,6 +79,16 @@ export function PostcardDemo() {
   );
   const artwork =
     design === 'alpine' ? <img src={samplePhoto.src} alt={samplePhoto.alt} /> : greeting;
+  const artworkImages =
+    design === 'alpine'
+      ? [
+          {
+            label: 'Alpine lake photo',
+            widthPx: samplePhoto.widthPx,
+            heightPx: samplePhoto.heightPx,
+          },
+        ]
+      : undefined;
   const messageContent = (text: string) => (
     <Text>
       {text.split('\n').map((line, index) => (
@@ -108,8 +118,9 @@ export function PostcardDemo() {
           {
             id: 'front',
             label: 'Front',
-            padding: design === 'alpine' ? 'none' : 'standard',
+            padding: design === 'alpine' ? 'bleed' : 'standard',
             content: artwork,
+            images: artworkImages,
           },
           {
             id: 'back',
@@ -142,8 +153,9 @@ export function PostcardDemo() {
           {
             id: 'cover',
             label: 'Cover',
-            padding: design === 'alpine' ? 'none' : 'standard',
+            padding: design === 'alpine' ? 'bleed' : 'standard',
             content: artwork,
+            images: artworkImages,
           },
           {
             id: 'inside',
@@ -354,9 +366,15 @@ export function PostcardDemo() {
             widthMm={format === 'folded' && pageId === 'inside' ? cardWidth * 2 : cardWidth}
             heightMm={cardHeight}
             safeAreaMm={5}
+            bleedMm={3}
+            imageResolution={{
+              title: 'Image may print blurry',
+              describe: ({ label, dpi, minimumDpi }) =>
+                `${label} prints at about ${dpi} dpi here; ${minimumDpi} dpi or more keeps it sharp.`,
+            }}
             pageId={pageId}
             onPageChange={setPageId}
-            labels={{ page: 'Side', zoom: 'Zoom', fit: 'Fit to view', guides: 'Show safe area' }}
+            labels={{ page: 'Side', zoom: 'Zoom', fit: 'Fit to view', guides: 'Show print guides' }}
             pages={pages}
           />
           {usesEnvelope && (
@@ -396,9 +414,10 @@ export function PostcardDemo() {
             />
           )}
           <Alert title="Screen preview only">
-            Review text fit on each panel. Fold and safe-area guides are illustrative; the envelope
-            is a 162 × 114 mm example. Print/PDF export, duplex layout, bleed, image-resolution
-            checks and AI generation are future application features.
+            Review text fit on each panel. Print guides show the 3 mm bleed, trim and crop marks and
+            a 5 mm safe area; they and the fold guide are illustrative, and the envelope is a 162 ×
+            114 mm example. Print/PDF export, duplex layout and AI generation are future application
+            features.
           </Alert>
         </Stack>
       </Grid>

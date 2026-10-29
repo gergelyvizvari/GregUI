@@ -256,11 +256,19 @@ Palette review: Iris and Lagoon retain their existing clean, distinct accents. F
 
 ## Document preview
 
-`DocumentPreview` exports `DocumentPreviewProps` and `DocumentPreviewPage`. Required props are `label`, positive finite `widthMm`/`heightMm`, nonempty `pages`, controlled `pageId`/`onPageChange` and translated `labels` (`page`, `zoom`, `fit`, `guides`). Each page has a unique `id`, `label` and `content`; Invalid dimensions or an empty `pages` list throw. A `pageId` that matches no page shows the first page, and a safe area that doesn't fit hides the guides; both log a development warning instead of crashing the screen. Page content unmounts on side changes: keep editable state in the application.
+`DocumentPreview` exports `DocumentPreviewProps`, `DocumentPreviewPage`, `DocumentPreviewImage`, `DocumentImageResolution`, `DocumentImageResolutionIssue` and the `documentImageDpi` helper. Required props are `label`, positive finite `widthMm`/`heightMm`, nonempty `pages`, controlled `pageId`/`onPageChange` and translated `labels` (`page`, `zoom`, `fit`, `guides`). Each page has a unique `id`, `label` and `content`; Invalid dimensions or an empty `pages` list throw. A `pageId` that matches no page shows the first page, a safe area that doesn't fit hides the safe-area guide, and a negative or non-finite bleed is ignored; each logs a development warning instead of crashing the screen. Page content unmounts on side changes: keep editable state in the application.
 
 The preview owns fit/50/100/150/200-percent zoom and optional guide visibility. Fit shrinks oversized pages to the viewport without enlarging smaller pages. Fixed physical dimensions use CSS's reference conversion of 96 pixels per inch; 100% is not a calibrated physical measurement on the user's screen. Zoom scrolls inside a keyboard-focusable region. A ResizeObserver refits after resizing; it disconnects on unmount. Page geometry is retained on narrow screens; explicit Grid column counts inside document content do not collapse with the surrounding UI. Other responsive components may still depend on the browser viewport, so use simple composition for fixed documents.
 
-Pages default to `padding="standard"` (8mm); `padding="none"` supports artwork. A single direct image fills the available page area with contain-fit, preserving the whole image. White paper and neutral ink remain fixed in dark mode, while the toolbar follows the surrounding theme. Pages inherit provider direction, with optional per-page `direction` overrides. `safeAreaMm` enables a labelled guide toggle; the inset must be nonnegative and less than half the shorter dimension. Guides are decorative and are hidden initially.
+Pages default to `padding="standard"` (8mm inside the trim); `padding="none"` fills the trimmed page and `padding="bleed"` fills the page and its bleed for edge-to-edge artwork. A single direct image fills the available page area with contain-fit, preserving the whole image. White paper and neutral ink remain fixed in dark mode, while the toolbar follows the surrounding theme. Pages inherit provider direction, with optional per-page `direction` overrides. `safeAreaMm` enables a labelled guide toggle; the inset is measured from the trim, must be nonnegative and less than half the shorter dimension. Guides are decorative and are hidden initially.
+
+### Bleed and trim marks
+
+`bleedMm` adds that much artwork beyond each trimmed edge. `widthMm`/`heightMm` stay the trimmed (finished) size, which the caption keeps showing; the sheet grows to `widthMm + 2 × bleedMm` by `heightMm + 2 × bleedMm` and fit/zoom measure the whole sheet. Bleed alone also enables the guide toggle. With guides on, the bleed is tinted, the trim edge is outlined, crop marks extend each trim edge through the bleed at all four corners and the safe area sits `safeAreaMm` inside the trim. A single direct image on a `padding="bleed"` page uses cover-fit, cropping rather than leaving white edges. Pages with `standard` or `none` padding stay on the trimmed page, so mailing faces and text are unaffected by bleed. Common postcard bleed is 2–3 mm; check the printer's specification.
+
+### Image resolution warning
+
+List the raster images on a page as `images: { label, widthPx, heightPx, widthMm?, heightMm? }[]`. Pixel sizes come from the application, for example an upload's `naturalWidth`/`naturalHeight`; zero or unknown sizes are skipped until known. Printed size defaults to the whole sheet including bleed, which matches full-bleed artwork. Supply `imageResolution: { title, describe, minimumDpi? }` to check them: images on the shown page whose effective density is below `minimumDpi` (default 300) appear in a warning alert between the toolbar and the page, one translated `describe({ label, dpi, minimumDpi })` line each. Without `imageResolution` no check runs. `documentImageDpi(image, widthMm, heightMm)` returns the same rounded-down density for applications that want to block export; it uses the lower of the two axes, which is what a cover-fit image prints at. The warning is advisory and does not detect upscaled or compressed source files.
 
 ```tsx
 <DocumentPreview
@@ -268,17 +276,28 @@ Pages default to `padding="standard"` (8mm); `padding="none"` supports artwork. 
   widthMm={148}
   heightMm={105}
   safeAreaMm={5}
+  bleedMm={3}
+  imageResolution={{
+    title: 'Image may print blurry',
+    describe: ({ label, dpi, minimumDpi }) => `${label}: ${dpi} dpi (needs ${minimumDpi})`,
+  }}
   pageId={side}
   onPageChange={setSide}
-  labels={{ page: 'Side', zoom: 'Zoom', fit: 'Fit to view', guides: 'Show safe area' }}
+  labels={{ page: 'Side', zoom: 'Zoom', fit: 'Fit to view', guides: 'Show print guides' }}
   pages={[
-    { id: 'front', label: 'Front', padding: 'none', content: <img src={artwork} alt="Lake" /> },
+    {
+      id: 'front',
+      label: 'Front',
+      padding: 'bleed',
+      content: <img src={artwork.src} alt="Lake" />,
+      images: [{ label: 'Lake photo', widthPx: artwork.width, heightPx: artwork.height }],
+    },
     { id: 'back', label: 'Back', content: <Text>{message}</Text> },
   ]}
 />
 ```
 
-This is a screen-proofing surface, not a print renderer. Overflowing document content is clipped to the page. Applications own text-fit validation, artwork resolution, asset loading/errors, bleed/trim requirements, export composition and PDF/print delivery. Guides alone do not establish print readiness. Postcard templates, addresses and personalisation rules stay in the consumer. Open **Postcard studio** in the Components catalog (`?page=components&component=postcard-studio`) for a local template/message/recipient/front/back example. AI generation and printing are not connected.
+This is a screen-proofing surface, not a print renderer. Overflowing document content is clipped to the page. Applications own text-fit validation, the printer's bleed and resolution requirements, asset loading/errors, export composition and PDF/print delivery. Guides and the resolution warning alone do not establish print readiness. Postcard templates, addresses and personalisation rules stay in the consumer. Open **Postcard studio** in the Components catalog (`?page=components&component=postcard-studio`) for a local template/message/recipient/front/back example. AI generation and printing are not connected.
 
 ## Address fields
 
