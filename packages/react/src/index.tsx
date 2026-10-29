@@ -101,11 +101,18 @@ export {
   DatePicker,
   addDays,
   addMonths,
+  daysBetween,
   isCalendarDate,
+  occurrencesBetween,
+  yearlyDate,
   todayDate,
   type CalendarDate,
   type CalendarMonthValue,
   type CalendarMonthProps,
+  type CalendarEvent,
+  type CalendarOccurrence,
+  type LeapDayRule,
   type DateAvailability,
   type DatePickerProps,
 } from './calendar';
+export { CalendarAgenda, type CalendarAgendaProps } from './calendar-agenda';

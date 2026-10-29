@@ -1,5 +1,5 @@
 import { PostcardDemo } from './postcard-demo';
-import { CalendarMonthDemo, DatePickerDemo } from './calendar-demo';
+import { CalendarAgendaDemo, CalendarMonthDemo, DatePickerDemo } from './calendar-demo';
 import { samplePhoto, PhotoCredit } from './sample-media';
 import { TypographyDemo, PageCompositionDemo } from './content-demo';
 import { useEffect, useState, type ReactNode } from 'react';
@@ -630,6 +630,13 @@ export function useAdvancedExamples(): CatalogEntry[] {
       'A keyboard-accessible month grid with blocked dates and short content per day, such as birthdays.',
       '<CalendarMonth label="Send date" month={month} onMonthChange={setMonth} value={date} onSelect={setDate} renderDay={(d) => occasions[d]} />',
       <CalendarMonthDemo />,
+    ),
+    entry(
+      'Calendar Agenda',
+      'Data display',
+      'Upcoming events grouped by day, with birthdays and anniversaries repeating every year.',
+      '<CalendarAgenda label="Coming up" events={occasions} days={45} onSelect={open} renderDetail={({ years }) => `Turns ${years}`} />',
+      <CalendarAgendaDemo />,
     ),
     entry(
       'Date Range Picker',

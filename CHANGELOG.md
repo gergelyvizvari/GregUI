@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added `CalendarAgenda`, a list of upcoming events grouped by day with relative labels and arrow-key navigation, and calendar events with a yearly repeat for birthdays and anniversaries. `CalendarMonth` and `DatePicker` take `events`. Added `occurrencesBetween`, `yearlyDate`, `daysBetween`, the `CalendarEvent`, `CalendarOccurrence` and `LeapDayRule` types, and two locale messages.
 - Added `headingLevel` (2–6) to the titled patterns, `PricingCards` plan names, `Wizard` step titles, `AuthForm` and `EmptyState`, so they fit any page outline. Defaults are unchanged.
 - `switchMode` now keeps hand-picked colours that still pass the contrast checks in the new mode, instead of resetting custom themes to the style defaults.
 - Async actions in the patterns, Wizard, AuthForm and ConfirmDialog now share one internal `useAsyncAction` hook (pending, failure, duplicate-submit lock and unmount safety). No API change.

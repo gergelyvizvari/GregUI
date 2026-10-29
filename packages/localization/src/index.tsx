@@ -17,6 +17,8 @@ export const english = {
   nextMonth: 'Next month',
   dateBeforeMin: 'Too early to choose',
   dateAfterMax: 'Too late to choose',
+  repeatsYearly: 'Every year',
+  agendaEmpty: 'Nothing coming up in this period.',
   dropFiles: 'Choose files or drop them here.',
   fileError: 'Check the file type, size and number of files.',
   notifications: 'Notifications',
