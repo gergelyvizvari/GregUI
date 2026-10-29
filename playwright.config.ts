@@ -2,7 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests/browser',
   fullyParallel: true,
-  workers: 2,
+  // GitHub's standard runner has 4 cores; keep local runs lighter.
+  workers: process.env.CI ? 4 : 2,
   retries: 0,
   use: { baseURL: 'http://127.0.0.1:4174', trace: 'retain-on-failure' },
   projects: [
