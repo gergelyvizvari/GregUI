@@ -7,7 +7,7 @@ All public exports go through `packages/react/src/index.tsx`, which re-exports t
 - `ThemeProvider`: scopes variables and the selected preset/mode. Nested providers inherit the current theme unless explicitly overridden. Portal components copy theme and locale into their portal root.
 - `LocaleProvider`: locale, direction, time zone and replaceable package-owned messages. Built-in messages follow the locale's language: English (default) and Hungarian (`hu`, for example `hu-HU`, informal register). `messages` overrides are applied on top. `english`, `hungarian` and `messagesFor(locale)` are exported for apps that build their own catalogs. Supply translated application labels/content yourself. `useFormat` formats numbers/dates and selects plural categories; applications supply plural message forms.
 - `Stack`, `Inline`, `Grid`: token-based gaps 0–8. Grid accepts 1–5 columns or `columns="auto"` (width-aware cards with a 15rem minimum) and collapses on small viewports. `Inline` wraps; do not depend on fixed text lengths.
-- `Split`, `Container`, `Card`, `Section`, `PageHeader`, `AppShell`: shared responsive composition. AppShell renders a skip link, desktop navigation and a modal navigation drawer on small screens. It does not own routing.
+- `Split`, `Container`, `Card`, `Section`, `PageHeader`, `AppShell`: shared responsive composition. AppShell renders a skip link, desktop navigation, a toolbar row and a modal navigation drawer on small screens; `sidebarCollapsible` adds an icon rail. It does not own routing.
 - `Card` accepts an optional `footer` for actions anchored to the bottom of equal-height grid cards.
 - `Text`, `Heading`: explicit semantic heading levels (h1–h6) and separate visual sizes. Text adds opt-in `lead` and `caption` roles. Application authors must choose logical heading order.
 - `Prose`: opt-in reading flow for native headings, paragraphs, lists, quotes, figures/captions, links, code and simple tables; defaults to a 65ch reading measure. `measure="full"` removes that cap.
@@ -30,7 +30,7 @@ All public exports go through `packages/react/src/index.tsx`, which re-exports t
 - `ConfirmDialog` focuses Cancel first and invokes `onConfirm` only for the explicit action. It awaits returned promises, locks actions/dismissal while pending, closes on success and retains failures for retry. Applications own the mutation and rollback; see [async confirmation](#async-confirmation) for the callback and focus contracts.
 - `Tooltip` supplements an already named trigger. `Popover` accepts interactive content and a label; Escape closes and restores focus. Never put essential instructions only in a tooltip.
 - `Tabs`: items have stable value/label/content; supports controlled state and direction-aware arrow-key navigation. Inactive panels unmount: hoist state if it must survive tab changes.
-- `Breadcrumbs`, `NavItem`, `Link`: apps supply navigation destinations or callbacks. No router dependency.
+- `Breadcrumbs`, `NavItem`, `SideNav`, `Menu`, `Link`: apps supply navigation destinations or callbacks. No router dependency. See [application navigation](#application-navigation).
 
 ## Feedback and data
 
@@ -132,6 +132,28 @@ Glass backgrounds use broad, low-chroma mist with a warm light source, with a qu
 AppShell standard/dashboard layouts fill the dynamic viewport even with short content. The main area grows below the toolbar, while decorative backgrounds cover the full workspace independently of the content width limit.
 
 AppShell accepts `stickyToolbar` to keep its toolbar visible at the top of the viewport while scrolling. It defaults to false and preserves the toolbar’s space in the layout on desktop and mobile.
+
+## Application navigation
+
+gregUI has no router. Every navigation component renders ordinary links for `href` destinations and reports activation through a callback, so an application can call `event.preventDefault()` and route client-side, or let the browser follow the link.
+
+```tsx
+<AppShell
+  brand="Acme"
+  sidebarCollapsible
+  nav={<SideNav sections={sections} value={currentId} onNavigate={route} />}
+  toolbar={<Breadcrumbs items={trail} maxItems={4} onNavigate={route} />}
+>
+  …
+</AppShell>
+```
+
+- `AppShell` is the app layout: sidebar (brand, `nav`, `footer`), a toolbar row used as the page header (`toolbar`, optional `stickyToolbar`), the main content area and, at 760px and below, a modal drawer opened from the toolbar. `sidebarCollapsible` adds a collapse control beside the brand that shrinks the desktop sidebar to a 72px icon rail; use `sidebarCollapsed`/`onSidebarCollapsedChange` to control or persist it, or `defaultSidebarCollapsed` for the initial state. In the rail, item labels stay in the accessibility tree and appear as tooltips, the footer is hidden, and the drawer always shows full labels. The editorial appearance ignores the option. Clicking a link or a destination button inside the drawer closes it; disclosure and menu buttons (`aria-expanded`/`aria-haspopup`) keep it open.
+- `useSidebarCollapsed()` reports whether the surrounding AppShell sidebar is in rail mode, for custom navigation content.
+- `NavItem` is a flat destination button. In the rail it shows its icon with a tooltip when its child is a string.
+- `SideNav` takes `items` or headed `sections` (`{ id, title?, items }`). Items have `id`, `label`, optional `icon`, `href`, `badge`, `disabled` and child `items`. Parents are disclosure buttons with `aria-expanded`/`aria-controls`; leaves are links (`href`) or buttons, and the item whose id equals `value` gets `aria-current="page"`. Groups that contain the current item open automatically, including when `value` changes. Use `expanded`/`onExpandedChange` to control open groups or `defaultExpanded` for the first render. Pass `label` to wrap the lists in a named `<nav>`; inside AppShell, leave it unset because the shell already provides the landmark. In the rail, top-level groups open as a `Menu` with the group name as its heading. Badges are visual; include anything important in the label. Disabled links have no `href` and are skipped by Tab.
+- `Breadcrumbs` takes the trail from root to the current page; the last item is the current page (`aria-current="page"`) and is never a link. The landmark is named with the localized "Breadcrumb" message unless `label` is set. `maxItems` keeps the first item and the last `maxItems - 1` items and hides the rest behind a "Show full path" button; revealing moves focus to the first revealed link. Separators flip in RTL.
+- `Menu` is a dropdown with ARIA menu semantics (arrow keys, Home/End, typeahead, Escape returns focus to the trigger). `trigger` must be one ref-forwarding button such as `Button` or `IconButton`. `items` accepts action items (`label`, `icon`, `shortcut`, `href`, `danger`, `disabled`, `current`, `onSelect`), `checkbox` items, `radio` groups, labelled `group`s, `submenu`s and `separator`s. Checkbox and radio items keep the menu open. `shortcut` is a visual hint only; the application owns the key binding. Use `ActionMenu` instead when a few buttons with ordinary Tab navigation are enough.
 
 ## Long-form editing
 
