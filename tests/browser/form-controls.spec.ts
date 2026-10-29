@@ -15,12 +15,13 @@ async function applyTheme(page: Page, preset: string, dark: boolean) {
   await panel.getByRole('button', { name: 'Collapse theme editor' }).click();
 }
 
-test('segmented control, slider and number field pass axe in Glass and Paper, light and dark', async ({
-  page,
-}, testInfo) => {
-  for (const preset of ['glass', 'paper']) {
-    for (const dark of [false, true]) {
-      for (const component of ['segmented-control', 'slider', 'number-field']) {
+// One test per combination keeps each within the default timeout in slower browsers.
+for (const preset of ['glass', 'paper'])
+  for (const dark of [false, true])
+    for (const component of ['segmented-control', 'slider', 'number-field'])
+      test(`${component} passes axe in ${preset} ${dark ? 'dark' : 'light'}`, async ({
+        page,
+      }, testInfo) => {
         await page.goto(`/?page=components&component=${component}`);
         await applyTheme(page, preset, dark);
         const preview = page.getByLabel('Component preview');
@@ -36,10 +37,7 @@ test('segmented control, slider and number field pass axe in Glass and Paper, li
           await preview.screenshot({
             path: `test-results/${component}-${preset}-${dark ? 'dark' : 'light'}.png`,
           });
-      }
-    }
-  }
-});
+      });
 
 test('segmented control selects with arrow keys', async ({ page }) => {
   await page.goto('/?page=components&component=segmented-control');
