@@ -58,6 +58,10 @@ describe('authentication patterns', () => {
     await waitFor(() => expect(screen.getByLabelText(/^Password/)).toHaveValue(''));
     expect(screen.getByRole('status')).toHaveTextContent('Completed successfully.');
   });
+  it('renders the title at the requested heading level', () => {
+    render(<AuthForm mode="login" onSubmit={vi.fn()} headingLevel={3} />);
+    expect(screen.getByRole('heading', { level: 3 })).toBeInTheDocument();
+  });
   it('handles rejected requests without leaking server errors and supports retry', async () => {
     const submit = vi
       .fn()
