@@ -52,7 +52,9 @@ export {
   type MenuSubmenu,
   type MenuSeparator,
   type MenuProps,
+  type ContextMenuProps,
   Menu,
+  ContextMenu,
 } from './menu';
 export { type SideNavItem, type SideNavSection, type SideNavProps, SideNav } from './side-nav';
 export {

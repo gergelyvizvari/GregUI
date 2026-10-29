@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   Breadcrumbs,
   Card,
+  ContextMenu,
   IconButton,
   Icon,
   Inline,
@@ -110,6 +111,74 @@ export function MenuDemo() {
       </Inline>
       <Text size="small" tone="muted">
         Pinned: {pinned ? 'yes' : 'no'}. Sorted by {sort === 'recent' ? 'most recent' : 'name'}.
+      </Text>
+    </Stack>
+  );
+}
+
+export function ContextMenuDemo() {
+  const [last, setLast] = useState('');
+  const [starred, setStarred] = useState(false);
+  const [view, setView] = useState('list');
+  return (
+    <Stack gap={3}>
+      <ContextMenu
+        label="Report actions"
+        items={[
+          { id: 'open', label: 'Open', icon: 'external', onSelect: () => setLast('Open') },
+          {
+            id: 'rename',
+            label: 'Rename',
+            icon: 'edit',
+            shortcut: 'F2',
+            onSelect: () => setLast('Rename'),
+          },
+          {
+            type: 'submenu',
+            id: 'share',
+            label: 'Share',
+            icon: 'download',
+            items: [
+              { id: 'link', label: 'Copy link', onSelect: () => setLast('Copy link') },
+              { id: 'email', label: 'Send by email', onSelect: () => setLast('Send by email') },
+            ],
+          },
+          { type: 'separator', id: 'sep-view' },
+          {
+            type: 'checkbox',
+            id: 'star',
+            label: 'Starred',
+            checked: starred,
+            onCheckedChange: setStarred,
+          },
+          {
+            type: 'radio',
+            id: 'view',
+            label: 'View as',
+            value: view,
+            onValueChange: setView,
+            options: [
+              { value: 'list', label: 'List' },
+              { value: 'grid', label: 'Grid' },
+            ],
+          },
+          { type: 'separator', id: 'sep-danger' },
+          { id: 'delete', label: 'Delete', danger: true, onSelect: () => setLast('Delete') },
+        ]}
+      >
+        <Card tabIndex={0}>
+          <Stack gap={1}>
+            <Text weight="strong">Quarterly report.pdf</Text>
+            <Text size="small" tone="muted">
+              Right-click or long-press here. From the keyboard, focus the card and press Shift+F10
+              or the ContextMenu key.
+            </Text>
+          </Stack>
+        </Card>
+      </ContextMenu>
+      <Text>{last ? `Chose: ${last}` : 'No action chosen yet.'}</Text>
+      <Text size="small" tone="muted">
+        Starred: {starred ? 'yes' : 'no'}. View: {view}.
       </Text>
     </Stack>
   );

@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
-import { render, screen, within, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import {
   AppShell,
   Breadcrumbs,
   Button,
+  ContextMenu,
   LocaleProvider,
   Menu,
   NavItem,
   SideNav,
+  ThemeProvider,
+  type MenuEntry,
   type SideNavItem,
 } from '@gregui/react';
+import { createTheme } from '@gregui/tokens';
 
 const trail = [
   { label: 'Home', href: '/' },
@@ -130,6 +134,11 @@ describe('Menu', () => {
       'true',
     );
     expect(screen.getByRole('group', { name: 'Density' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('menuitemradio', { name: 'Compact' }));
+    expect(screen.getByRole('menuitemradio', { name: 'Compact' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
   });
 
   it('opens submenus from the keyboard', async () => {
@@ -141,6 +150,143 @@ describe('Menu', () => {
     move.focus();
     await userEvent.keyboard('{ArrowRight}');
     expect(await screen.findByRole('menuitem', { name: 'Inbox' })).toBeInTheDocument();
+  });
+});
+
+describe('ContextMenu', () => {
+  function Region({
+    onOpen,
+    disabled,
+    onOpenChange,
+  }: {
+    onOpen?: () => void;
+    disabled?: boolean;
+    onOpenChange?: (open: boolean) => void;
+  }) {
+    const [pinned, setPinned] = useState(false);
+    const [sort, setSort] = useState('recent');
+    const items: MenuEntry[] = [
+      { id: 'open', label: 'Open', icon: 'external', shortcut: 'Enter', onSelect: onOpen },
+      { id: 'copy', label: 'Copy link' },
+      { type: 'separator', id: 's1' },
+      { type: 'checkbox', id: 'pin', label: 'Pin', checked: pinned, onCheckedChange: setPinned },
+      {
+        type: 'radio',
+        id: 'sort',
+        label: 'Sort by',
+        value: sort,
+        onValueChange: setSort,
+        options: [
+          { value: 'recent', label: 'Most recent' },
+          { value: 'name', label: 'Name' },
+        ],
+      },
+      { type: 'submenu', id: 'move', label: 'Move to', items: [{ id: 'inbox', label: 'Inbox' }] },
+      { id: 'delete', label: 'Delete', danger: true, disabled: true },
+    ];
+    return (
+      <>
+        <button type="button">Before</button>
+        <ContextMenu
+          label="File actions"
+          items={items}
+          disabled={disabled}
+          onOpenChange={onOpenChange}
+        >
+          <div tabIndex={0} data-testid="region">
+            Quarterly report
+          </div>
+        </ContextMenu>
+      </>
+    );
+  }
+
+  it('opens on the contextmenu event with menu semantics and runs the chosen item', async () => {
+    const open = vi.fn();
+    render(<Region onOpen={open} />);
+    const region = screen.getByTestId('region');
+    const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+    region.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(true);
+    const menu = await screen.findByRole('menu', { name: 'File actions' });
+    expect(menu).toHaveClass('g-menu');
+    expect(within(menu).getByRole('menuitem', { name: /Delete/ })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+    expect(within(menu).getByText('Enter')).toHaveClass('g-menu-shortcut');
+    await userEvent.click(within(menu).getByRole('menuitem', { name: /Open/ }));
+    expect(open).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument());
+  });
+
+  it('keeps the menu open while toggling checkbox and radio items', async () => {
+    render(<Region />);
+    fireEvent.contextMenu(screen.getByTestId('region'));
+    const pin = await screen.findByRole('menuitemcheckbox', { name: 'Pin' });
+    await userEvent.click(pin);
+    expect(screen.getByRole('menuitemcheckbox', { name: 'Pin' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+    await userEvent.click(screen.getByRole('menuitemradio', { name: 'Name' }));
+    expect(screen.getByRole('menuitemradio', { name: 'Name' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+    expect(screen.getByRole('group', { name: 'Sort by' })).toBeInTheDocument();
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
+
+  it('opens from Shift+F10 and the ContextMenu key, focuses the first item and returns focus', async () => {
+    const user = userEvent.setup();
+    render(<Region />);
+    const region = screen.getByTestId('region');
+    region.focus();
+    await user.keyboard('{Shift>}{F10}{/Shift}');
+    const menu = await screen.findByRole('menu');
+    await waitFor(() => expect(within(menu).getByRole('menuitem', { name: /Open/ })).toHaveFocus());
+    await user.keyboard('{ArrowDown}');
+    expect(within(menu).getByRole('menuitem', { name: 'Copy link' })).toHaveFocus();
+    await user.keyboard('{End}');
+    expect(within(menu).getByRole('menuitem', { name: /Move to/ })).toHaveFocus();
+    await user.keyboard('{ArrowRight}');
+    await waitFor(() => expect(screen.getByRole('menuitem', { name: 'Inbox' })).toHaveFocus());
+    await user.keyboard('{ArrowLeft}');
+    await waitFor(() => expect(screen.getByRole('menuitem', { name: /Move to/ })).toHaveFocus());
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument());
+    expect(region).toHaveFocus();
+    await user.keyboard('{ContextMenu}');
+    expect(await screen.findByRole('menu')).toBeInTheDocument();
+  });
+
+  it('leaves the native menu alone and ignores keyboard shortcuts when disabled', async () => {
+    const change = vi.fn();
+    render(<Region disabled onOpenChange={change} />);
+    const region = screen.getByTestId('region');
+    const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+    region.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(false);
+    region.focus();
+    await userEvent.keyboard('{Shift>}{F10}{/Shift}');
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    expect(change).not.toHaveBeenCalled();
+  });
+
+  it('inherits theme and RTL through its portal', async () => {
+    render(
+      <LocaleProvider locale="ar" direction="rtl">
+        <ThemeProvider theme={createTheme('glass', 'dark')}>
+          <Region />
+        </ThemeProvider>
+      </LocaleProvider>,
+    );
+    fireEvent.contextMenu(screen.getByTestId('region'));
+    const menu = await screen.findByRole('menu');
+    expect(menu.closest('.g-theme')).toHaveAttribute('data-mode', 'dark');
+    expect(menu.closest('.g-theme')).toHaveAttribute('dir', 'rtl');
+    expect(menu).toHaveAttribute('dir', 'rtl');
   });
 });
 

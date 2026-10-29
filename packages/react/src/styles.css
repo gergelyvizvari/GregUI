@@ -5025,7 +5025,7 @@ button.g-agenda-event:hover {
   z-index: 110;
   min-width: 200px;
   max-width: min(320px, calc(100vw - 2rem));
-  max-height: var(--radix-dropdown-menu-content-available-height);
+  max-height: var(--radix-popper-available-height);
   overflow: auto;
   padding: 0.35rem;
   border: 1px solid var(--g-border);
@@ -5033,7 +5033,7 @@ button.g-agenda-event:hover {
   background: var(--g-surface);
   color: var(--g-text);
   box-shadow: var(--g-popover-depth);
-  transform-origin: var(--radix-dropdown-menu-content-transform-origin);
+  transform-origin: var(--radix-popper-transform-origin);
 }
 .g-menu[data-state='open'] {
   animation: g-float-in var(--g-duration) var(--g-ease-enter) both;
