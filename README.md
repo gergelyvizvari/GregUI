@@ -77,7 +77,7 @@ export function App() {
 
 Import the stylesheet once, at the application root. Packages ship ESM and TypeScript declarations; React providers/components carry a `use client` directive for frameworks with server components. The package itself does not depend on Next.js. Locale/time-zone inputs must be consistent on server and client.
 
-Use `parseTheme(JSON.parse(input))` before applying externally supplied theme JSON. `exportTheme` rejects schemas or checked color pairs that fail validation; export is not accessibility certification. Changing light/dark mode with `switchMode` uses the matching palette's light/dark colours. Custom colours fall back to the preset's defaults; other theme properties are preserved.
+Use `parseTheme(JSON.parse(input))` before applying externally supplied theme JSON. `exportTheme` rejects schemas or checked color pairs that fail validation; export is not accessibility certification. Changing light/dark mode with `switchMode` uses the matching palette's light/dark colours. Hand-picked colour roles are kept when they still pass `checkContrast` in the new mode, and the rest come from the closest palette or the preset's defaults; other theme properties are preserved.
 
 Each preset has its own default palette and component treatment: forest Flat, plum Glass, clay Soft, blue Elevated and ink/cream Outline. See the [visual direction](docs/DESIGN.md) and the generated per-preset [style guides](docs/styles/README.md). The workbench loads the complete preset when selected; Undo restores your previous custom draft.
 

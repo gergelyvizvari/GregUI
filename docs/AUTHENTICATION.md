@@ -39,7 +39,7 @@ Successful submissions clear the form. Changing mode remounts fields so credenti
 
 Wrap patterns in `ThemeProvider` and `LocaleProvider`, as with other gregUI components. `AuthLayout` gives a responsive card and optional brand/introduction/footer regions. All surfaces use package tokens; consumers need no CSS.
 
-All default form copy comes from the `auth*` keys in `LocaleProvider.messages`, including validation, loading outcomes and navigation. Optional title/description/passwordHint/footer content belongs to the application and must be translated there. The workbench demonstrates complete English/Hungarian form messages. Native browser validation messages follow the browser language. RTL direction inherits from `LocaleProvider`; numeric codes retain LTR entry.
+All default form copy comes from the `auth*` keys in `LocaleProvider.messages`, including validation, loading outcomes and navigation. The form title renders as `h2`; set `headingLevel` (2–6) when the form sits under another heading. Optional title/description/passwordHint/footer content belongs to the application and must be translated there. The workbench demonstrates complete English/Hungarian form messages. Native browser validation messages follow the browser language. RTL direction inherits from `LocaleProvider`; numeric codes retain LTR entry.
 
 These are reusable UI patterns, not an authentication service or a certification. Provider-specific integration and real assistive-technology/device validation remain application work.
 

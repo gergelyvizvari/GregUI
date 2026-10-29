@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added `headingLevel` (2–6) to the titled patterns, `PricingCards` plan names, `Wizard` step titles, `AuthForm` and `EmptyState`, so they fit any page outline. Defaults are unchanged.
+- `switchMode` now keeps hand-picked colours that still pass the contrast checks in the new mode, instead of resetting custom themes to the style defaults.
+- Async actions in the patterns, Wizard, AuthForm and ConfirmDialog now share one internal `useAsyncAction` hook (pending, failure, duplicate-submit lock and unmount safety). No API change.
 - DocumentPreview is print-aware: `bleedMm` grows the sheet beyond the trim and adds trim and crop marks to the guides, `padding="bleed"` lets artwork reach the sheet edge, and `imageResolution` with per-page `images` warns when a photo would print below 300 dpi (configurable). Added `documentImageDpi`. Postcard studio uses a 3 mm bleed and flags its sample photo.
 - Added style guides: `designMarkdown(theme)` and `presetGuides` in `@gregui/tokens` write a DESIGN.md (colour roles in both modes, checked contrast, type, spacing, motion and rules) that AI coding tools can follow. Generated guides for the featured presets live in `docs/styles/`, `npm run check` keeps them current, and the workbench has Export DESIGN.md.
 - Added `CalendarMonth` and `DatePicker` for single dates, with blocked dates that explain why, `min`/`max`, per-day content, Monday or Sunday week starts and plain `YYYY-MM-DD` values. Added `calendar` and `chevron-back` icons and five locale messages.

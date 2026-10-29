@@ -536,7 +536,7 @@ function App() {
         onChange={(e) => {
           edit(switchMode(theme, e.target.checked ? 'dark' : 'light'));
           setNotice(
-            'Mode changed. Matched palettes keep their colour family; custom colours use the style defaults.',
+            'Mode changed. Your custom colours are kept where they stay readable; the rest follow the palette.',
           );
         }}
       />

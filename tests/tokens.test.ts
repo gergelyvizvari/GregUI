@@ -42,6 +42,16 @@ describe('theme contract', () => {
     expect(parseTheme(theme)).toEqual(theme);
     expect(() => exportTheme(theme)).toThrow(/contrast/);
   });
+  it('keeps hand-picked colours that stay legible and swaps the rest to the new mode', () => {
+    const theme = applyPalette(createTheme('flat'), 'plum');
+    const custom = { ...theme, colors: { ...theme.colors, focus: '#d9480f', primary: '#123456' } };
+    const dark = switchMode(custom, 'dark');
+    const plumDark = createTheme('flat', 'dark', 'plum').colors;
+    // focus passes on both modes; the dark-blue primary would vanish on a dark surface.
+    expect(dark.colors).toEqual({ ...plumDark, focus: '#d9480f' });
+    expect(checkContrast(dark).filter((check) => !check.pass)).toEqual([]);
+    expect(switchMode(dark, 'light').colors).toEqual({ ...theme.colors, focus: '#d9480f' });
+  });
   it('resets color roles on mode changes while keeping identity and shape', () => {
     const theme = { ...createTheme('soft'), name: 'Brand', radius: 'square' as const };
     expect(switchMode(theme, 'dark')).toEqual({
