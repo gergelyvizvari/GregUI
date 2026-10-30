@@ -40,6 +40,8 @@ import {
   LanguageSwitcher,
   LinkButton,
   LogoCloud,
+  MonthDayField,
+  type MonthDayValue,
   Testimonials,
   Badge,
   Postmark,
@@ -1796,6 +1798,14 @@ function ComponentCatalog({
       ),
     },
     {
+      name: 'Month and day field',
+      category: 'Forms',
+      description:
+        "A recurring date such as a birthday or name day: month and day in the locale's order, with an optional year. 29 February is allowed without a year; a shorter month moves the day to its last day.",
+      api: '<MonthDayField label="Birthday" value={birthday} onChange={setBirthday} withYear />',
+      demo: <MonthDayDemo />,
+    },
+    {
       name: 'Text field',
       category: 'Forms',
       description:
@@ -2409,3 +2419,19 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </React.StrictMode>,
 );
+
+function MonthDayDemo() {
+  const [birthday, setBirthday] = useState<MonthDayValue>({ month: 2, day: 29, year: null });
+  const [nameDay, setNameDay] = useState<MonthDayValue>({ month: null, day: null });
+  return (
+    <Stack>
+      <MonthDayField label="Birthday" value={birthday} onChange={setBirthday} withYear />
+      <MonthDayField
+        label="Name day"
+        hint="Leave empty if you do not know it."
+        value={nameDay}
+        onChange={setNameDay}
+      />
+    </Stack>
+  );
+}

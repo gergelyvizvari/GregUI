@@ -11,8 +11,8 @@
   "dependencies": {
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "@gregui/react": "0.4.0",
-    "@gregui/tokens": "0.4.0",
-    "@gregui/localization": "0.4.0"
+    "@gregui/react": "0.5.0",
+    "@gregui/tokens": "0.5.0",
+    "@gregui/localization": "0.5.0"
   }
 }

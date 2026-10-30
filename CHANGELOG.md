@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0 — 30 October 2026
+
+### Added
+
+- `MonthDayField` and `daysInMonth`: recurring dates without a year (birthdays, name days), with locale month names and order and an optional year.
+- Locale messages `month`, `day`, `year`, `notSelected` and `optional` (English and Hungarian). Apps that pass a complete `Messages` object must add them.
+
 ## 0.4.0 — 30 October 2026
 
 ### Added
