@@ -12,6 +12,7 @@
 ### Added
 
 - System colour mode: `ThemeProvider colorScheme="system"` follows the device's light/dark setting with no first-paint flash, including in portals. Added `useSystemMode` and the `ThemeColorScheme` type. Theme JSON is unchanged.
+- `ThemeProvider page` makes a top-level provider the page root: its background fills the viewport and the document's `color-scheme` follows the theme.
 - `ContextMenu`: the same `MenuEntry` items as `Menu`, opened by right click, long-press, Shift+F10 or the ContextMenu key.
 - Form controls: `SegmentedControl`, `Slider` and `NumberField` (locale-aware parsing, including Hungarian separators).
 - Feedback: timed toasts (`duration` per stack or item, pausing on hover, focus and hidden pages; danger toasts never expire unless `forceExpiry`), toast actions, and `Banner` with an `AppShell banner` slot.

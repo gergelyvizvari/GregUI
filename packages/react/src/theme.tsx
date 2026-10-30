@@ -80,10 +80,12 @@ function ThemeFrame({
   state,
   children,
   portal = false,
+  page = false,
 }: {
   state: ThemeState;
   children: ReactNode;
   portal?: boolean;
+  page?: boolean;
 }) {
   const { locale, direction } = useLocale();
   const { theme, scheme, systemMode } = state;
@@ -101,6 +103,7 @@ function ThemeFrame({
       data-accent={theme.accent ?? 'expressive'}
       data-density={theme.density}
       data-motion={theme.motion}
+      data-page={page || undefined}
       style={variables as CSSProperties}
       lang={locale}
       dir={direction}
@@ -126,6 +129,7 @@ function schemeStyles({ id, light, dark }: SystemScheme) {
 export function ThemeProvider({
   theme,
   colorScheme,
+  page = false,
   children,
 }: {
   theme?: Theme;
@@ -135,6 +139,12 @@ export function ThemeProvider({
    * parent's setting when `theme` is omitted.
    */
   colorScheme?: ThemeColorScheme;
+  /**
+   * Marks this provider as the page root: its background fills at least the viewport height and
+   * the document's `color-scheme` follows the theme, so short pages and overscroll match it.
+   * Use it on one top-level provider; AppShell already fills the viewport on its own.
+   */
+  page?: boolean;
   children: ReactNode;
 }) {
   const inherited = useContext(ThemeContext);
@@ -176,7 +186,9 @@ export function ThemeProvider({
   return (
     <ThemeContext.Provider value={state}>
       {variants && <style dangerouslySetInnerHTML={{ __html: schemeStyles(variants.scheme) }} />}
-      <ThemeFrame state={state}>{children}</ThemeFrame>
+      <ThemeFrame state={state} page={page}>
+        {children}
+      </ThemeFrame>
     </ThemeContext.Provider>
   );
 }

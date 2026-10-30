@@ -19,6 +19,18 @@ body,
 body {
   margin: 0;
 }
+/* ThemeProvider page: the theme's background covers short pages, and the document canvas
+   (overscroll, scrollbars) follows the theme's light/dark mode. */
+.g-theme[data-page] {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+:root:has(> body .g-theme[data-page][data-mode='dark']:not(.g-portal)) {
+  color-scheme: dark;
+}
+:root:has(> body .g-theme[data-page][data-mode='system']:not(.g-portal)) {
+  color-scheme: light dark;
+}
 .g-theme {
   color-scheme: light;
   font-family: var(--g-font);
