@@ -1,6 +1,32 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 — 30 October 2026
+
+### Changed behaviour
+
+- A `ToastStack` item's action button now dismisses the toast after running `onAction`. Set `keepOpen: true` on the action to keep the previous behaviour.
+- `parseTheme` now ignores unknown top-level properties and colour roles from newer builds instead of rejecting the theme; known properties are still validated and other versions are still rejected. Re-saving such a theme drops the unknown keys.
+- `ActionMenu` is deprecated in favour of `Menu`. It still works.
+- `Menu` radio items now keep the menu open, as documented.
+
+### Added
+
+- System colour mode: `ThemeProvider colorScheme="system"` follows the device's light/dark setting with no first-paint flash, including in portals. Added `useSystemMode` and the `ThemeColorScheme` type. Theme JSON is unchanged.
+- `ThemeProvider page` makes a top-level provider the page root: its background fills the viewport and the document's `color-scheme` follows the theme.
+- `ContextMenu`: the same `MenuEntry` items as `Menu`, opened by right click, long-press, Shift+F10 or the ContextMenu key.
+- Form controls: `SegmentedControl`, `Slider` and `NumberField` (locale-aware parsing, including Hungarian separators).
+- Feedback: timed toasts (`duration` per stack or item, pausing on hover, focus and hidden pages; danger toasts never expire unless `forceExpiry`), toast actions, and `Banner` with an `AppShell banner` slot.
+- People and text helpers: `Avatar`, `AvatarGroup`, `Kbd`, `VisuallyHidden` and `SkipLink` (now used by `AppShell`).
+- Icons: 27 more built-in icons (`iconNames` lists 49), application glyphs as `Icon` children, and the `IconSource` type accepted by `SideNav`, `Menu` and `NavItem` icon props. `Alert`, toasts and `Banner` use a distinct icon per tone.
+- Tokens: `zIndex` (emitted as `--g-z-*`), `breakpoints` and `mediaQuery()`.
+- New locale messages (English and Hungarian): `statusOnline`, `statusAway`, `statusBusy`, `statusOffline`, `morePeople`, `numberIncrease`, `numberDecrease`, `numberInvalid`, `numberTooLow`, `numberTooHigh`. Apps that pass a complete `Messages` object must add them.
+
+### Internal
+
+- A stylesheet lint fails `npm run check` when hard-coded colours or font sizes in `styles.css` increase; numeric `z-index` is no longer allowed in library CSS.
+- README and DESIGN.md preset and palette counts match the exported lists.
+
+## 0.1.0
 
 - Added navigation components. `Menu` is a dropdown menu with keyboard support, links, shortcuts, checkbox and radio items, groups and submenus. `SideNav` is hierarchical side navigation with headed sections, nested collapsible groups, badges and automatic opening of the current page's branch. `AppShell sidebarCollapsible` shrinks the desktop sidebar to an icon rail with tooltips, and SideNav groups become menus there. `Breadcrumbs` gained `maxItems` to collapse long trails, `onNavigate` for client-side routing and a localized landmark name, and now marks only the last item as the current page. Added `useSidebarCollapsed` and four locale messages (English and Hungarian). The mobile drawer now also closes when a link is chosen and stays open when a group is expanded.
 - Added Hungarian package messages. `LocaleProvider` now picks built-in messages from the locale's language, so `locale="hu-HU"` shows every package label, error and calendar control in Hungarian; other languages still fall back to English and `messages` overrides still win. Dates, numbers, month and weekday names already follow the locale through `Intl`. Exported `english`, `hungarian` and `messagesFor`.

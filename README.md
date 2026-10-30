@@ -75,6 +75,8 @@ export function App() {
 }
 ```
 
+For an app without `AppShell`, add `page` to the top-level provider so the theme's background fills the window and the browser's scrollbars and overscroll follow its mode: `<ThemeProvider theme={theme} page>`.
+
 To follow the device's light/dark setting, add `colorScheme="system"`: `<ThemeProvider theme={theme} colorScheme="system">`. The provider derives the other mode with `switchMode`, follows live changes and paints the device's mode before JavaScript runs, including server-rendered pages. `useTheme().mode` reports the resolved mode and `useSystemMode()` the device setting. Saved theme JSON keeps `mode: 'light' | 'dark'`; store a "match system" preference separately. The default is unchanged: the theme's own mode.
 
 Import the stylesheet once, at the application root. Packages ship ESM and TypeScript declarations; React providers/components carry a `use client` directive for frameworks with server components. The package itself does not depend on Next.js. Locale/time-zone inputs must be consistent on server and client.
