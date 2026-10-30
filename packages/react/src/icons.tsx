@@ -10,6 +10,7 @@ export type IconName =
   | 'menu'
   | 'sun'
   | 'moon'
+  | 'globe'
   | 'download'
   | 'upload'
   | 'undo'
@@ -88,6 +89,12 @@ const paths: Record<IconName, ReactNode> = {
     </>
   ),
   moon: <path d="M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z" />,
+  globe: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+    </>
+  ),
   download: <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" />,
   upload: <path d="M12 16V4m-5 5 5-5 5 5M4 16v5h16v-5" />,
   undo: <path d="M4 10h10a6 6 0 0 1 0 12M4 10l5-5m-5 5 5 5" />,

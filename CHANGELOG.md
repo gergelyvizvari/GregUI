@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 — 30 October 2026
+
+### Added
+
+- `LinkButton`: navigation styled as a `Button`, with an optional framework link `component`.
+- `LanguageSwitcher`: interface-language select with a globe icon, per-option `lang` and a translated default label.
+- Icon: `globe`.
+- Locale message `language` (English and Hungarian). Apps that pass a complete `Messages` object must add it.
+
 ## 0.2.0 — 30 October 2026
 
 ### Changed behaviour

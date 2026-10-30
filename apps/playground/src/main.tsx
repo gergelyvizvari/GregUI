@@ -34,6 +34,8 @@ import {
   Kbd,
   VisuallyHidden,
   Button,
+  LanguageSwitcher,
+  LinkButton,
   Badge,
   Postmark,
   Text,
@@ -1664,6 +1666,52 @@ function ComponentCatalog({
           </Button>
           <Button disabled>Disabled</Button>
           <Button loading>Saving</Button>
+        </Inline>
+      ),
+    },
+    {
+      name: 'Link button',
+      category: 'Actions',
+      description:
+        'A link that looks like a Button: use it for destinations, Button for actions. Pass your router or framework link as component.',
+      api: '<LinkButton href="/start" variant="primary" component={NextLink}>Get started</LinkButton>',
+      demo: (
+        <Inline>
+          <LinkButton href="#link-button">Get started</LinkButton>
+          <LinkButton href="#link-button" variant="secondary" icon={<Icon name="calendar" />}>
+            View calendar
+          </LinkButton>
+          <LinkButton href="#link-button" variant="ghost" size="small">
+            Learn more
+          </LinkButton>
+        </Inline>
+      ),
+    },
+    {
+      name: 'Language switcher',
+      category: 'Forms',
+      description:
+        'Native select with a globe icon for the interface language. Each option shows the language in its own name and lang; the app stores the choice and loads its copy.',
+      api: '<LanguageSwitcher options={[{ value: "hu", label: "Magyar", lang: "hu" }]} value={language} onValueChange={setLanguage} hideLabel />',
+      demo: (
+        <Inline>
+          <LanguageSwitcher
+            options={[
+              { value: 'hu', label: 'Magyar', lang: 'hu' },
+              { value: 'en', label: 'English', lang: 'en' },
+              { value: 'de', label: 'Deutsch', lang: 'de' },
+            ]}
+            defaultValue="en"
+          />
+          <LanguageSwitcher
+            hideLabel
+            size="small"
+            options={[
+              { value: 'hu', label: 'Magyar', lang: 'hu' },
+              { value: 'en', label: 'English', lang: 'en' },
+            ]}
+            defaultValue="hu"
+          />
         </Inline>
       ),
     },

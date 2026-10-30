@@ -22,6 +22,12 @@ export {
   Kbd,
 } from './typography';
 export { Button, IconButton } from './buttons';
+export { LinkButton, type LinkButtonProps } from './link-button';
+export {
+  LanguageSwitcher,
+  type LanguageOption,
+  type LanguageSwitcherProps,
+} from './language-switcher';
 export { type IconName, type IconSource, Icon, iconNames } from './icons';
 export {
   type AvatarProps,

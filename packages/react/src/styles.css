@@ -1151,6 +1151,28 @@ body {
 .g-select:disabled + .g-select-chevron {
   opacity: 0.6;
 }
+.g-language-switcher {
+  display: grid;
+  gap: 0.4rem;
+  width: max-content;
+  max-width: 100%;
+}
+.g-language-switcher-icon {
+  position: absolute;
+  inset-inline-start: 0.8rem;
+  top: 50%;
+  display: flex;
+  transform: translateY(-50%);
+  color: var(--g-muted);
+  pointer-events: none;
+}
+.g-language-switcher .g-select-wrap > .g-select {
+  padding-inline-start: 2.6rem;
+}
+.g-language-switcher[data-size='small'] .g-select {
+  min-height: var(--g-button-small-height);
+  font-size: var(--g-type-small-size);
+}
 .g-textarea {
   resize: vertical;
   min-height: var(--g-textarea-height);
