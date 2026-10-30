@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1 — 31 October 2026
+
+- `Field` takes `optional`, which marks the label instead of adding a hint line, so fields in one row stay aligned.
+- `MonthDayField`'s year uses it: the year input now lines up with month and day. The `optional` message is lower case to fit in the label.
+
 ## 0.5.0 — 30 October 2026
 
 ### Added

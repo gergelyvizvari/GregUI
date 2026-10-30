@@ -139,7 +139,7 @@ export function MonthDayField({
         {dayFirst ? day : month}
         {dayFirst ? month : day}
         {withYear && (
-          <Field label={messages.year} hint={messages.optional}>
+          <Field label={messages.year} optional>
             {(control) => (
               <Input
                 {...control}
