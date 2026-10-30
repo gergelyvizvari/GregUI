@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0 — 30 October 2026
+
+### Added
+
+- Marketing sections: `HeroSection`, `FeatureGrid`, `Testimonials`, `LogoCloud` and `CtaBand`, with an opt-in `reveal` entrance that respects reduced motion and never hides server-rendered content.
+
 ## 0.3.0 — 30 October 2026
 
 ### Added

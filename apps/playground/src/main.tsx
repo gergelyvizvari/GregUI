@@ -34,8 +34,13 @@ import {
   Kbd,
   VisuallyHidden,
   Button,
+  CtaBand,
+  FeatureGrid,
+  HeroSection,
   LanguageSwitcher,
   LinkButton,
+  LogoCloud,
+  Testimonials,
   Badge,
   Postmark,
   Text,
@@ -1642,6 +1647,81 @@ function ComponentCatalog({
             { value: 'review', label: 'Review' },
           ]}
         />
+      ),
+    },
+    {
+      name: 'Marketing sections',
+      category: 'Patterns',
+      description:
+        "HeroSection, FeatureGrid, Testimonials, LogoCloud and CtaBand for public sites, built from the app's own tokens. Optional reveal animates sections into view; content stays visible without JavaScript and with reduced motion.",
+      api: '<HeroSection title="…" lead="…" actions={<LinkButton href="/start">Start</LinkButton>} reveal />',
+      demo: (
+        <Stack>
+          <HeroSection
+            eyebrow="Postcards"
+            title="Cards for the people who matter"
+            lead="Keep birthdays and name days in one place. We remind you in time and deliver online or by post."
+            actions={
+              <>
+                <LinkButton href="#marketing-sections">Send a card now</LinkButton>
+                <LinkButton href="#marketing-sections" variant="secondary">
+                  See templates
+                </LinkButton>
+              </>
+            }
+            align="center"
+            headingLevel={3}
+          />
+          <FeatureGrid
+            title="Why it works"
+            headingLevel={3}
+            reveal
+            features={[
+              {
+                icon: 'calendar',
+                title: 'Reminders',
+                description: 'Early enough to post on time.',
+              },
+              { icon: 'edit', title: 'Templates', description: 'Personalised for each person.' },
+              {
+                icon: 'mail',
+                title: 'Delivery',
+                description: 'As an e-card or printed and posted.',
+              },
+            ]}
+          />
+          <Testimonials
+            headingLevel={3}
+            reveal
+            items={[
+              {
+                quote: 'My grandmother kept the card on her fridge.',
+                name: 'Anna K.',
+                detail: 'Budapest',
+              },
+              {
+                quote: 'Our client cards went out in one afternoon.',
+                name: 'Péter N.',
+                detail: 'Office manager',
+              },
+            ]}
+          />
+          <LogoCloud
+            label="Trusted by"
+            logos={[{ name: 'Northwind' }, { name: 'Contoso' }, { name: 'Fabrikam' }]}
+          />
+          <CtaBand
+            title="Ready to say hello?"
+            lead="Your first e-card is free."
+            headingLevel={3}
+            reveal
+            actions={
+              <LinkButton href="#marketing-sections" variant="secondary">
+                Get started
+              </LinkButton>
+            }
+          />
+        </Stack>
       ),
     },
     {

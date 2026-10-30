@@ -5720,3 +5720,182 @@ button.g-agenda-event:hover {
     border: 1px solid;
   }
 }
+
+/* Marketing sections: public-site bands built from the same roles as the app. */
+.g-hero-section,
+.g-marketing-section,
+.g-cta-band {
+  padding-block: clamp(3rem, 8vw, 6rem);
+}
+.g-hero-section {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+.g-hero-section[data-media] {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+}
+.g-hero-copy,
+.g-marketing-intro,
+.g-cta-copy {
+  display: grid;
+  gap: 1rem;
+  max-width: 44rem;
+}
+.g-hero-section[data-align='center'] .g-hero-copy {
+  justify-items: center;
+  margin-inline: auto;
+  text-align: center;
+}
+.g-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block-start: 0.5rem;
+}
+.g-hero-media {
+  min-width: 0;
+}
+.g-hero-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--g-card-radius);
+}
+.g-marketing-section {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+}
+.g-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 3vw, 2rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.g-feature-grid[data-columns='2'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.g-feature-grid[data-columns='4'] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.g-feature {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+}
+.g-feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-block-end: 0.25rem;
+  border-radius: var(--g-control-radius);
+  background: var(--g-tint);
+  color: var(--g-primary);
+}
+.g-testimonials {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: clamp(1rem, 3vw, 1.5rem);
+}
+.g-testimonial {
+  display: grid;
+  align-content: space-between;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 1.5rem;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-card-radius);
+  background: var(--g-surface);
+  box-shadow: var(--g-card-shadow);
+}
+.g-testimonial blockquote {
+  margin: 0;
+}
+.g-testimonial-person {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.g-testimonial-who {
+  display: grid;
+}
+.g-logo-cloud {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding-block: 2rem;
+}
+.g-logo-cloud ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem clamp(1.5rem, 5vw, 3rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.g-logo-cloud img {
+  display: block;
+  height: 2rem;
+  width: auto;
+  filter: grayscale(1);
+  opacity: 0.7;
+}
+.g-logo-name {
+  color: var(--g-muted);
+  font-family: var(--g-display-font);
+  font-weight: 700;
+}
+.g-cta-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem 2rem;
+  margin-block: clamp(2rem, 6vw, 4rem);
+  padding-inline: clamp(1.5rem, 5vw, 3.5rem);
+  border-radius: var(--g-card-radius);
+  background: var(--g-surface);
+  border: 1px solid var(--g-line);
+}
+.g-cta-band[data-tone='primary'] {
+  background: var(--g-primary);
+  border-color: transparent;
+  color: var(--g-onPrimary);
+}
+.g-cta-band[data-tone='primary'] .g-heading,
+.g-cta-band[data-tone='primary'] .g-text {
+  color: inherit;
+}
+@media (max-width: 960px) /* breakpoints.medium */ {
+  .g-hero-section[data-media] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .g-feature-grid[data-columns='3'],
+  .g-feature-grid[data-columns='4'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-feature-grid[data-columns] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal='armed'] {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  [data-reveal='shown'] {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity calc(var(--g-duration) * 3) var(--g-ease),
+      transform calc(var(--g-duration) * 3) var(--g-ease);
+  }
+}

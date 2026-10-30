@@ -70,6 +70,18 @@ Themes accept an optional `accent: 'expressive' | 'restrained'`. Omitted means e
 
 `PageHeader` optionally accepts an `artwork` node to create a responsive editorial header. `ThemeArtwork` supplies a decorative, theme-aware material study; `compact` fits introduction panels. It is hidden from assistive technology and carries no essential information. `AppShell viewKey` optionally remounts the page content with a brief entrance and resets scroll when the key changes; keep persistent form state outside that keyed content if required.
 
+## Marketing sections
+
+For public sites that must feel like the product they lead to. All five use theme roles, so a landing page follows the same preset, palette, light/dark mode and density as the app. Apps supply copy, images, alt text and links.
+
+- `HeroSection`: `title` (an `h1` by default; set `headingLevel` when nested), optional `eyebrow`, `lead`, `actions` (usually `LinkButton`s) and `media`. With media the copy and media sit side by side and stack below the `medium` breakpoint; without it `align="center"` centres the copy.
+- `FeatureGrid`: optional section `eyebrow`/`title`/`lead` and `features` (`icon`, `title`, `description`) in 2–4 columns that reduce on narrow screens. Feature titles use the heading level below the section title.
+- `Testimonials`: `items` (`quote`, `name`, optional `detail` and `avatarSrc`) as `figure`/`blockquote`/`figcaption` cards. Avatars are decorative; the name is text.
+- `LogoCloud`: a named region (`label`) of `logos`; each `name` becomes the image's alt text, or is shown as text when there is no `src`. Images are shown muted.
+- `CtaBand`: closing `title`, optional `lead` and `actions` on a `primary` (default) or `surface` band. On `primary`, use `secondary` buttons for contrast.
+
+`reveal` (Hero, FeatureGrid, Testimonials, CtaBand) fades and lifts a section in when it first enters the viewport, timed from the theme's `--g-duration`. Server markup and no-JavaScript pages are never hidden; nothing animates under `prefers-reduced-motion: reduce` or without `IntersectionObserver`.
+
 ## Disclosure and multi-step workflows
 
 - `Accordion`: independent native `details`/`summary` disclosures with unique item `value`, plain-text `title` and rich `content`. `defaultOpen` selects initially expanded items. Multiple items may stay open; Enter/Space toggle the focused summary. Do not put interactive controls in titles.

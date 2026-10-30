@@ -24,6 +24,21 @@ export {
 export { Button, IconButton } from './buttons';
 export { LinkButton, type LinkButtonProps } from './link-button';
 export {
+  HeroSection,
+  FeatureGrid,
+  Testimonials,
+  LogoCloud,
+  CtaBand,
+  type HeroSectionProps,
+  type Feature,
+  type FeatureGridProps,
+  type Testimonial,
+  type TestimonialsProps,
+  type Logo,
+  type LogoCloudProps,
+  type CtaBandProps,
+} from './marketing';
+export {
   LanguageSwitcher,
   type LanguageOption,
   type LanguageSwitcherProps,
