@@ -1,6 +1,6 @@
 {
   "name": "@gregui/react",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "files": [
     "dist"
@@ -25,8 +25,8 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
-    "@gregui/localization": "0.1.0",
-    "@gregui/tokens": "0.1.0",
+    "@gregui/localization": "0.2.0",
+    "@gregui/tokens": "0.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.0",
     "@radix-ui/react-context-menu": "^2.4.1",
     "@radix-ui/react-dialog": "^1.1.23",
