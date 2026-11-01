@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2 — 1 November 2026
+
+- `AuthLayout`: `page` makes it the whole screen, filling the viewport with the introduction and form centred together.
+
 ## 0.6.1 — 1 November 2026
 
 - `AppShell`: on small screens the brand mark and name show next to the menu button, so the product is still recognisable while the sidebar is hidden.

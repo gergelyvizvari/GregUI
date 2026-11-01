@@ -2285,9 +2285,21 @@ body {
 .g-auth-feedback:has(> div:empty):not(:has(.g-alert)) {
   display: none;
 }
+.g-auth-layout[data-page] {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  align-content: center;
+  padding: clamp(1.5rem, 6vw, 4rem);
+  border-radius: 0;
+}
 @media (min-width: 960px) /* breakpoints.medium */ {
   .g-auth-layout:has(.g-auth-intro) {
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+  /* A full screen keeps both columns together in the middle instead of at opposite edges. */
+  .g-auth-layout[data-page]:has(.g-auth-intro) {
+    grid-template-columns: minmax(0, 32rem) minmax(0, 28rem);
+    justify-content: center;
   }
 }
 

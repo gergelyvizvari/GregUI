@@ -84,14 +84,17 @@ export function AuthLayout({
   introduction,
   children,
   footer,
+  page = false,
 }: {
   brand?: ReactNode;
   introduction?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
+  /** The whole screen: fills the viewport and centres the introduction and form in it. */
+  page?: boolean;
 }) {
   return (
-    <section className="g-auth-layout">
+    <section className="g-auth-layout" data-page={page || undefined}>
       {(brand || introduction) && (
         <div className="g-auth-intro">
           <Stack gap={5}>
