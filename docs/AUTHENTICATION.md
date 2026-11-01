@@ -37,7 +37,7 @@ Successful submissions clear the form. Changing mode remounts fields so credenti
 
 ## Composition and localization
 
-Wrap patterns in `ThemeProvider` and `LocaleProvider`, as with other gregUI components. `AuthLayout` gives a responsive card and optional brand/introduction/footer regions. Set `page` when the layout is the whole screen (an app's sign-in): it fills the viewport and centres the introduction and form together instead of leaving the form at the top. All surfaces use package tokens; consumers need no CSS.
+Wrap patterns in `ThemeProvider` and `LocaleProvider`, as with other gregUI components. `AuthLayout` gives a responsive card and optional brand/introduction/footer regions. `AuthForm registration={false}` hides the login screen's "create account" link where accounts are made for people (staff tools, invitations). Set `page` when the layout is the whole screen (an app's sign-in): it fills the viewport and centres the introduction and form together instead of leaving the form at the top. All surfaces use package tokens; consumers need no CSS.
 
 All default form copy comes from the `auth*` keys in `LocaleProvider.messages`, including validation, loading outcomes and navigation. The form title renders as `h2`; set `headingLevel` (2–6) when the form sits under another heading. Optional title/description/passwordHint/footer content belongs to the application and must be translated there. The workbench demonstrates complete English/Hungarian form messages. Native browser validation messages follow the browser language. RTL direction inherits from `LocaleProvider`; numeric codes retain LTR entry.
 

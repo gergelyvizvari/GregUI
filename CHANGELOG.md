@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.4 — 1 November 2026
+
+- `AuthForm`: `registration={false}` hides the "create account" link on the login screen.
+
 ## 0.6.3 — 1 November 2026
 
 - `AuthLayout page`: on one column the introduction lines up with the form.

@@ -153,6 +153,11 @@ export interface AuthFormProps {
    * one-time code by email and then enter it in `verify-email`. Requires `onNavigate`.
    */
   emailCode?: boolean;
+  /**
+   * Shows the "create account" link on the login screen. Defaults to true; set false where
+   * accounts are made for people (staff tools, invitations).
+   */
+  registration?: boolean;
 }
 /** Providers own authentication, session persistence, token validation and rate limits. */
 export function AuthForm(props: AuthFormProps) {
@@ -176,6 +181,7 @@ function AuthFormScreen({
   footer,
   headingLevel = 2,
   emailCode = false,
+  registration = true,
 }: AuthFormProps) {
   const { messages: m } = useLocale();
   const id = useId();
@@ -397,9 +403,11 @@ function AuthFormScreen({
                     <Button variant="ghost" onClick={() => onNavigate('forgot-password')}>
                       {m.authForgot}
                     </Button>
-                    <Button variant="ghost" onClick={() => onNavigate('register')}>
-                      {m.authRegister}
-                    </Button>
+                    {registration && (
+                      <Button variant="ghost" onClick={() => onNavigate('register')}>
+                        {m.authRegister}
+                      </Button>
+                    )}
                   </>
                 ) : (
                   <Button variant="ghost" onClick={() => onNavigate('login')}>
