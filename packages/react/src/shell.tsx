@@ -234,6 +234,15 @@ export function AppShell({
                 {nav}
               </nav>
             </Drawer>
+            {/* On phones the sidebar is hidden, so the brand rides next to the menu button. */}
+            <span className="g-mobile-brand">
+              {brandMark ?? (
+                <span className="g-brand-mark" aria-hidden="true">
+                  g<span>↗</span>
+                </span>
+              )}
+              <Text weight="strong">{brand}</Text>
+            </span>
           </div>
           {toolbar}
         </div>

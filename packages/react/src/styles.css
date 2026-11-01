@@ -1718,6 +1718,16 @@ body {
 .g-mobile-nav {
   display: none;
 }
+.g-mobile-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.g-mobile-brand .g-brand-mark {
+  width: 32px;
+  height: 32px;
+}
 .g-skip {
   position: fixed;
   top: 1rem;
@@ -1993,7 +2003,9 @@ body {
     display: none;
   }
   .g-mobile-nav {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
   .g-toolbar {
     flex-wrap: wrap;
@@ -3250,7 +3262,7 @@ body {
   }
   .g-app-shell[data-appearance='editorial'] .g-mobile-nav,
   .g-app-shell[data-appearance='dashboard'] .g-mobile-nav {
-    display: block;
+    display: flex;
   }
 }
 

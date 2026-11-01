@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1 — 1 November 2026
+
+- `AppShell`: on small screens the brand mark and name show next to the menu button, so the product is still recognisable while the sidebar is hidden.
+
 ## 0.6.0 — 1 November 2026
 
 - Passwordless sign-in: `AuthForm` mode `email-code` and `EmailCodeForm` ask for an email to send a one-time code to; `emailCode` adds an "Email me a code instead" link to the login screen. Enter the code with the existing `verify-email` screen. New messages: `authEmailCode`, `authEmailCodeDescription`, `authSendCode`, `authUseCode`, `authEmailCodeSent`.
