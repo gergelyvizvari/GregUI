@@ -2292,6 +2292,12 @@ body {
   padding: clamp(1.5rem, 6vw, 4rem);
   border-radius: 0;
 }
+/* On one column the introduction lines up with the form instead of starting at the page edge. */
+.g-auth-layout[data-page] > .g-auth-intro {
+  width: 100%;
+  max-width: 30rem;
+  margin-inline: auto;
+}
 @media (min-width: 960px) /* breakpoints.medium */ {
   .g-auth-layout:has(.g-auth-intro) {
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
@@ -2300,6 +2306,9 @@ body {
   .g-auth-layout[data-page]:has(.g-auth-intro) {
     grid-template-columns: minmax(0, 32rem) minmax(0, 28rem);
     justify-content: center;
+  }
+  .g-auth-layout[data-page] > .g-auth-intro {
+    max-width: 32rem;
   }
 }
 

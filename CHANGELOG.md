@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.3 — 1 November 2026
+
+- `AuthLayout page`: on one column the introduction lines up with the form.
+
 ## 0.6.2 — 1 November 2026
 
 - `AuthLayout`: `page` makes it the whole screen, filling the viewport with the introduction and form centred together.
