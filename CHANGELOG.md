@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0 — 1 November 2026
+
+- Passwordless sign-in: `AuthForm` mode `email-code` and `EmailCodeForm` ask for an email to send a one-time code to; `emailCode` adds an "Email me a code instead" link to the login screen. Enter the code with the existing `verify-email` screen. New messages: `authEmailCode`, `authEmailCodeDescription`, `authSendCode`, `authUseCode`, `authEmailCodeSent`.
+
 ## 0.5.1 — 31 October 2026
 
 - `Field` takes `optional`, which marks the label instead of adding a hint line, so fields in one row stay aligned.
