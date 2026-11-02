@@ -9,7 +9,7 @@ export {
 } from '@gregui/localization';
 export { createTheme, type Theme } from '@gregui/tokens';
 export { useTheme, useSystemMode, ThemeProvider, type ThemeColorScheme } from './theme';
-export { Stack, Inline, Grid, Split, Container, Card, Section } from './layout';
+export { Stack, Inline, Grid, Split, Container, Card, CardLink, Section } from './layout';
 export {
   Text,
   Heading,

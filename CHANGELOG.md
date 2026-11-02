@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.5 — 2 November 2026
+
+- `CardLink`: the title link of a `Card` that makes the whole card clickable, for lists of records; the title reads as plain text and the card lifts on hover.
+
 ## 0.6.4 — 1 November 2026
 
 - `AuthForm`: `registration={false}` hides the "create account" link on the login screen.
