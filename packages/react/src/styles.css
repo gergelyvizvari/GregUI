@@ -5795,6 +5795,13 @@ button.g-agenda-event:hover {
 }
 .g-segmented[data-variant='chips'] .g-segment-input:checked + .g-segment-face {
   border-color: var(--g-selection);
+  background: var(--g-selection);
+  color: var(--g-onSelection);
+}
+.g-segmented[data-variant='chips']
+  .g-segment-input:not(:checked):not(:disabled):hover
+  + .g-segment-face {
+  background: var(--g-tint);
 }
 
 /* Slider: a styled native range input. --g-slider-fill is the value's position on the track. */
