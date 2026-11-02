@@ -66,6 +66,13 @@ body {
   outline: 2px solid var(--g-focus);
   outline-offset: 3px;
 }
+/*
+ * Headings, regions and messages that code moves focus to (tabindex="-1") so screen readers
+ * announce them: no ring, as they are not something to act on and cannot be tabbed to.
+ */
+.g-theme [tabindex='-1']:not(a, button, input, select, textarea, summary):focus-visible {
+  outline: none;
+}
 .g-theme [hidden] {
   display: none !important;
 }

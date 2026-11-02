@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.8 — 2 November 2026
+
+- Headings, regions and messages that receive focus from code (`tabindex="-1"`, such as `Wizard` step titles, the `AppShell` main area and form feedback) no longer show a focus ring.
+
 ## 0.6.7 — 2 November 2026
 
 - `Stepper`: `onStepSelect` makes completed steps buttons, so people can go back to them.
