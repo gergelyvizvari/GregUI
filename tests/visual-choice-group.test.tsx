@@ -73,3 +73,22 @@ it('announces option status through one persistent live region', () => {
   expect(screen.getByRole('status')).toBe(live[0]);
   expect(live[0]).toBeEmptyDOMElement();
 });
+
+it('lays previews out as a gallery and still selects by clicking the picture', async () => {
+  function Fixture() {
+    const [value, onChange] = useState<string | null>(null);
+    return (
+      <VisualChoiceGroup
+        label="Design"
+        layout="gallery"
+        options={options}
+        value={value}
+        onChange={onChange}
+      />
+    );
+  }
+  render(<Fixture />);
+  expect(screen.getByRole('group', { name: 'Design' })).toHaveAttribute('data-layout', 'gallery');
+  await userEvent.setup().click(screen.getByText('Mountains'));
+  expect(screen.getByRole('radio', { name: 'Alpine' })).toBeChecked();
+});

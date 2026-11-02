@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.7 — 2 November 2026
+
+- `Stepper`: `onStepSelect` makes completed steps buttons, so people can go back to them.
+- `SegmentedControl`: `variant="chips"` shows many options as wrapping rounded chips, for filters.
+- `VisualChoiceGroup`: `layout="gallery"` shows previews at their own proportion and one height, ringed and ticked when chosen, for pictures of mixed shapes.
+
 ## 0.6.6 — 2 November 2026
 
 - `PageLoading`: a whole-screen, centred loading state with an optional brand mark, shown after a short pause.

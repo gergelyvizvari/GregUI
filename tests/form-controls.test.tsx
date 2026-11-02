@@ -12,6 +12,26 @@ const views = [
 ];
 
 describe('SegmentedControl', () => {
+  it('shows many options as wrapping chips with the same radio behaviour', async () => {
+    const change = vi.fn();
+    render(
+      <SegmentedControl
+        label="Occasion"
+        variant="chips"
+        options={['All', 'Birthday', 'Name day', 'Christmas', 'Easter', 'Thanks'].map((label) => ({
+          value: label,
+          label,
+        }))}
+        defaultValue="All"
+        onValueChange={change}
+      />,
+    );
+    const group = screen.getByRole('group', { name: 'Occasion' });
+    expect(group.querySelector('.g-segmented')).toHaveAttribute('data-variant', 'chips');
+    await userEvent.setup().click(screen.getByRole('radio', { name: 'Easter' }));
+    expect(change).toHaveBeenCalledWith('Easter');
+  });
+
   it('is a named radio group with hint and error descriptions', () => {
     render(
       <SegmentedControl label="View" options={views} hint="Pick a layout" error="Choose one" />,

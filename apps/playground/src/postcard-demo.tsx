@@ -243,6 +243,7 @@ export function PostcardDemo() {
       </Field>
       <VisualChoiceGroup
         label="Postcard design"
+        layout="gallery"
         value={design}
         onChange={setDesign}
         hint="Choose one design. Use the arrow keys to move between available choices."
