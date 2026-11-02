@@ -12,9 +12,30 @@ import {
   ConfirmDialog,
   Tabs,
   Checkbox,
+  Card,
+  CardLink,
 } from '@gregui/react';
 import { createTheme } from '@gregui/tokens';
 describe('interaction contracts', () => {
+  it('makes a whole card a link while its own buttons stay separate', async () => {
+    const open = vi.fn((event: React.MouseEvent) => event.preventDefault());
+    const send = vi.fn();
+    render(
+      <Card footer={<Button onClick={send}>Send</Button>}>
+        <CardLink href="/people/1" onClick={open}>
+          Anna Kiss
+        </CardLink>
+      </Card>,
+    );
+    const link = screen.getByRole('link', { name: 'Anna Kiss' });
+    expect(link).toHaveAttribute('href', '/people/1');
+    expect(link).toHaveClass('g-card-link');
+    await userEvent.click(link);
+    await userEvent.click(screen.getByRole('button', { name: 'Send' }));
+    expect(open).toHaveBeenCalledTimes(1);
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
   it('links field labels, hints and errors without ID collisions', () => {
     render(
       <>

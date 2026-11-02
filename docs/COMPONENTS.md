@@ -7,8 +7,9 @@ All public exports go through `packages/react/src/index.tsx`, which re-exports t
 - `ThemeProvider`: scopes variables and the selected preset/mode. Nested providers inherit the current theme unless explicitly overridden. Portal components copy theme and locale into their portal root. `colorScheme="system"` follows the device's light/dark setting; see [system colour mode](#system-colour-mode). `page` marks one top-level provider as the page root: its background fills at least the viewport height (`100dvh`) and the document's `color-scheme` follows the theme, so short pages, scrollbars and overscroll match. Nested providers and portals never take it; `AppShell` fills the viewport by itself.
 - `LocaleProvider`: locale, direction, time zone and replaceable package-owned messages. Built-in messages follow the locale's language: English (default) and Hungarian (`hu`, for example `hu-HU`, informal register). `messages` overrides are applied on top. `english`, `hungarian` and `messagesFor(locale)` are exported for apps that build their own catalogs. Supply translated application labels/content yourself. `useFormat` formats numbers/dates and selects plural categories; applications supply plural message forms.
 - `Stack`, `Inline`, `Grid`: token-based gaps 0–8. Grid accepts 1–5 columns or `columns="auto"` (width-aware cards with a 15rem minimum) and collapses on small viewports. `Inline` wraps; do not depend on fixed text lengths.
-- `Split`, `Container`, `Card`, `Section`, `PageHeader`, `AppShell`: shared responsive composition. AppShell renders a skip link, desktop navigation, a toolbar row and a modal navigation drawer on small screens; `sidebarCollapsible` adds an icon rail. It does not own routing.
+- `Split`, `Container`, `Card`, `Section`, `PageHeader`, `AppShell`: shared responsive composition. AppShell renders a skip link, desktop navigation, a toolbar row and a modal navigation drawer on small screens, where the brand mark (`brandMark`, else the default mark) and `brand` name sit next to the menu button because the sidebar is hidden; `sidebarCollapsible` adds an icon rail. It does not own routing.
 - `Card` accepts an optional `footer` for actions anchored to the bottom of equal-height grid cards.
+- `CardLink` (`href`, `onClick`, children) inside a `Card` makes the whole card open one record: the title reads as plain heading text, the card lifts on hover and shows the focus ring when the link has keyboard focus. Buttons, checkboxes and other links in the card stay clickable on their own. One per card; the app owns navigation (pass `onClick` and call `preventDefault` for client-side routing).
 - `Text`, `Heading`: explicit semantic heading levels (h1–h6) and separate visual sizes. Text adds opt-in `lead` and `caption` roles. Application authors must choose logical heading order.
 - `Prose`: opt-in reading flow for native headings, paragraphs, lists, quotes, figures/captions, links, code and simple tables; defaults to a 65ch reading measure. `measure="full"` removes that cap.
 - `Section level` chooses h2–h6 for correctly nested named sections; the default remains h2. PageHeader adds optional breadcrumbs/meta slots and `size="compact"`. See [typography and page foundations](#typography-and-page-foundations).
@@ -16,7 +17,10 @@ All public exports go through `packages/react/src/index.tsx`, which re-exports t
 ## Forms and actions
 
 - `Button`: primary/secondary/ghost/danger, small/medium/large. Default type is `button`; use `type="submit"` in forms. `loading` sets `aria-busy` and disables repeated actions. `IconButton` requires `label`.
-- `TextField`: label, hint, error and generated stable IDs. Native input props remain available. Use `Field`'s render callback with `Input`, `Textarea` or `Select` for other labeled controls.
+- `LinkButton`: an anchor with the same variants and sizes as `Button`, for navigation and calls to action. `href` is required; pass a router or framework link (for example Next.js `Link`) as `component`. It must render an `<a>` and receives `className` and the button data attributes. Links cannot be disabled; render a disabled `Button` or nothing instead.
+- `LanguageSwitcher`: a native select with a globe icon for the interface language. Options take `value`, `label` (the language's own name) and `lang` (the label's BCP 47 tag, applied to the option and the select). Controlled (`value`/`onValueChange`) or uncontrolled (`defaultValue`); `label` defaults to the translated `language` message and `hideLabel` keeps it for assistive technology only. The app owns the language list, persistence and loading its own copy.
+- `MonthDayField`: a controlled recurring date (`{ month, day, year? }`, each `null` when unset) for birthdays, name days and anniversaries. Month names and the month/day order follow the active locale; `withYear` adds an optional numeric year. Without a year February offers 29 days; choosing a shorter month or a non-leap year moves the day to the month's last day. `error` is announced on the group. `daysInMonth(month, year?)` is exported. Labels come from the `month`, `day`, `year`, `notSelected` and `optional` messages.
+- `TextField`: label, hint, error and generated stable IDs. Native input props remain available. Use `Field`'s render callback with `Input`, `Textarea` or `Select` for other labeled controls. `Field` takes `required` or `optional`; both mark the label, so fields in one row stay aligned (a `hint` adds a line above the control).
 - `Checkbox`, `Switch`: native checkbox state/events; Checkbox optionally accepts `hideLabel` for compact table selection while retaining its accessible name; Switch exposes switch semantics. `RadioGroup` requires controlled value/onChange and options.
 - `Combobox` supports local filtering or app-owned remote results through a controlled query, with loading/retry feedback and a persistent selection label. See [expanded contracts](EXPANDED-COMPONENTS.md#remote-and-controlled-choices) for query reset, error and focus behaviour.
 - Form validation remains in the application. `ErrorSummary` links errors to field IDs. On failed submission, move focus to the summary or first invalid field; on success use `Status`.
@@ -67,6 +71,18 @@ Themes accept an optional `accent: 'expressive' | 'restrained'`. Omitted means e
 ## Editorial composition
 
 `PageHeader` optionally accepts an `artwork` node to create a responsive editorial header. `ThemeArtwork` supplies a decorative, theme-aware material study; `compact` fits introduction panels. It is hidden from assistive technology and carries no essential information. `AppShell viewKey` optionally remounts the page content with a brief entrance and resets scroll when the key changes; keep persistent form state outside that keyed content if required.
+
+## Marketing sections
+
+For public sites that must feel like the product they lead to. All five use theme roles, so a landing page follows the same preset, palette, light/dark mode and density as the app. Apps supply copy, images, alt text and links.
+
+- `HeroSection`: `title` (an `h1` by default; set `headingLevel` when nested), optional `eyebrow`, `lead`, `actions` (usually `LinkButton`s) and `media`. With media the copy and media sit side by side and stack below the `medium` breakpoint; without it `align="center"` centres the copy.
+- `FeatureGrid`: optional section `eyebrow`/`title`/`lead` and `features` (`icon`, `title`, `description`) in 2–4 columns that reduce on narrow screens. Feature titles use the heading level below the section title.
+- `Testimonials`: `items` (`quote`, `name`, optional `detail` and `avatarSrc`) as `figure`/`blockquote`/`figcaption` cards. Avatars are decorative; the name is text.
+- `LogoCloud`: a named region (`label`) of `logos`; each `name` becomes the image's alt text, or is shown as text when there is no `src`. Images are shown muted.
+- `CtaBand`: closing `title`, optional `lead` and `actions` on a `primary` (default) or `surface` band. On `primary`, use `secondary` buttons for contrast.
+
+`reveal` (Hero, FeatureGrid, Testimonials, CtaBand) fades and lifts a section in when it first enters the viewport, timed from the theme's `--g-duration`. Server markup and no-JavaScript pages are never hidden; nothing animates under `prefers-reduced-motion: reduce` or without `IntersectionObserver`.
 
 ## Disclosure and multi-step workflows
 

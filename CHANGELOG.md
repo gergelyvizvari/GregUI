@@ -1,5 +1,56 @@
 # Changelog
 
+## 0.6.5 — 2 November 2026
+
+- `CardLink`: the title link of a `Card` that makes the whole card clickable, for lists of records; the title reads as plain text and the card lifts on hover.
+
+## 0.6.4 — 1 November 2026
+
+- `AuthForm`: `registration={false}` hides the "create account" link on the login screen.
+
+## 0.6.3 — 1 November 2026
+
+- `AuthLayout page`: on one column the introduction lines up with the form.
+
+## 0.6.2 — 1 November 2026
+
+- `AuthLayout`: `page` makes it the whole screen, filling the viewport with the introduction and form centred together.
+
+## 0.6.1 — 1 November 2026
+
+- `AppShell`: on small screens the brand mark and name show next to the menu button, so the product is still recognisable while the sidebar is hidden.
+
+## 0.6.0 — 1 November 2026
+
+- Passwordless sign-in: `AuthForm` mode `email-code` and `EmailCodeForm` ask for an email to send a one-time code to; `emailCode` adds an "Email me a code instead" link to the login screen. Enter the code with the existing `verify-email` screen. New messages: `authEmailCode`, `authEmailCodeDescription`, `authSendCode`, `authUseCode`, `authEmailCodeSent`.
+
+## 0.5.1 — 31 October 2026
+
+- `Field` takes `optional`, which marks the label instead of adding a hint line, so fields in one row stay aligned.
+- `MonthDayField`'s year uses it: the year input now lines up with month and day. The `optional` message is lower case to fit in the label.
+
+## 0.5.0 — 30 October 2026
+
+### Added
+
+- `MonthDayField` and `daysInMonth`: recurring dates without a year (birthdays, name days), with locale month names and order and an optional year.
+- Locale messages `month`, `day`, `year`, `notSelected` and `optional` (English and Hungarian). Apps that pass a complete `Messages` object must add them.
+
+## 0.4.0 — 30 October 2026
+
+### Added
+
+- Marketing sections: `HeroSection`, `FeatureGrid`, `Testimonials`, `LogoCloud` and `CtaBand`, with an opt-in `reveal` entrance that respects reduced motion and never hides server-rendered content.
+
+## 0.3.0 — 30 October 2026
+
+### Added
+
+- `LinkButton`: navigation styled as a `Button`, with an optional framework link `component`.
+- `LanguageSwitcher`: interface-language select with a globe icon, per-option `lang` and a translated default label.
+- Icon: `globe`.
+- Locale message `language` (English and Hungarian). Apps that pass a complete `Messages` object must add it.
+
 ## 0.2.0 — 30 October 2026
 
 ### Changed behaviour

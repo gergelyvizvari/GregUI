@@ -84,14 +84,17 @@ export function AuthLayout({
   introduction,
   children,
   footer,
+  page = false,
 }: {
   brand?: ReactNode;
   introduction?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
+  /** The whole screen: fills the viewport and centres the introduction and form in it. */
+  page?: boolean;
 }) {
   return (
-    <section className="g-auth-layout">
+    <section className="g-auth-layout" data-page={page || undefined}>
       {(brand || introduction) && (
         <div className="g-auth-intro">
           <Stack gap={5}>
@@ -110,11 +113,17 @@ export function AuthLayout({
   );
 }
 export type AuthMode =
-  'login' | 'register' | 'forgot-password' | 'reset-password' | 'verify-email' | 'two-factor';
+  | 'login'
+  | 'register'
+  | 'forgot-password'
+  | 'reset-password'
+  | 'verify-email'
+  | 'two-factor'
+  | 'email-code';
 export type AuthSubmission =
   | { mode: 'login'; email: string; password: string; remember: boolean }
   | { mode: 'register'; name: string; email: string; password: string }
-  | { mode: 'forgot-password'; email: string }
+  | { mode: 'forgot-password' | 'email-code'; email: string }
   | { mode: 'reset-password'; password: string }
   | { mode: 'verify-email' | 'two-factor'; code: string };
 /**
@@ -139,6 +148,16 @@ export interface AuthFormProps {
   footer?: ReactNode;
   /** Level of the form title heading. Defaults to 2. */
   headingLevel?: 2 | 3 | 4 | 5 | 6;
+  /**
+   * Offers passwordless sign-in: the login screen links to `email-code`, where people ask for a
+   * one-time code by email and then enter it in `verify-email`. Requires `onNavigate`.
+   */
+  emailCode?: boolean;
+  /**
+   * Shows the "create account" link on the login screen. Defaults to true; set false where
+   * accounts are made for people (staff tools, invitations).
+   */
+  registration?: boolean;
 }
 /** Providers own authentication, session persistence, token validation and rate limits. */
 export function AuthForm(props: AuthFormProps) {
@@ -161,6 +180,8 @@ function AuthFormScreen({
   successMessage,
   footer,
   headingLevel = 2,
+  emailCode = false,
+  registration = true,
 }: AuthFormProps) {
   const { messages: m } = useLocale();
   const id = useId();
@@ -172,7 +193,7 @@ function AuthFormScreen({
   const [mismatch, setMismatch] = useState(false);
   const feedback = useRef<HTMLDivElement>(null);
   const confirm = useRef<HTMLInputElement>(null);
-  const email = ['login', 'register', 'forgot-password'].includes(mode);
+  const email = ['login', 'register', 'forgot-password', 'email-code'].includes(mode);
   const password = ['login', 'register', 'reset-password'].includes(mode);
   const newPassword = mode === 'register' || mode === 'reset-password';
   const verification = mode === 'verify-email' || mode === 'two-factor';
@@ -183,6 +204,7 @@ function AuthFormScreen({
     'reset-password': m.authReset,
     'verify-email': m.authVerifyEmail,
     'two-factor': m.authTwoFactor,
+    'email-code': m.authEmailCode,
   };
   const descriptions = {
     login: m.authLoginDescription,
@@ -191,12 +213,15 @@ function AuthFormScreen({
     'reset-password': m.authResetDescription,
     'verify-email': m.authVerifyDescription,
     'two-factor': m.authTwoFactorDescription,
+    'email-code': m.authEmailCodeDescription,
   };
   const action = verification
     ? m.authVerify
     : mode === 'forgot-password'
       ? m.authSendLink
-      : titles[mode];
+      : mode === 'email-code'
+        ? m.authSendCode
+        : titles[mode];
   async function run(
     operation: () => AuthResult | Promise<AuthResult>,
     message: string,
@@ -250,12 +275,18 @@ function AuthFormScreen({
             email: value('email').trim(),
             password: value('password'),
           };
-        else if (mode === 'forgot-password') values = { mode, email: value('email').trim() };
+        else if (mode === 'forgot-password' || mode === 'email-code')
+          values = { mode, email: value('email').trim() };
         else if (mode === 'reset-password') values = { mode, password: value('password') };
         else values = { mode, code: value('code') };
         void run(
           () => onSubmit(values),
-          successMessage ?? (mode === 'forgot-password' ? m.authResetSent : m.authComplete),
+          successMessage ??
+            (mode === 'forgot-password'
+              ? m.authResetSent
+              : mode === 'email-code'
+                ? m.authEmailCodeSent
+                : m.authComplete),
           form,
         );
       }}
@@ -364,12 +395,19 @@ function AuthFormScreen({
               <div className="g-auth-links">
                 {mode === 'login' ? (
                   <>
+                    {emailCode && (
+                      <Button variant="ghost" onClick={() => onNavigate('email-code')}>
+                        {m.authUseCode}
+                      </Button>
+                    )}
                     <Button variant="ghost" onClick={() => onNavigate('forgot-password')}>
                       {m.authForgot}
                     </Button>
-                    <Button variant="ghost" onClick={() => onNavigate('register')}>
-                      {m.authRegister}
-                    </Button>
+                    {registration && (
+                      <Button variant="ghost" onClick={() => onNavigate('register')}>
+                        {m.authRegister}
+                      </Button>
+                    )}
                   </>
                 ) : (
                   <Button variant="ghost" onClick={() => onNavigate('login')}>
@@ -403,4 +441,8 @@ export function EmailVerificationForm(props: FlowProps) {
 }
 export function TwoFactorForm(props: FlowProps) {
   return <AuthForm {...props} mode="two-factor" />;
+}
+/** Passwordless sign-in, first step: the email to send a one-time code to. */
+export function EmailCodeForm(props: FlowProps) {
+  return <AuthForm {...props} mode="email-code" />;
 }

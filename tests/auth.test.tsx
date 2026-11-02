@@ -170,3 +170,26 @@ describe('application-reported failures', () => {
     expect(screen.queryByText('Signed in')).toBeNull();
   });
 });
+
+describe('passwordless email code', () => {
+  it('links from login to the code request only when enabled, and submits just the email', async () => {
+    const navigate = vi.fn();
+    const { unmount } = render(<LoginForm onSubmit={vi.fn()} onNavigate={navigate} />);
+    expect(screen.queryByRole('button', { name: 'Email me a code instead' })).toBeNull();
+    unmount();
+    render(<LoginForm onSubmit={vi.fn()} onNavigate={navigate} emailCode />);
+    await userEvent.click(screen.getByRole('button', { name: 'Email me a code instead' }));
+    expect(navigate).toHaveBeenCalledWith('email-code');
+  });
+
+  it('asks for an email and confirms the code was sent', async () => {
+    const submit = vi.fn();
+    render(<AuthForm mode="email-code" onSubmit={submit} />);
+    expect(screen.getByRole('heading', { name: 'Sign in with an email code' })).toBeInTheDocument();
+    expect(screen.queryByLabelText(/password/i)).toBeNull();
+    await userEvent.type(screen.getByRole('textbox', { name: /email/i }), ' anna@example.com ');
+    await userEvent.click(screen.getByRole('button', { name: 'Email me a code' }));
+    expect(submit).toHaveBeenCalledWith({ mode: 'email-code', email: 'anna@example.com' });
+    expect(await screen.findByText('We sent you a code. Check your email.')).toBeInTheDocument();
+  });
+});

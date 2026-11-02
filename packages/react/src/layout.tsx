@@ -1,7 +1,7 @@
 'use client';
-import { useId, type ReactNode } from 'react';
+import { useId, type ComponentPropsWithoutRef, type ReactNode } from 'react';
 import { spacing, type Space } from '@gregui/tokens';
-import type { DivProps } from './internal-types';
+import type { Clean, DivProps } from './internal-types';
 import { Heading, Text } from './typography';
 export function Stack({ gap = 4, children, ...props }: DivProps & { gap?: Space }) {
   return (
@@ -82,6 +82,23 @@ export function Card({
       {children}
       {footer != null && <div className="g-card-footer">{footer}</div>}
     </div>
+  );
+}
+/**
+ * The card's title as a link that makes the whole card clickable, for lists where each card opens
+ * a record. It reads as plain heading text (no link colour or underline); the card lifts on hover
+ * and shows the focus ring when the link has keyboard focus. Buttons, checkboxes and other links
+ * inside the card stay clickable on their own. Use one per card. Apps own navigation: pass
+ * `onClick` (and `preventDefault`) for client-side routing.
+ */
+export function CardLink({
+  children,
+  ...props
+}: Clean<ComponentPropsWithoutRef<'a'>> & { href: string }) {
+  return (
+    <a {...props} className="g-card-link">
+      {children}
+    </a>
   );
 }
 export function Section({

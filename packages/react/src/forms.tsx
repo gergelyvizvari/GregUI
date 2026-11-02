@@ -9,6 +9,8 @@ interface FieldProps {
   hint?: string;
   error?: string;
   required?: boolean;
+  /** Marks the label "(optional)" without a hint line, so it lines up with fields beside it. */
+  optional?: boolean;
   id?: string;
   children: (props: {
     id: string;
@@ -17,7 +19,15 @@ interface FieldProps {
     required?: boolean;
   }) => ReactNode;
 }
-export function Field({ label, hint, error, required, id: provided, children }: FieldProps) {
+export function Field({
+  label,
+  hint,
+  error,
+  required,
+  optional,
+  id: provided,
+  children,
+}: FieldProps) {
   const uid = useId();
   const id = provided ?? uid;
   const { messages } = useLocale();
@@ -26,6 +36,7 @@ export function Field({ label, hint, error, required, id: provided, children }: 
       <label className="g-label" htmlFor={id}>
         {label}
         {required && <span className="g-required"> ({messages.required})</span>}
+        {optional && !required && <span className="g-required"> ({messages.optional})</span>}
       </label>
       {hint && (
         <p className="g-hint" id={`${id}-hint`}>
