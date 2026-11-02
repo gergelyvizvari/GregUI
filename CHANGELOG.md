@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0 — 2 November 2026
+
+- `PostcardStage`: one postcard on the table at true proportions, scaled to fit, turning over between its picture and writing sides, with an optional envelope behind a folded card and a small settle when its content changes.
+- `MailFace`: `variant="inside"` for the inside of a folded card, the message alone.
+- `VisualChoiceGroup`: `layout="tiles"` for big, centred choices with an avatar, icon or small picture; `hideLabel` when a heading already asks the question.
+
 ## 0.6.8 — 2 November 2026
 
 - Headings, regions and messages that receive focus from code (`tabindex="-1"`, such as `Wizard` step titles, the `AppShell` main area and form feedback) no longer show a focus ring.

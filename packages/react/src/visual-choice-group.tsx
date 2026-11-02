@@ -13,6 +13,8 @@ export interface VisualChoiceOption {
 }
 export interface VisualChoiceGroupProps {
   label: string;
+  /** Keep the label for assistive technology only, when a heading above already asks it. */
+  hideLabel?: boolean;
   options: readonly VisualChoiceOption[];
   value: string | null;
   onChange: (value: string) => void;
@@ -24,12 +26,15 @@ export interface VisualChoiceGroupProps {
   /**
    * `gallery`: previews keep their own shape at one height, like prints laid out on a table;
    * the chosen one is ringed and ticked. Suits pictures of different proportions.
+   * `tiles`: big centred choices with a small preview (an avatar, icon or picture) above the
+   * label, for quick choices such as who or how.
    */
-  layout?: 'grid' | 'gallery';
+  layout?: 'grid' | 'gallery' | 'tiles';
 }
 /** Controlled native radio selection with consistent directional keyboard navigation. */
 export function VisualChoiceGroup({
   label,
+  hideLabel = false,
   options,
   value,
   onChange,
@@ -50,7 +55,7 @@ export function VisualChoiceGroup({
       disabled={disabled}
       aria-describedby={feedback}
     >
-      <legend>{label}</legend>
+      <legend className={hideLabel ? 'g-sr-only' : undefined}>{label}</legend>
       {hint && (
         <p id={`${id}-hint`} className="g-visual-choice-hint">
           {hint}
