@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.6 — 2 November 2026
+
+- `PageLoading`: a whole-screen, centred loading state with an optional brand mark, shown after a short pause.
+
 ## 0.6.5 — 2 November 2026
 
 - `CardLink`: the title link of a `Card` that makes the whole card clickable, for lists of records; the title reads as plain text and the card lifts on hover.

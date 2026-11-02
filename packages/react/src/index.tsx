@@ -70,6 +70,7 @@ export {
   Alert,
   Status,
   Spinner,
+  PageLoading,
   Progress,
   Skeleton,
   EmptyState,
