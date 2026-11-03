@@ -347,6 +347,16 @@ describe('SideNav', () => {
     expect(navigate.mock.calls.map(([item]) => item.id)).toEqual(['home', 'settings']);
   });
 
+  it('marks a badge that needs attention', () => {
+    render(
+      <SideNav
+        items={[{ id: 'inbox', label: 'Inbox', href: '/inbox', badge: 3, badgeTone: 'attention' }]}
+      />,
+    );
+    const link = screen.getByRole('link', { name: 'Inbox 3' });
+    expect(within(link).getByText('3')).toHaveAttribute('data-tone', 'attention');
+  });
+
   it('names sections by their headings', () => {
     render(
       <SideNav

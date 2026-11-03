@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.3 — 3 November 2026
+
+- `SideNav`: `badgeTone: 'attention'` fills an item's badge with the primary colour for work waiting there; the collapsed rail keeps it as a dot.
+
 ## 0.10.2 — 3 November 2026
 
 - `Stepper`: `reachedStep` keeps steps already reached finished and selectable after going back, so people can jump forward again.

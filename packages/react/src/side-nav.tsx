@@ -14,6 +14,11 @@ export interface SideNavItem {
   href?: string;
   /** Short trailing content such as a count. Include it in the label if it matters to screen readers. */
   badge?: ReactNode;
+  /**
+   * `attention` fills the badge with the primary colour for work waiting there; the collapsed
+   * rail then keeps it as a dot on the item. Defaults to a quiet `neutral` badge.
+   */
+  badgeTone?: 'neutral' | 'attention';
   disabled?: boolean;
   /** Child items make this a disclosure that shows and hides them. */
   items?: SideNavItem[];
@@ -134,7 +139,11 @@ export function SideNav({
               </span>
             )}
         <span className="g-nav-text">{item.label}</span>
-        {item.badge != null && <span className="g-side-nav-badge">{item.badge}</span>}
+        {item.badge != null && (
+          <span className="g-side-nav-badge" data-tone={item.badgeTone ?? 'neutral'}>
+            {item.badge}
+          </span>
+        )}
       </>
     );
     if (item.items) {

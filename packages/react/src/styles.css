@@ -5834,6 +5834,12 @@ button.g-agenda-event:hover {
   font-size: 0.6875rem;
   text-align: center;
 }
+.g-side-nav-badge[data-tone='attention'] {
+  background: var(--g-primary);
+  color: var(--g-onPrimary);
+  font-weight: 700;
+  line-height: 1.25rem;
+}
 .g-side-nav-disclosure {
   display: inline-flex;
   transition: transform var(--g-duration) var(--g-ease);
@@ -5872,6 +5878,23 @@ button.g-agenda-event:hover {
 .g-sidebar[data-collapsed] .g-brand {
   flex-direction: column;
   padding: 0;
+}
+/* In the rail an attention badge stays as a dot on the item; its text stays for screen readers. */
+.g-sidebar[data-collapsed] .g-side-nav .g-nav-item {
+  position: relative;
+}
+.g-sidebar[data-collapsed] .g-side-nav-badge[data-tone='attention'] {
+  position: absolute;
+  inset-block-start: 6px;
+  inset-inline-end: 6px;
+  width: 8px;
+  min-width: 0;
+  height: 8px;
+  padding: 0;
+  overflow: hidden;
+  font-size: 0;
+  line-height: 0;
+  clip-path: none;
 }
 .g-sidebar[data-collapsed] .g-brand > .g-stack,
 .g-sidebar[data-collapsed] .g-nav-dot,
