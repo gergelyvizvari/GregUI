@@ -134,3 +134,35 @@ it('lets people go back to completed steps when the consumer allows it', async (
   expect(screen.getAllByRole('button')).toHaveLength(2);
   expect(screen.getByText('Words').closest('li')).toHaveAttribute('aria-current', 'step');
 });
+
+it('fits the steps on one row when compact', () => {
+  render(
+    <Stepper
+      compact
+      currentStep={1}
+      steps={[
+        { value: 'a', label: 'Who' },
+        { value: 'b', label: 'Card' },
+      ]}
+    />,
+  );
+  expect(screen.getByRole('list')).toHaveAttribute('data-compact', 'true');
+  expect(screen.getByText('Card')).toBeInTheDocument();
+});
+
+it('shows what each finished step chose when compact', () => {
+  render(
+    <Stepper
+      compact
+      currentStep={2}
+      steps={[
+        { value: 'who', label: 'Who is it for?', description: 'Anna Kiss' },
+        { value: 'card', label: 'Which card?' },
+        { value: 'send', label: 'Send' },
+      ]}
+    />,
+  );
+  expect(document.querySelectorAll('.g-step-summary')[0]).toHaveTextContent('Anna Kiss');
+  // Without a summary, the step's own label stands in.
+  expect(document.querySelectorAll('.g-step-summary')[1]).toHaveTextContent('Which card?');
+});

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.0 — 3 November 2026
+
+- `PostcardStage`: `fold="closed" | "open"` for a folded card seen slightly from the side that opens on its fold to `inside`; a portrait card's writing side is landscape and the card turns a quarter as it turns over; `onTurn` and `turnLabel` make the card a button that turns or opens it; `size="large"` for a last look; the stage is roomier, and a closed folded card stands slightly open.
+- `Stepper`: `compact` for one short row: finished steps show what was chosen, the current step its label.
+- `DocumentPreview`: `controls="buttons"` shows the page and zoom as segmented buttons instead of menus; a page's `sizeMm` shows it at its own size, such as an envelope.
+- `MailFace`: the inside of a folded card is centred, in the display face.
+- `MailFace`: `postage={false}` for cards that are not posted.
+- `VisualChoiceGroup`: `layout="notes"` for written suggestions as small note cards; `preview` is optional with it.
+
 ## 0.7.0 — 2 November 2026
 
 - `PostcardStage`: one postcard on the table at true proportions, scaled to fit, turning over between its picture and writing sides, with an optional envelope behind a folded card and a small settle when its content changes.

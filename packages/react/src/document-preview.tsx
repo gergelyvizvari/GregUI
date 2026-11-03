@@ -1,6 +1,7 @@
 'use client';
 import { Alert } from './feedback';
 import { Field, Select, Checkbox } from './forms';
+import { SegmentedControl } from './segmented-control';
 import { useLocale } from '@gregui/localization';
 import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 
@@ -16,6 +17,11 @@ export interface DocumentPreviewPage {
   padding?: 'none' | 'standard' | 'bleed';
   /** Raster images placed on this page, checked against `imageResolution`. */
   images?: readonly DocumentPreviewImage[];
+  /**
+   * A page of another size, such as the envelope a card goes in; shown without bleed or safe
+   * area guides.
+   */
+  sizeMm?: { width: number; height: number };
 }
 export interface DocumentPreviewImage {
   label: string;
@@ -50,6 +56,8 @@ export interface DocumentPreviewProps {
   bleedMm?: number;
   imageResolution?: DocumentImageResolution;
   labels: { page: string; zoom: string; fit: string; guides: string };
+  /** `buttons` shows the page and zoom choices as segmented buttons instead of menus. */
+  controls?: 'menus' | 'buttons';
 }
 /**
  * Effective print density of an image covering a printed area. Cover-fit scaling uses the
@@ -68,6 +76,8 @@ const warn = (message: string) => {
   console.warn(message);
 };
 /** Screen proofing only. The application owns composition, asset quality and print/export. */
+const zoomOptions = ['fit', '0.5', '1', '1.5', '2'];
+
 export function DocumentPreview({
   label,
   pages,
@@ -79,6 +89,7 @@ export function DocumentPreview({
   bleedMm,
   imageResolution,
   labels,
+  controls = 'menus',
 }: DocumentPreviewProps) {
   const { direction } = useLocale();
   const id = useId();
@@ -124,8 +135,12 @@ export function DocumentPreview({
   useEffect(() => {
     if (problem) warn(problem);
   }, [problem]);
-  const sheetWidthMm = widthMm + bleed * 2;
-  const sheetHeightMm = heightMm + bleed * 2;
+  const own = page.sizeMm && [page.sizeMm.width, page.sizeMm.height].every(positive);
+  const pageWidthMm = own ? page.sizeMm!.width : widthMm;
+  const pageHeightMm = own ? page.sizeMm!.height : heightMm;
+  const pageBleed = own ? 0 : bleed;
+  const sheetWidthMm = pageWidthMm + pageBleed * 2;
+  const sheetHeightMm = pageHeightMm + pageBleed * 2;
   const width = (sheetWidthMm * 96) / 25.4;
   const height = (sheetHeightMm * 96) / 25.4;
   const minimumDpi = imageResolution?.minimumDpi ?? 300;
@@ -143,32 +158,56 @@ export function DocumentPreview({
   return (
     <section className="g-document-preview" aria-label={label}>
       <div className="g-document-toolbar">
-        <Field label={labels.page}>
-          {(field) => (
-            <Select
-              {...field}
+        {controls === 'buttons' ? (
+          <>
+            <SegmentedControl
+              label={labels.page}
+              size="small"
               value={page.id}
-              onChange={(event) => onPageChange(event.target.value)}
-            >
-              {pages.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.label}
-                </option>
-              ))}
-            </Select>
-          )}
-        </Field>
-        <Field label={labels.zoom}>
-          {(field) => (
-            <Select {...field} value={zoom} onChange={(event) => setZoom(event.target.value)}>
-              <option value="fit">{labels.fit}</option>
-              <option value="0.5">50%</option>
-              <option value="1">100%</option>
-              <option value="1.5">150%</option>
-              <option value="2">200%</option>
-            </Select>
-          )}
-        </Field>
+              onValueChange={onPageChange}
+              options={pages.map((item) => ({ value: item.id, label: item.label }))}
+            />
+            <SegmentedControl
+              label={labels.zoom}
+              size="small"
+              value={zoom}
+              onValueChange={setZoom}
+              options={zoomOptions.map((value) => ({
+                value,
+                label: value === 'fit' ? labels.fit : `${Number(value) * 100}%`,
+              }))}
+            />
+          </>
+        ) : (
+          <>
+            <Field label={labels.page}>
+              {(field) => (
+                <Select
+                  {...field}
+                  value={page.id}
+                  onChange={(event) => onPageChange(event.target.value)}
+                >
+                  {pages.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            </Field>
+            <Field label={labels.zoom}>
+              {(field) => (
+                <Select {...field} value={zoom} onChange={(event) => setZoom(event.target.value)}>
+                  {zoomOptions.map((value) => (
+                    <option key={value} value={value}>
+                      {value === 'fit' ? labels.fit : `${Number(value) * 100}%`}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            </Field>
+          </>
+        )}
         {hasGuides && (
           <Checkbox
             label={labels.guides}
@@ -209,14 +248,14 @@ export function DocumentPreview({
                 height,
                 transform: `scale(${scale})`,
                 '--g-document-safe': `${safeArea ?? 0}mm`,
-                '--g-document-bleed': `${bleed}mm`,
+                '--g-document-bleed': `${pageBleed}mm`,
               } as CSSProperties
             }
           >
             <div className="g-document-content" key={page.id}>
               {page.content}
             </div>
-            {guides && bleed > 0 && (
+            {guides && pageBleed > 0 && (
               <div className="g-document-trim" aria-hidden="true">
                 {(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const).map(
                   (corner) => (
@@ -225,14 +264,14 @@ export function DocumentPreview({
                 )}
               </div>
             )}
-            {guides && safeArea !== undefined && (
+            {guides && !own && safeArea !== undefined && (
               <div className="g-document-guides" aria-hidden="true" />
             )}
           </div>
         </div>
       </div>
       <p className="g-document-caption" id={`${id}-page`} aria-live="polite">
-        {page.label} · {widthMm} × {heightMm} mm
+        {page.label} · {pageWidthMm} × {pageHeightMm} mm
       </p>
     </section>
   );

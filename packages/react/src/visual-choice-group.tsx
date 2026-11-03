@@ -5,8 +5,8 @@ export interface VisualChoiceOption {
   value: string;
   label: string;
   description?: string;
-  /** Decorative preview; the radio label and description provide the accessible text. */
-  preview: ReactNode;
+  /** Decorative preview; the radio label and description provide the accessible text. Optional with the `notes` layout. */
+  preview?: ReactNode;
   disabled?: boolean;
   /** Supply translated pending/unavailable feedback alongside disabled. */
   status?: string;
@@ -28,8 +28,10 @@ export interface VisualChoiceGroupProps {
    * the chosen one is ringed and ticked. Suits pictures of different proportions.
    * `tiles`: big centred choices with a small preview (an avatar, icon or picture) above the
    * label, for quick choices such as who or how.
+   * `notes`: text choices as small note cards, the label as a title and the description as the
+   * text, for picking among written suggestions.
    */
-  layout?: 'grid' | 'gallery' | 'tiles';
+  layout?: 'grid' | 'gallery' | 'tiles' | 'notes';
 }
 /** Controlled native radio selection with consistent directional keyboard navigation. */
 export function VisualChoiceGroup({
@@ -110,9 +112,11 @@ export function VisualChoiceGroup({
                 if (radios[next] && radios[next].value !== value) onChange(radios[next].value);
               }}
             />
-            <span className="g-visual-choice-preview" aria-hidden="true">
-              {option.preview}
-            </span>
+            {option.preview !== undefined && (
+              <span className="g-visual-choice-preview" aria-hidden="true">
+                {option.preview}
+              </span>
+            )}
             <span className="g-visual-choice-caption">
               <strong id={`${id}-${index}-label`}>{option.label}</strong>
               {option.description && (

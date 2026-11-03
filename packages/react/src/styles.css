@@ -2685,6 +2685,52 @@ body {
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
+/* Compact: one row of numbers; only the current step shows its label. */
+.g-stepper[data-compact='true'] {
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.g-stepper[data-compact='true'] li {
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding-block: 0;
+  border-top: 0;
+}
+.g-stepper[data-compact='true'] li[aria-current='step'] {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.g-stepper[data-compact='true'] .g-step-number {
+  flex-basis: 1.75rem;
+  height: 1.75rem;
+}
+.g-stepper[data-compact='true'] .g-step-button {
+  align-items: center;
+}
+.g-step-summary {
+  display: block;
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--g-type-small-size);
+  color: var(--g-muted);
+}
+.g-stepper[data-compact='true'] {
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
+}
+.g-stepper[data-compact='true'] li:not([aria-current='step']) .g-step-label,
+.g-stepper[data-compact='true'] .g-step-description {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 /* Completed steps the consumer lets people go back to. */
 .g-step-button {
   display: flex;
@@ -4771,6 +4817,72 @@ body {
   }
 }
 
+/* Notes: written suggestions as small note cards; the chosen one is outlined and ticked. */
+.g-visual-choice-group[data-layout='notes'] .g-visual-choice-options {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 0.75rem;
+}
+.g-visual-choice-group[data-layout='notes'] .g-visual-choice {
+  border-width: 1px;
+  border-color: var(--g-line);
+  border-radius: calc(var(--g-radius) * 1.5);
+  box-shadow: var(--g-card-shadow);
+  transition:
+    transform var(--g-duration) var(--g-ease),
+    border-color var(--g-duration) var(--g-ease);
+}
+.g-visual-choice-group[data-layout='notes'] .g-visual-choice:hover {
+  transform: translateY(-2px);
+  border-color: var(--g-selection);
+}
+.g-visual-choice-group[data-layout='notes'] .g-visual-choice input {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.g-visual-choice-group[data-layout='notes'] .g-visual-choice:has(input:checked) {
+  border-color: var(--g-selection);
+  outline: 1px solid var(--g-selection);
+  background: var(--g-tint);
+}
+.g-visual-choice-group[data-layout='notes'] .g-visual-choice:has(input:checked)::after {
+  content: '✓';
+  position: absolute;
+  inset-block-start: 0.6rem;
+  inset-inline-end: 0.6rem;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--g-selection);
+  color: var(--g-onSelection);
+  font-weight: 700;
+}
+.g-visual-choice-group[data-layout='notes'] .g-visual-choice-caption {
+  gap: 0.4rem;
+  padding: 1rem 2.25rem 1.1rem 1.1rem;
+}
+.g-visual-choice-group[data-layout='notes'] .g-visual-choice-caption > strong {
+  font-family: var(--g-display-font);
+  font-weight: var(--g-display-weight);
+}
+.g-visual-choice-group[data-layout='notes'] .g-visual-choice-caption > span {
+  font-size: var(--g-type-body-size);
+  color: var(--g-text);
+  line-height: 1.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-visual-choice-group[data-layout='notes'] .g-visual-choice {
+    transition: none;
+  }
+  .g-visual-choice-group[data-layout='notes'] .g-visual-choice:hover {
+    transform: none;
+  }
+}
+
 /* Gallery: previews at their own proportion and one height; the chosen one is ringed and ticked. */
 .g-visual-choice-group[data-layout='gallery'] {
   --g-gallery-height: 10rem;
@@ -5209,10 +5321,15 @@ body {
   font: inherit;
 }
 
-/* Inside a folded card: the message alone, with generous margins. */
+/* Inside a folded card: the message alone, centred, in the display face. */
 .g-mail-face[data-variant='inside'] .g-mail-message {
   inset: 14mm 12mm;
   width: auto;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  font-family: var(--g-display-font);
+  line-height: 1.45;
 }
 .g-mail-face[data-sender='true'] .g-mail-message {
   top: 42mm;
@@ -6256,9 +6373,27 @@ button.g-agenda-event:hover {
 /* PostcardStage: one card on the table at true proportions, scaled to fit, turning over. */
 .g-postcard-stage {
   position: relative;
+  display: block;
   width: 100%;
-  max-height: 22rem;
+  max-height: 28rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
   perspective: 1400px;
+}
+.g-postcard-stage[data-size='large'] {
+  max-height: 40rem;
+}
+button.g-postcard-stage {
+  cursor: pointer;
+}
+button.g-postcard-stage:focus-visible {
+  outline: 2px solid var(--g-focus);
+  outline-offset: 4px;
+  border-radius: var(--g-radius);
 }
 .g-postcard-stage[data-ready='false'] {
   visibility: hidden;
@@ -6266,37 +6401,36 @@ button.g-agenda-event:hover {
 /* Drawn at true size, then scaled from its top centre so its true size never affects layout. */
 .g-postcard-table {
   position: absolute;
-  inset-block-start: 24px;
   left: 50%;
   transform: translateX(-50%) scale(var(--g-stage-scale, 1));
   transform-origin: top center;
   transform-style: preserve-3d;
 }
-.g-postcard-card {
+.g-postcard-card,
+.g-postcard-folded {
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
-  transform: rotateX(7deg) rotateY(-9deg);
   transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.g-postcard-card {
+  transform: rotateX(7deg) rotateY(-9deg);
 }
 .g-postcard-card[data-side='back'] {
   transform: rotateX(7deg) rotateY(171deg);
 }
-.g-postcard-card[data-settle='a'] {
-  animation: g-postcard-settle-a 480ms var(--g-ease);
+/* The writing side is landscape: a portrait card turns a quarter as it turns over. */
+.g-postcard-card[data-orientation='portrait'][data-side='back'] {
+  transform: rotateX(7deg) rotateY(171deg) rotateZ(90deg);
 }
-.g-postcard-card[data-settle='b'] {
-  animation: g-postcard-settle-b 480ms var(--g-ease);
+.g-postcard-back {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
 }
-@keyframes g-postcard-settle-a {
-  40% {
-    translate: 0 -10px;
-  }
-}
-@keyframes g-postcard-settle-b {
-  40% {
-    translate: 0 -10px;
-  }
+.g-postcard-card[data-orientation='portrait'] .g-postcard-back {
+  rotate: 90deg;
 }
 .g-postcard-face {
   position: absolute;
@@ -6311,12 +6445,73 @@ button.g-agenda-event:hover {
 .g-postcard-face[data-face='back'] {
   transform: rotateY(180deg);
 }
+.g-postcard-card[data-orientation='portrait'] .g-postcard-face[data-face='back'] {
+  overflow: visible;
+  background: none;
+  box-shadow: none;
+}
+.g-postcard-card[data-orientation='portrait'] .g-postcard-back {
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--g-surface);
+  box-shadow: var(--g-card-shadow);
+}
 .g-postcard-face > img,
 .g-postcard-face > svg {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+/* A folded card seen slightly from the side; open, its cover swings back on the fold. */
+.g-postcard-folded {
+  transform: rotateX(10deg) rotateY(-26deg);
+}
+.g-postcard-folded[data-fold='open'][data-orientation='portrait'] {
+  transform: translateX(50%) rotateX(8deg) rotateY(-8deg);
+}
+.g-postcard-folded[data-fold='open'][data-orientation='landscape'] {
+  transform: translateY(50%) rotateX(16deg) rotateY(-6deg);
+}
+.g-postcard-cover {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  /* Closed, the cover stands a little open, so it reads as a card that opens. */
+  transform: translateZ(2px) rotateY(-14deg);
+  transition: transform 800ms cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+.g-postcard-folded[data-orientation='landscape'] .g-postcard-cover {
+  transform-origin: top center;
+  transform: translateZ(2px) rotateX(14deg);
+}
+.g-postcard-folded[data-fold='open'][data-orientation='portrait'] .g-postcard-cover {
+  transform: translateZ(2px) rotateY(-176deg);
+}
+.g-postcard-folded[data-fold='open'][data-orientation='landscape'] .g-postcard-cover {
+  transform: translateZ(2px) rotateX(176deg);
+}
+.g-postcard-folded[data-orientation='landscape'] .g-postcard-cover-inside {
+  transform: rotateX(180deg);
+}
+.g-postcard-card[data-settle='a'],
+.g-postcard-folded[data-settle='a'] {
+  animation: g-postcard-settle-a 480ms var(--g-ease);
+}
+.g-postcard-card[data-settle='b'],
+.g-postcard-folded[data-settle='b'] {
+  animation: g-postcard-settle-b 480ms var(--g-ease);
+}
+@keyframes g-postcard-settle-a {
+  40% {
+    translate: 0 -10px;
+  }
+}
+@keyframes g-postcard-settle-b {
+  40% {
+    translate: 0 -10px;
+  }
 }
 .g-postcard-envelope {
   position: absolute;
@@ -6330,14 +6525,20 @@ button.g-agenda-event:hover {
 }
 @media (max-width: 760px) /* breakpoints.compact */ {
   .g-postcard-stage {
-    max-height: 15rem;
+    max-height: 18rem;
+  }
+  .g-postcard-stage[data-size='large'] {
+    max-height: 26rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .g-postcard-card {
+  .g-postcard-card,
+  .g-postcard-folded,
+  .g-postcard-cover {
     transition: none;
   }
-  .g-postcard-card[data-settle] {
+  .g-postcard-card[data-settle],
+  .g-postcard-folded[data-settle] {
     animation: none;
   }
 }

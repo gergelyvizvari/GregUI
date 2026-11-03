@@ -9,6 +9,8 @@ export interface MailFaceProps {
   recipient?: { label: string; content: ReactNode };
   /** Decorative placeholder only; never represents paid postage. Not shown inside a card. */
   postageLabel: string;
+  /** Show the postage placeholder; off for cards that are not posted, such as e-cards. */
+  postage?: boolean;
   message?: { label: string; content: ReactNode };
   sender?: { label: string; content: ReactNode };
   /** Decorative mark over the postage corner, usually a Postmark. Hidden from assistive technology. */
@@ -23,6 +25,7 @@ export function MailFace({
   message,
   sender,
   postmark,
+  postage = true,
 }: MailFaceProps) {
   return (
     <div
@@ -44,7 +47,7 @@ export function MailFace({
         </section>
       )}
       {variant === 'postcard' && <div className="g-mail-divider" aria-hidden="true" />}
-      {variant !== 'inside' && (
+      {postage && variant !== 'inside' && (
         <div className="g-mail-postage" aria-hidden="true">
           {postageLabel}
         </div>
