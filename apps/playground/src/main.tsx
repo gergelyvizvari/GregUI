@@ -1659,6 +1659,8 @@ function ComponentCatalog({
             label={`Postcard for Anna, ${stageSide === 'front' ? 'picture' : 'writing'} side`}
             side={stageSide === 'back' ? 'back' : 'front'}
             changeKey={stageSide}
+            onTurn={() => setStageSide(stageSide === 'front' ? 'back' : 'front')}
+            turnLabel={stageSide === 'front' ? 'Show the writing side' : 'Show the picture'}
             front={<img src={samplePhoto.src} alt="" />}
             back={
               <MailFace

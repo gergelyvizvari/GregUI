@@ -113,6 +113,7 @@ export function Stepper({
   currentStep,
   label,
   onStepSelect,
+  compact = false,
 }: {
   steps: StepItem[];
   currentStep: number;
@@ -122,10 +123,12 @@ export function Stepper({
    * Steps after the current one stay plain text.
    */
   onStepSelect?: (index: number) => void;
+  /** One short row: numbers only, with the current step's label beside its number. */
+  compact?: boolean;
 }) {
   const { messages } = useLocale();
   return (
-    <ol className="g-stepper" aria-label={label ?? messages.steps}>
+    <ol className="g-stepper" data-compact={compact} aria-label={label ?? messages.steps}>
       {steps.map((step, i) => {
         const content = (
           <>
@@ -133,6 +136,12 @@ export function Stepper({
               {i < currentStep ? '✓' : i + 1}
             </span>
             <span>
+              {/* Compact: a finished step shows what was chosen (or its label) beside the tick. */}
+              {compact && i < currentStep && (
+                <span className="g-step-summary" aria-hidden="true">
+                  {step.description || step.label}
+                </span>
+              )}
               <span className="g-step-label">{step.label}</span>
               {step.description && <span className="g-step-description">{step.description}</span>}
               {i < currentStep && <span className="g-sr-only"> · {messages.completed}</span>}
@@ -142,6 +151,7 @@ export function Stepper({
         return (
           <li
             key={step.value}
+            title={compact ? step.label : undefined}
             aria-current={i === currentStep ? 'step' : undefined}
             data-complete={i < currentStep}
           >

@@ -212,3 +212,52 @@ it('renders two named document panels in reading order with optional decorative 
   rerender(<DocumentSpread label="Open document" panels={panels} />);
   expect(container.querySelector('.g-document-fold')).toBeNull();
 });
+
+it('offers the page and zoom as buttons when asked', async () => {
+  const pages: string[] = [];
+  render(
+    <DocumentPreview
+      label="Card"
+      controls="buttons"
+      pages={[
+        { id: 'front', label: 'Front', content: <p>Front side</p> },
+        { id: 'back', label: 'Back', content: <p>Back side</p> },
+      ]}
+      pageId="front"
+      onPageChange={(id) => pages.push(id)}
+      widthMm={148}
+      heightMm={105}
+      labels={{ page: 'Side', zoom: 'Zoom', fit: 'Fit', guides: 'Guides' }}
+    />,
+  );
+  const user = userEvent.setup();
+  await user.click(screen.getByRole('radio', { name: 'Back' }));
+  expect(pages).toEqual(['back']);
+  await user.click(screen.getByRole('radio', { name: '200%' }));
+  expect(screen.getByRole('radio', { name: '200%' })).toBeChecked();
+  expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+});
+
+it('shows a page of another size, such as an envelope, at its own size', () => {
+  render(
+    <DocumentPreview
+      label="Card"
+      pages={[
+        { id: 'front', label: 'Front', content: <p>Front side</p> },
+        {
+          id: 'envelope',
+          label: 'Envelope',
+          content: <p>Anna</p>,
+          sizeMm: { width: 162, height: 114 },
+        },
+      ]}
+      pageId="envelope"
+      onPageChange={() => undefined}
+      widthMm={105}
+      heightMm={148}
+      bleedMm={3}
+      labels={{ page: 'Side', zoom: 'Zoom', fit: 'Fit', guides: 'Guides' }}
+    />,
+  );
+  expect(screen.getByText('Envelope · 162 × 114 mm')).toBeInTheDocument();
+});

@@ -40,3 +40,12 @@ it('preserves form semantics, named sections and document-first keyboard order',
   await user.tab();
   expect(screen.getByRole('button', { name: 'Submit for review' })).toHaveFocus();
 });
+it('marks a preview aside so it can stay in view', () => {
+  const { container } = render(
+    <EditorLayout aside={{ label: 'Card', content: 'The card', preview: true }}>
+      <p>Form</p>
+    </EditorLayout>,
+  );
+  expect(screen.getByRole('complementary', { name: 'Card' })).toBeTruthy();
+  expect(container.firstElementChild).toHaveAttribute('data-aside-kind', 'preview');
+});
