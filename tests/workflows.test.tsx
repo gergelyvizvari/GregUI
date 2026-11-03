@@ -110,3 +110,27 @@ it('renders step titles at the requested heading level', () => {
   );
   expect(screen.getByRole('heading', { name: 'Details', level: 2 })).toBeInTheDocument();
 });
+
+it('lets people go back to completed steps when the consumer allows it', async () => {
+  const select = vi.fn();
+  const user = userEvent.setup();
+  render(
+    <Stepper
+      currentStep={2}
+      onStepSelect={select}
+      steps={[
+        { value: 'who', label: 'Who', description: 'Anna' },
+        { value: 'card', label: 'Card' },
+        { value: 'words', label: 'Words' },
+        { value: 'send', label: 'Send' },
+      ]}
+    />,
+  );
+  await user.click(screen.getByRole('button', { name: /Who/ }));
+  expect(select).toHaveBeenCalledWith(0);
+  await user.click(screen.getByRole('button', { name: /Card/ }));
+  expect(select).toHaveBeenCalledWith(1);
+  // The current step and later ones are not buttons.
+  expect(screen.getAllByRole('button')).toHaveLength(2);
+  expect(screen.getByText('Words').closest('li')).toHaveAttribute('aria-current', 'step');
+});

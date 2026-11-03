@@ -66,6 +66,13 @@ body {
   outline: 2px solid var(--g-focus);
   outline-offset: 3px;
 }
+/*
+ * Headings, regions and messages that code moves focus to (tabindex="-1") so screen readers
+ * announce them: no ring, as they are not something to act on and cannot be tabbed to.
+ */
+.g-theme [tabindex='-1']:not(a, button, input, select, textarea, summary):focus-visible {
+  outline: none;
+}
 .g-theme [hidden] {
   display: none !important;
 }
@@ -1347,6 +1354,21 @@ body {
   border-radius: 50%;
   animation: g-spin 0.8s linear infinite;
   flex: none;
+}
+.g-spinner[data-size='large'] {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-width: 3px;
+}
+.g-page-loading {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1.5rem;
+  color: var(--g-primary);
+  animation: g-fade-in 0.3s ease-out 0.4s both;
 }
 @keyframes g-spin {
   to {
@@ -2662,6 +2684,29 @@ body {
   color: var(--g-muted);
   font-size: 0.875rem;
   margin-top: 0.25rem;
+}
+/* Completed steps the consumer lets people go back to. */
+.g-step-button {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.g-step-button:hover .g-step-label {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.g-step-button:focus-visible {
+  outline: 2px solid var(--g-focus);
+  outline-offset: 4px;
+  border-radius: var(--g-radius);
 }
 .g-wizard {
   padding: clamp(1rem, 3vw, 2rem);
@@ -4663,6 +4708,123 @@ body {
 .g-visual-choice:has(input:disabled) .g-visual-choice-caption > strong {
   color: var(--g-muted);
 }
+/* Gallery: previews at their own proportion and one height; the chosen one is ringed and ticked. */
+.g-visual-choice-group[data-layout='gallery'] {
+  --g-gallery-height: 10rem;
+}
+.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1.5rem 1.25rem;
+}
+.g-visual-choice-group[data-layout='gallery'] .g-visual-choice {
+  border: 0;
+  background: none;
+  overflow: visible;
+  max-width: 100%;
+}
+.g-visual-choice-group[data-layout='gallery'] .g-visual-choice input {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.g-visual-choice-group[data-layout='gallery'] .g-visual-choice:has(input:focus-visible) {
+  outline: 0;
+}
+.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-preview {
+  position: relative;
+  display: block;
+  height: var(--g-gallery-height);
+  aspect-ratio: auto;
+  background: none;
+  overflow: visible;
+}
+.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-preview > * {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  border-radius: calc(var(--g-radius) / 2);
+  box-shadow: var(--g-card-shadow);
+  transition: transform var(--g-duration) var(--g-ease);
+}
+.g-visual-choice-group[data-layout='gallery'] .g-visual-choice:hover .g-visual-choice-preview > * {
+  transform: translateY(-2px);
+}
+.g-visual-choice-group[data-layout='gallery']
+  .g-visual-choice:has(input:checked)
+  .g-visual-choice-preview
+  > *,
+.g-visual-choice-group[data-layout='gallery']
+  .g-visual-choice:has(input:focus-visible)
+  .g-visual-choice-preview
+  > * {
+  outline: 3px solid var(--g-selection);
+  outline-offset: 3px;
+}
+.g-visual-choice-group[data-layout='gallery']
+  .g-visual-choice:has(input:focus-visible)
+  .g-visual-choice-preview
+  > * {
+  outline-color: var(--g-focus);
+}
+.g-visual-choice-group[data-layout='gallery']
+  .g-visual-choice:has(input:checked)
+  .g-visual-choice-preview::after {
+  content: '✓';
+  position: absolute;
+  inset-block-start: 0.5rem;
+  inset-inline-end: 0.5rem;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--g-selection);
+  color: var(--g-onSelection);
+  font-weight: 700;
+}
+.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-caption {
+  padding: 0.6rem 0 0;
+}
+.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-caption > strong {
+  font-size: var(--g-type-small-size);
+  font-weight: 500;
+  color: var(--g-muted);
+}
+.g-visual-choice-group[data-layout='gallery']
+  .g-visual-choice:has(input:checked)
+  .g-visual-choice-caption
+  > strong {
+  color: var(--g-text);
+  font-weight: 650;
+}
+/* A preview that is not a picture, such as "make your own", is a quiet landscape tile. */
+.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-preview > :not(img, svg, canvas) {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: calc(var(--g-gallery-height) * 1.41);
+  padding: 1rem;
+  border: 1px dashed var(--g-line);
+  background: var(--g-quiet-fill);
+  box-shadow: none;
+  color: var(--g-muted);
+  text-align: center;
+}
+@media (max-width: 760px) /* breakpoints.compact */ {
+  .g-visual-choice-group[data-layout='gallery'] {
+    --g-gallery-height: 7.5rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-visual-choice-group[data-layout='gallery'] .g-visual-choice-preview > * {
+    transition: none;
+  }
+}
 .g-document-preview {
   min-width: 0;
   border: 1px solid var(--g-border);
@@ -5621,6 +5783,32 @@ button.g-agenda-event:hover {
 }
 .g-segmented-field:disabled .g-segmented {
   opacity: 0.6;
+}
+/* Chips: separate rounded options that wrap, for filters with more than a few choices. */
+.g-segmented[data-variant='chips'] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.g-segmented[data-variant='chips'] .g-segment-face {
+  border-color: var(--g-control-border);
+  border-radius: 999px;
+  background: var(--g-control-fill);
+  font-weight: 500;
+}
+.g-segmented[data-variant='chips'] .g-segment-input:checked + .g-segment-face {
+  border-color: var(--g-selection);
+  background: var(--g-selection);
+  color: var(--g-onSelection);
+}
+.g-segmented[data-variant='chips']
+  .g-segment-input:not(:checked):not(:disabled):hover
+  + .g-segment-face {
+  background: var(--g-tint);
 }
 
 /* Slider: a styled native range input. --g-slider-fill is the value's position on the track. */

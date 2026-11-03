@@ -1592,6 +1592,7 @@ function ComponentCatalog({
     return () => window.removeEventListener('popstate', back);
   }, [onSearchChange]);
   const [radio, setRadio] = useState('monthly');
+  const [step, setStep] = useState(1);
   const [view, setView] = useState('list');
   const [volume, setVolume] = useState(0.6);
   const [quantity, setQuantity] = useState<number | null>(2);
@@ -1638,13 +1639,14 @@ function ComponentCatalog({
       name: 'Stepper',
       category: 'Navigation',
       description:
-        'Non-interactive progress with current and completed steps; supports long labels and narrow screens.',
-      api: '<Stepper steps={steps} currentStep={1} />',
+        'Progress with current and completed steps; with onStepSelect, completed steps are buttons that go back. Supports long labels and narrow screens.',
+      api: '<Stepper steps={steps} currentStep={step} onStepSelect={setStep} />',
       demo: (
         <Stepper
-          currentStep={1}
+          currentStep={step}
+          onStepSelect={setStep}
           steps={[
-            { value: 'details', label: 'Details' },
+            { value: 'details', label: 'Details', description: 'Anna Kiss' },
             { value: 'preferences', label: 'Preferences' },
             { value: 'review', label: 'Review' },
           ]}
@@ -1904,6 +1906,20 @@ function ComponentCatalog({
               { value: 'year', label: 'Year', disabled: true },
             ]}
             defaultValue="week"
+          />
+          <SegmentedControl
+            label="Occasion"
+            variant="chips"
+            options={[
+              'All',
+              'Birthday',
+              'Name day',
+              'Christmas',
+              'Easter',
+              'Thanks',
+              'Just because',
+            ].map((label) => ({ value: label, label }))}
+            defaultValue="Birthday"
           />
         </Stack>
       ),

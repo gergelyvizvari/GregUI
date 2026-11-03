@@ -112,30 +112,49 @@ export function Stepper({
   steps,
   currentStep,
   label,
+  onStepSelect,
 }: {
   steps: StepItem[];
   currentStep: number;
   label?: string;
+  /**
+   * Makes completed steps buttons that go back to them; the consumer moves `currentStep`.
+   * Steps after the current one stay plain text.
+   */
+  onStepSelect?: (index: number) => void;
 }) {
   const { messages } = useLocale();
   return (
     <ol className="g-stepper" aria-label={label ?? messages.steps}>
-      {steps.map((step, i) => (
-        <li
-          key={step.value}
-          aria-current={i === currentStep ? 'step' : undefined}
-          data-complete={i < currentStep}
-        >
-          <span className="g-step-number" aria-hidden="true">
-            {i < currentStep ? '✓' : i + 1}
-          </span>
-          <span>
-            <span className="g-step-label">{step.label}</span>
-            {step.description && <span className="g-step-description">{step.description}</span>}
-            {i < currentStep && <span className="g-sr-only"> · {messages.completed}</span>}
-          </span>
-        </li>
-      ))}
+      {steps.map((step, i) => {
+        const content = (
+          <>
+            <span className="g-step-number" aria-hidden="true">
+              {i < currentStep ? '✓' : i + 1}
+            </span>
+            <span>
+              <span className="g-step-label">{step.label}</span>
+              {step.description && <span className="g-step-description">{step.description}</span>}
+              {i < currentStep && <span className="g-sr-only"> · {messages.completed}</span>}
+            </span>
+          </>
+        );
+        return (
+          <li
+            key={step.value}
+            aria-current={i === currentStep ? 'step' : undefined}
+            data-complete={i < currentStep}
+          >
+            {onStepSelect && i < currentStep ? (
+              <button type="button" className="g-step-button" onClick={() => onStepSelect(i)}>
+                {content}
+              </button>
+            ) : (
+              content
+            )}
+          </li>
+        );
+      })}
     </ol>
   );
 }

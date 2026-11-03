@@ -17,7 +17,7 @@ export interface SegmentedControlProps {
   label: string;
   /** Keep the label for assistive technology only, when the context already makes it clear. */
   hideLabel?: boolean;
-  /** Two to five short options. */
+  /** Two to five short options; with `variant="chips"` any number, wrapping onto new lines. */
   options: readonly SegmentedControlOption[];
   /** Controlled selection. */
   value?: string;
@@ -33,6 +33,8 @@ export interface SegmentedControlProps {
   size?: 'small' | 'medium';
   /** Stretch the segments to fill the available width. */
   fullWidth?: boolean;
+  /** `chips`: separate rounded chips that wrap, for filters with more options. */
+  variant?: 'segments' | 'chips';
 }
 const navigationKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
 /** Single choice among a few short options, built from native radio inputs. */
@@ -49,6 +51,7 @@ export function SegmentedControl({
   disabled = false,
   size = 'medium',
   fullWidth = false,
+  variant = 'segments',
 }: SegmentedControlProps) {
   const id = useId();
   const { direction } = useLocale();
@@ -92,6 +95,7 @@ export function SegmentedControl({
       <div
         className="g-segmented"
         data-size={size}
+        data-variant={variant}
         data-full-width={fullWidth}
         data-invalid={error ? true : undefined}
       >

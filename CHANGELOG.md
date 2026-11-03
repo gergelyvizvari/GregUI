@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.6.8 — 2 November 2026
+
+- Headings, regions and messages that receive focus from code (`tabindex="-1"`, such as `Wizard` step titles, the `AppShell` main area and form feedback) no longer show a focus ring.
+
+## 0.6.7 — 2 November 2026
+
+- `Stepper`: `onStepSelect` makes completed steps buttons, so people can go back to them.
+- `SegmentedControl`: `variant="chips"` shows many options as wrapping rounded chips, for filters.
+- `VisualChoiceGroup`: `layout="gallery"` shows previews at their own proportion and one height, ringed and ticked when chosen, for pictures of mixed shapes.
+
+## 0.6.6 — 2 November 2026
+
+- `PageLoading`: a whole-screen, centred loading state with an optional brand mark, shown after a short pause.
+
 ## 0.6.5 — 2 November 2026
 
 - `CardLink`: the title link of a `Card` that makes the whole card clickable, for lists of records; the title reads as plain text and the card lifts on hover.

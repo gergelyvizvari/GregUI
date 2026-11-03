@@ -63,6 +63,20 @@ export function Spinner({ label }: { label?: string }) {
   const { messages } = useLocale();
   return <span className="g-spinner" role="status" aria-label={label ?? messages.loading} />;
 }
+/**
+ * Whole-screen loading state while an app starts or opens a page: centred in the viewport, with
+ * an optional brand mark above a larger spinner. It fades in after a short pause, so a quick load
+ * shows nothing at all.
+ */
+export function PageLoading({ label, brand }: { label?: string; brand?: ReactNode }) {
+  const { messages } = useLocale();
+  return (
+    <div className="g-page-loading" role="status" aria-label={label ?? messages.loading}>
+      {brand && <div aria-hidden="true">{brand}</div>}
+      <span className="g-spinner" data-size="large" />
+    </div>
+  );
+}
 export function Progress({ value, label }: { value: number; label: string }) {
   return (
     <label className="g-progress-label">

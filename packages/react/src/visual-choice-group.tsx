@@ -21,6 +21,11 @@ export interface VisualChoiceGroupProps {
   error?: string;
   disabled?: boolean;
   required?: boolean;
+  /**
+   * `gallery`: previews keep their own shape at one height, like prints laid out on a table;
+   * the chosen one is ringed and ticked. Suits pictures of different proportions.
+   */
+  layout?: 'grid' | 'gallery';
 }
 /** Controlled native radio selection with consistent directional keyboard navigation. */
 export function VisualChoiceGroup({
@@ -33,12 +38,18 @@ export function VisualChoiceGroup({
   error,
   disabled,
   required,
+  layout = 'grid',
 }: VisualChoiceGroupProps) {
   const id = useId();
   const feedback =
     [hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ') || undefined;
   return (
-    <fieldset className="g-visual-choice-group" disabled={disabled} aria-describedby={feedback}>
+    <fieldset
+      className="g-visual-choice-group"
+      data-layout={layout}
+      disabled={disabled}
+      aria-describedby={feedback}
+    >
       <legend>{label}</legend>
       {hint && (
         <p id={`${id}-hint`} className="g-visual-choice-hint">

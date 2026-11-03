@@ -14,9 +14,17 @@ import {
   Checkbox,
   Card,
   CardLink,
+  PageLoading,
 } from '@gregui/react';
 import { createTheme } from '@gregui/tokens';
 describe('interaction contracts', () => {
+  it('announces a whole-screen loading state once, with the brand hidden', () => {
+    render(<PageLoading label="Opening KindHello" brand={<svg role="img" aria-label="Logo" />} />);
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+    expect(screen.getByRole('status', { name: 'Opening KindHello' })).toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: 'Logo' })).not.toBeInTheDocument();
+  });
+
   it('makes a whole card a link while its own buttons stay separate', async () => {
     const open = vi.fn((event: React.MouseEvent) => event.preventDefault());
     const send = vi.fn();
