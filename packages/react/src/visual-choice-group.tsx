@@ -10,6 +10,10 @@ export interface VisualChoiceOption {
   disabled?: boolean;
   /** Supply translated pending/unavailable feedback alongside disabled. */
   status?: string;
+  /** `people` layout: set this choice apart, such as someone celebrating soon. */
+  highlight?: boolean;
+  /** `people` layout: a lighter, dashed choice, such as "someone else". */
+  quiet?: boolean;
 }
 export interface VisualChoiceGroupProps {
   label: string;
@@ -34,12 +38,14 @@ export interface VisualChoiceGroupProps {
    * `masonry`: like `gallery`, but each preview fills a column's width at its own height, in
    * balanced columns, so many pictures of mixed proportions sit close together. Options run
    * down the first column, then the next.
+   * `people`: one row per choice, an avatar or icon beside the name and a short note, for
+   * choosing a person; `highlight` sets a choice apart and `quiet` makes it a lighter extra.
    * `tiles`: big centred choices with a small preview (an avatar, icon or picture) above the
    * label, for quick choices such as who or how.
    * `notes`: text choices as small note cards, the label as a title and the description as the
    * text, for picking among written suggestions.
    */
-  layout?: 'grid' | 'gallery' | 'masonry' | 'tiles' | 'notes';
+  layout?: 'grid' | 'gallery' | 'masonry' | 'tiles' | 'notes' | 'people';
   /**
    * Called when an option is clicked or tapped, after `onChange`, so an app can move on at
    * once. Arrow keys only change the selection; keyboard users confirm in the form as usual.
@@ -85,6 +91,8 @@ export function VisualChoiceGroup({
             className="g-visual-choice"
             key={option.value}
             data-disabled={!!option.disabled}
+            data-highlight={option.highlight || undefined}
+            data-quiet={option.quiet || undefined}
             onPointerDown={() => {
               pointer.current = true;
             }}

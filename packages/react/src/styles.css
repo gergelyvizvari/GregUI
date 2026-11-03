@@ -1015,6 +1015,27 @@ body {
   font-weight: 600;
   line-height: 1;
 }
+/* Colourful initials: a soft wash of a theme role, its ink for the letters. */
+.g-avatar[data-hue] {
+  background: color-mix(in srgb, var(--g-avatar-hue) 16%, var(--g-surface));
+  color: color-mix(in srgb, var(--g-avatar-hue) 85%, var(--g-text));
+  font-weight: 600;
+}
+.g-avatar[data-hue='0'] {
+  --g-avatar-hue: var(--g-primary);
+}
+.g-avatar[data-hue='1'] {
+  --g-avatar-hue: var(--g-success);
+}
+.g-avatar[data-hue='2'] {
+  --g-avatar-hue: var(--g-warning);
+}
+.g-avatar[data-hue='3'] {
+  --g-avatar-hue: var(--g-danger);
+}
+.g-avatar[data-hue='4'] {
+  --g-avatar-hue: var(--g-focus);
+}
 .g-avatar[data-size='small'] {
   --g-avatar-size: 1.75rem;
   font-size: var(--g-type-caption-size);
@@ -4838,6 +4859,135 @@ body {
 }
 .g-visual-choice-group[data-layout='tiles'] .g-visual-choice-caption > strong {
   font-weight: 600;
+}
+/* People: a calm row per person, avatar first, the note as a soft line or pill. */
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-options {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 0.75rem;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.875rem;
+  min-height: 4.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--g-border) 40%, transparent);
+  border-radius: calc(var(--g-radius) * 1.5);
+  background: var(--g-surface);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--g-text) 6%, transparent);
+  transition:
+    transform var(--g-duration) var(--g-ease),
+    box-shadow var(--g-duration) var(--g-ease),
+    border-color var(--g-duration) var(--g-ease);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--g-selection) 55%, transparent);
+  box-shadow: var(--g-card-shadow);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice:has(input:checked) {
+  border-color: var(--g-selection);
+  box-shadow: 0 0 0 1px var(--g-selection);
+  background: var(--g-tint);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice:has(input:checked)::after {
+  content: '✓';
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-inline-start: auto;
+  border-radius: 50%;
+  background: var(--g-selection);
+  color: var(--g-onSelection);
+  font-size: var(--g-type-caption-size);
+  font-weight: 700;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice input {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-preview {
+  flex: none;
+  display: grid;
+  place-items: center;
+  aspect-ratio: auto;
+  background: none;
+  overflow: visible;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-preview .g-avatar {
+  --g-avatar-size: 2.75rem;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-caption {
+  gap: 0.15rem;
+  padding: 0;
+  min-width: 0;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-caption > strong {
+  font-weight: 600;
+  line-height: 1.3;
+}
+/* Set apart: a festive rose edge and the note as a pill, with room for the pill. */
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-options:has([data-highlight]) {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-highlight] {
+  border-color: color-mix(in srgb, var(--g-danger) 30%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--g-danger) 7%, var(--g-surface)),
+    var(--g-surface) 60%
+  );
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-highlight]:has(input:checked) {
+  border-color: var(--g-selection);
+  background: var(--g-tint);
+}
+.g-visual-choice-group[data-layout='people']
+  .g-visual-choice[data-highlight]
+  .g-visual-choice-caption
+  > span {
+  justify-self: start;
+  max-width: 100%;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--g-danger) 12%, transparent);
+  color: var(--g-danger);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* A lighter extra: dashed, no fill, the icon in a soft circle. */
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-quiet] {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--g-border) 70%, transparent);
+  background: transparent;
+  box-shadow: none;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-quiet]:has(input:checked) {
+  border-style: solid;
+  background: var(--g-tint);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-quiet] .g-visual-choice-preview {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--g-tint);
+  color: var(--g-primary);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-preview .g-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-visual-choice-group[data-layout='people'] .g-visual-choice {
+    transition: none;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .g-visual-choice-group[data-layout='tiles'] .g-visual-choice {

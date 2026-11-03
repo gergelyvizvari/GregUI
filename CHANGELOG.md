@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.5 — 3 November 2026
+
+- `VisualChoiceGroup`: `layout="people"` shows one calm row per choice, avatar or icon beside the name and a short note; an option's `highlight` sets it apart with a festive edge and the note as a pill, `quiet` makes it a lighter dashed extra.
+- `Avatar`: `colorful` puts the initials on a soft theme hue picked from the name, the same every time.
+
 ## 0.10.4 — 3 November 2026
 
 - `Stepper`: moving between steps, each number glides to its new place and the new step's name fades in, so the move reads as a move; skipped when motion is reduced.

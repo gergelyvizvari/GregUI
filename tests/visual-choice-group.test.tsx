@@ -149,3 +149,26 @@ it('reports a pointer pick, but not arrow keys or Space', async () => {
   expect(onPick).toHaveBeenLastCalledWith('c');
   expect(onPick).toHaveBeenCalledTimes(2);
 });
+
+it('marks highlighted and quiet people choices', () => {
+  render(
+    <VisualChoiceGroup
+      label="Who"
+      layout="people"
+      options={[
+        { value: 'a', label: 'Anna', description: 'Birthday tomorrow', highlight: true },
+        { value: 'new', label: 'Someone else', quiet: true },
+      ]}
+      value={null}
+      onChange={() => {}}
+    />,
+  );
+  expect(screen.getByRole('radio', { name: 'Anna' }).closest('label')).toHaveAttribute(
+    'data-highlight',
+    'true',
+  );
+  expect(screen.getByRole('radio', { name: 'Someone else' }).closest('label')).toHaveAttribute(
+    'data-quiet',
+    'true',
+  );
+});
