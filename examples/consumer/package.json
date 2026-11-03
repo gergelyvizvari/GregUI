@@ -10,8 +10,8 @@
   "dependencies": {
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "@gregui/react": "0.10.3",
-    "@gregui/tokens": "0.10.3",
-    "@gregui/localization": "0.10.3"
+    "@gregui/react": "0.10.4",
+    "@gregui/tokens": "0.10.4",
+    "@gregui/localization": "0.10.4"
   }
 }

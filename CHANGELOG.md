@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.4 — 3 November 2026
+
+- `Stepper`: moving between steps, each number glides to its new place and the new step's name fades in, so the move reads as a move; skipped when motion is reduced.
+
 ## 0.10.3 — 3 November 2026
 
 - `SideNav`: `badgeTone: 'attention'` fills an item's badge with the primary colour for work waiting there; the collapsed rail keeps it as a dot.

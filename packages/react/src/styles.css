@@ -2706,6 +2706,21 @@ body {
   flex-basis: 1.75rem;
   height: 1.75rem;
 }
+/* The step just reached shows its name softly while its number glides into place. */
+.g-stepper[data-compact='true'] li[aria-current='step'] .g-step-label {
+  animation: g-step-label-in var(--g-duration-enter) var(--g-ease) both;
+}
+@keyframes g-step-label-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.5rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-stepper[data-compact='true'] li[aria-current='step'] .g-step-label {
+    animation: none;
+  }
+}
 .g-stepper[data-compact='true'] .g-step-button {
   align-items: center;
 }
