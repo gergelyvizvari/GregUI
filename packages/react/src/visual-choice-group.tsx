@@ -1,5 +1,5 @@
 'use client';
-import { useId, type ReactNode } from 'react';
+import { useId, useRef, type ReactNode } from 'react';
 
 export interface VisualChoiceOption {
   value: string;
@@ -32,6 +32,11 @@ export interface VisualChoiceGroupProps {
    * text, for picking among written suggestions.
    */
   layout?: 'grid' | 'gallery' | 'tiles' | 'notes';
+  /**
+   * Called when an option is clicked or tapped, after `onChange`, so an app can move on at
+   * once. Arrow keys only change the selection; keyboard users confirm in the form as usual.
+   */
+  onPick?: (value: string) => void;
 }
 /** Controlled native radio selection with consistent directional keyboard navigation. */
 export function VisualChoiceGroup({
@@ -46,8 +51,10 @@ export function VisualChoiceGroup({
   disabled,
   required,
   layout = 'grid',
+  onPick,
 }: VisualChoiceGroupProps) {
   const id = useId();
+  const pointer = useRef(false);
   const feedback =
     [hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ') || undefined;
   return (
@@ -65,7 +72,14 @@ export function VisualChoiceGroup({
       )}
       <div className="g-visual-choice-options">
         {options.map((option, index) => (
-          <label className="g-visual-choice" key={option.value} data-disabled={!!option.disabled}>
+          <label
+            className="g-visual-choice"
+            key={option.value}
+            data-disabled={!!option.disabled}
+            onPointerDown={() => {
+              pointer.current = true;
+            }}
+          >
             <input
               type="radio"
               name={name ?? id}
@@ -85,7 +99,13 @@ export function VisualChoiceGroup({
                   .join(' ') || undefined
               }
               onChange={() => onChange(option.value)}
+              onClick={() => {
+                // Only a click or tap that started on this choice; Space also clicks a radio.
+                if (pointer.current) onPick?.(option.value);
+                pointer.current = false;
+              }}
               onKeyDown={(event) => {
+                pointer.current = false;
                 if (
                   !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(
                     event.key,

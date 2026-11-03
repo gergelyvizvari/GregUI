@@ -92,3 +92,33 @@ it('lays previews out as a gallery and still selects by clicking the picture', a
   await userEvent.setup().click(screen.getByText('Mountains'));
   expect(screen.getByRole('radio', { name: 'Alpine' })).toBeChecked();
 });
+it('reports a pointer pick, but not arrow keys or Space', async () => {
+  const onPick = vi.fn();
+  function Fixture() {
+    const [value, onChange] = useState<string | null>('a');
+    return (
+      <VisualChoiceGroup
+        label="Design"
+        options={options}
+        value={value}
+        onChange={onChange}
+        onPick={onPick}
+      />
+    );
+  }
+  render(<Fixture />);
+  const user = userEvent.setup();
+  await user.click(screen.getByText('Hello'));
+  expect(screen.getByRole('radio', { name: 'Greeting' })).toBeChecked();
+  expect(onPick).toHaveBeenCalledTimes(1);
+  expect(onPick).toHaveBeenCalledWith('c');
+  await user.keyboard('{ArrowLeft}');
+  await user.keyboard(' ');
+  expect(screen.getByRole('radio', { name: 'Alpine' })).toBeChecked();
+  expect(onPick).toHaveBeenCalledTimes(1);
+  await user.click(screen.getByText('Waiting'));
+  expect(onPick).toHaveBeenCalledTimes(1);
+  await user.click(screen.getByRole('radio', { name: 'Greeting' }));
+  expect(onPick).toHaveBeenLastCalledWith('c');
+  expect(onPick).toHaveBeenCalledTimes(2);
+});

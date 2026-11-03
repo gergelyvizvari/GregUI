@@ -6,10 +6,18 @@ export function EditorLayout({
   aside,
 }: {
   children: ReactNode;
-  aside?: { label: string; content: ReactNode };
+  /**
+   * A named column beside the document. With `preview` it is a live preview of the work: a
+   * wider column that stays in view while the document scrolls, and above it when stacked.
+   */
+  aside?: { label: string; content: ReactNode; preview?: boolean };
 }) {
   return (
-    <div className="g-editor-layout" data-aside={!!aside}>
+    <div
+      className="g-editor-layout"
+      data-aside={!!aside}
+      data-aside-kind={aside?.preview ? 'preview' : undefined}
+    >
       <div className="g-editor-main">{children}</div>
       {aside && (
         <aside className="g-editor-aside" aria-label={aside.label}>

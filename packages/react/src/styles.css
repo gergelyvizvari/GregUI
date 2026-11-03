@@ -4323,6 +4323,13 @@ body {
 .g-editor-layout[data-aside='true'] {
   grid-template-columns: minmax(0, 1fr) minmax(15rem, 19rem);
 }
+.g-editor-layout[data-aside='true'][data-aside-kind='preview'] {
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.85fr);
+}
+.g-editor-layout[data-aside='true'][data-aside-kind='preview'] > .g-editor-aside {
+  position: sticky;
+  top: 1rem;
+}
 .g-editor-layout[data-aside='false'] {
   max-width: 56rem;
 }
@@ -4391,6 +4398,15 @@ body {
 @media (max-width: 1100px) /* off-scale: component threshold */ {
   .g-editor-layout[data-aside='true'] {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 860px) /* off-scale: component threshold */ {
+  .g-editor-layout[data-aside='true'][data-aside-kind='preview'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .g-editor-layout[data-aside='true'][data-aside-kind='preview'] > .g-editor-aside {
+    position: static;
+    order: -1;
   }
 }
 @media (max-width: 600px) /* breakpoints.phone */ {

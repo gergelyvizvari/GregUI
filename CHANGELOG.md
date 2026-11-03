@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.0 — 3 November 2026
+
+- `EditorLayout`: `aside.preview` for a live preview beside the document: a wider column that stays in view while scrolling, above the document when stacked.
+- `VisualChoiceGroup`: `onPick` reports a click or tap on an option, so a wizard can move on as soon as something is chosen; arrow keys only select.
+
 ## 0.8.0 — 3 November 2026
 
 - `PostcardStage`: `fold="closed" | "open"` for a folded card seen slightly from the side that opens on its fold to `inside`; a portrait card's writing side is landscape and the card turns a quarter as it turns over; `onTurn` and `turnLabel` make the card a button that turns or opens it; `size="large"` for a last look; the stage is roomier, and a closed folded card stands slightly open.
