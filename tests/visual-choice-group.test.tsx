@@ -92,6 +92,19 @@ it('lays previews out as a gallery and still selects by clicking the picture', a
   await userEvent.setup().click(screen.getByText('Mountains'));
   expect(screen.getByRole('radio', { name: 'Alpine' })).toBeChecked();
 });
+it('lays previews out in masonry columns', () => {
+  render(
+    <VisualChoiceGroup
+      label="Design"
+      layout="masonry"
+      options={options}
+      value={null}
+      onChange={() => {}}
+    />,
+  );
+  expect(screen.getByRole('group', { name: 'Design' })).toHaveAttribute('data-layout', 'masonry');
+  expect(screen.getAllByRole('radio')).toHaveLength(options.length);
+});
 it('reports a pointer pick, but not arrow keys or Space', async () => {
   const onPick = vi.fn();
   function Fixture() {

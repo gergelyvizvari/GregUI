@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.0 — 3 November 2026
+
+- `VisualChoiceGroup`: `layout="masonry"` shows previews at a column's full width and their own height, in balanced columns, for a large set of mixed pictures; selection looks the same as `gallery`.
+
 ## 0.9.0 — 3 November 2026
 
 - `EditorLayout`: `aside.preview` for a live preview beside the document: a wider column that stays in view while scrolling, above the document when stacked.

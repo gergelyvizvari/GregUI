@@ -26,12 +26,15 @@ export interface VisualChoiceGroupProps {
   /**
    * `gallery`: previews keep their own shape at one height, like prints laid out on a table;
    * the chosen one is ringed and ticked. Suits pictures of different proportions.
+   * `masonry`: like `gallery`, but each preview fills a column's width at its own height, in
+   * balanced columns, so many pictures of mixed proportions sit close together. Options run
+   * down the first column, then the next.
    * `tiles`: big centred choices with a small preview (an avatar, icon or picture) above the
    * label, for quick choices such as who or how.
    * `notes`: text choices as small note cards, the label as a title and the description as the
    * text, for picking among written suggestions.
    */
-  layout?: 'grid' | 'gallery' | 'tiles' | 'notes';
+  layout?: 'grid' | 'gallery' | 'masonry' | 'tiles' | 'notes';
   /**
    * Called when an option is clicked or tapped, after `onChange`, so an app can move on at
    * once. Arrow keys only change the selection; keyboard users confirm in the form as usual.
