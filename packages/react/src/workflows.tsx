@@ -113,6 +113,7 @@ export function Stepper({
   currentStep,
   label,
   onStepSelect,
+  reachedStep,
   compact = false,
 }: {
   steps: StepItem[];
@@ -120,31 +121,39 @@ export function Stepper({
   label?: string;
   /**
    * Makes completed steps buttons that go back to them; the consumer moves `currentStep`.
-   * Steps after the current one stay plain text.
+   * Steps after the current one stay plain text, unless `reachedStep` says they were reached.
    */
   onStepSelect?: (index: number) => void;
+  /**
+   * The furthest step reached so far. After going back, steps up to it stay finished and
+   * selectable, so people can jump forward again; the consumer checks the steps in between.
+   */
+  reachedStep?: number;
   /** One short row: numbers only, with the current step's label beside its number. */
   compact?: boolean;
 }) {
   const { messages } = useLocale();
+  const furthest = Math.max(reachedStep ?? currentStep, currentStep);
+  const done = (i: number) => i !== currentStep && i < furthest;
+  const selectable = (i: number) => i !== currentStep && i <= furthest;
   return (
     <ol className="g-stepper" data-compact={compact} aria-label={label ?? messages.steps}>
       {steps.map((step, i) => {
         const content = (
           <>
             <span className="g-step-number" aria-hidden="true">
-              {i < currentStep ? '✓' : i + 1}
+              {done(i) ? '✓' : i + 1}
             </span>
             <span>
               {/* Compact: a finished step shows what was chosen (or its label) beside the tick. */}
-              {compact && i < currentStep && (
+              {compact && done(i) && (
                 <span className="g-step-summary" aria-hidden="true">
                   {step.description || step.label}
                 </span>
               )}
               <span className="g-step-label">{step.label}</span>
               {step.description && <span className="g-step-description">{step.description}</span>}
-              {i < currentStep && <span className="g-sr-only"> · {messages.completed}</span>}
+              {done(i) && <span className="g-sr-only"> · {messages.completed}</span>}
             </span>
           </>
         );
@@ -153,9 +162,9 @@ export function Stepper({
             key={step.value}
             title={compact ? step.label : undefined}
             aria-current={i === currentStep ? 'step' : undefined}
-            data-complete={i < currentStep}
+            data-complete={done(i)}
           >
-            {onStepSelect && i < currentStep ? (
+            {onStepSelect && selectable(i) ? (
               <button type="button" className="g-step-button" onClick={() => onStepSelect(i)}>
                 {content}
               </button>

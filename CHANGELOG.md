@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.2 — 3 November 2026
+
+- `Stepper`: `reachedStep` keeps steps already reached finished and selectable after going back, so people can jump forward again.
+
 ## 0.10.1 — 3 November 2026
 
 - `VisualChoiceGroup`: `hideCaptions` keeps option labels for assistive technology only, when the pictures speak for themselves.
