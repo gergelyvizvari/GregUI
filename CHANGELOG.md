@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.10.5 — 3 November 2026
+
+- `VisualChoiceGroup`: `layout="people"` shows one calm row per choice, avatar or icon beside the name and a short note; an option's `highlight` sets it apart with a festive edge and the note as a pill, `quiet` makes it a lighter dashed extra.
+- `Avatar`: `colorful` puts the initials on a soft theme hue picked from the name, the same every time.
+
+## 0.10.4 — 3 November 2026
+
+- `Stepper`: moving between steps, each number glides to its new place and the new step's name fades in, so the move reads as a move; skipped when motion is reduced.
+
+## 0.10.3 — 3 November 2026
+
+- `SideNav`: `badgeTone: 'attention'` fills an item's badge with the primary colour for work waiting there; the collapsed rail keeps it as a dot.
+
+## 0.10.2 — 3 November 2026
+
+- `Stepper`: `reachedStep` keeps steps already reached finished and selectable after going back, so people can jump forward again.
+
+## 0.10.1 — 3 November 2026
+
+- `VisualChoiceGroup`: `hideCaptions` keeps option labels for assistive technology only, when the pictures speak for themselves.
+
+## 0.10.0 — 3 November 2026
+
+- `VisualChoiceGroup`: `layout="masonry"` shows previews at a column's full width and their own height, in balanced columns, for a large set of mixed pictures; selection looks the same as `gallery`.
+
 ## 0.9.0 — 3 November 2026
 
 - `EditorLayout`: `aside.preview` for a live preview beside the document: a wider column that stays in view while scrolling, above the document when stacked.

@@ -1015,6 +1015,27 @@ body {
   font-weight: 600;
   line-height: 1;
 }
+/* Colourful initials: a soft wash of a theme role, its ink for the letters. */
+.g-avatar[data-hue] {
+  background: color-mix(in srgb, var(--g-avatar-hue) 16%, var(--g-surface));
+  color: color-mix(in srgb, var(--g-avatar-hue) 85%, var(--g-text));
+  font-weight: 600;
+}
+.g-avatar[data-hue='0'] {
+  --g-avatar-hue: var(--g-primary);
+}
+.g-avatar[data-hue='1'] {
+  --g-avatar-hue: var(--g-success);
+}
+.g-avatar[data-hue='2'] {
+  --g-avatar-hue: var(--g-warning);
+}
+.g-avatar[data-hue='3'] {
+  --g-avatar-hue: var(--g-danger);
+}
+.g-avatar[data-hue='4'] {
+  --g-avatar-hue: var(--g-focus);
+}
 .g-avatar[data-size='small'] {
   --g-avatar-size: 1.75rem;
   font-size: var(--g-type-caption-size);
@@ -2705,6 +2726,21 @@ body {
 .g-stepper[data-compact='true'] .g-step-number {
   flex-basis: 1.75rem;
   height: 1.75rem;
+}
+/* The step just reached shows its name softly while its number glides into place. */
+.g-stepper[data-compact='true'] li[aria-current='step'] .g-step-label {
+  animation: g-step-label-in var(--g-duration-enter) var(--g-ease) both;
+}
+@keyframes g-step-label-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.5rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-stepper[data-compact='true'] li[aria-current='step'] .g-step-label {
+    animation: none;
+  }
 }
 .g-stepper[data-compact='true'] .g-step-button {
   align-items: center;
@@ -4824,6 +4860,135 @@ body {
 .g-visual-choice-group[data-layout='tiles'] .g-visual-choice-caption > strong {
   font-weight: 600;
 }
+/* People: a calm row per person, avatar first, the note as a soft line or pill. */
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-options {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 0.75rem;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.875rem;
+  min-height: 4.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--g-border) 40%, transparent);
+  border-radius: calc(var(--g-radius) * 1.5);
+  background: var(--g-surface);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--g-text) 6%, transparent);
+  transition:
+    transform var(--g-duration) var(--g-ease),
+    box-shadow var(--g-duration) var(--g-ease),
+    border-color var(--g-duration) var(--g-ease);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--g-selection) 55%, transparent);
+  box-shadow: var(--g-card-shadow);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice:has(input:checked) {
+  border-color: var(--g-selection);
+  box-shadow: 0 0 0 1px var(--g-selection);
+  background: var(--g-tint);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice:has(input:checked)::after {
+  content: '✓';
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-inline-start: auto;
+  border-radius: 50%;
+  background: var(--g-selection);
+  color: var(--g-onSelection);
+  font-size: var(--g-type-caption-size);
+  font-weight: 700;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice input {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-preview {
+  flex: none;
+  display: grid;
+  place-items: center;
+  aspect-ratio: auto;
+  background: none;
+  overflow: visible;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-preview .g-avatar {
+  --g-avatar-size: 2.75rem;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-caption {
+  gap: 0.15rem;
+  padding: 0;
+  min-width: 0;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-caption > strong {
+  font-weight: 600;
+  line-height: 1.3;
+}
+/* Set apart: a festive rose edge and the note as a pill, with room for the pill. */
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-options:has([data-highlight]) {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-highlight] {
+  border-color: color-mix(in srgb, var(--g-danger) 30%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--g-danger) 7%, var(--g-surface)),
+    var(--g-surface) 60%
+  );
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-highlight]:has(input:checked) {
+  border-color: var(--g-selection);
+  background: var(--g-tint);
+}
+.g-visual-choice-group[data-layout='people']
+  .g-visual-choice[data-highlight]
+  .g-visual-choice-caption
+  > span {
+  justify-self: start;
+  max-width: 100%;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--g-danger) 12%, transparent);
+  color: var(--g-danger);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* A lighter extra: dashed, no fill, the icon in a soft circle. */
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-quiet] {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--g-border) 70%, transparent);
+  background: transparent;
+  box-shadow: none;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-quiet]:has(input:checked) {
+  border-style: solid;
+  background: var(--g-tint);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-quiet] .g-visual-choice-preview {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--g-tint);
+  color: var(--g-primary);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-preview .g-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-visual-choice-group[data-layout='people'] .g-visual-choice {
+    transition: none;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .g-visual-choice-group[data-layout='tiles'] .g-visual-choice {
     transition: none;
@@ -4909,23 +5074,25 @@ body {
   align-items: flex-start;
   gap: 1.5rem 1.25rem;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry']) .g-visual-choice {
   border: 0;
   background: none;
   overflow: visible;
   max-width: 100%;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice input {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry']) .g-visual-choice input {
   inset: 0;
   width: 100%;
   height: 100%;
   opacity: 0;
   cursor: pointer;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice:has(input:focus-visible) {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice:has(input:focus-visible) {
   outline: 0;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-preview {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice-preview {
   position: relative;
   display: block;
   height: var(--g-gallery-height);
@@ -4933,7 +5100,9 @@ body {
   background: none;
   overflow: visible;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-preview > * {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice-preview
+  > * {
   display: block;
   height: 100%;
   width: auto;
@@ -4942,27 +5111,30 @@ body {
   box-shadow: var(--g-card-shadow);
   transition: transform var(--g-duration) var(--g-ease);
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice:hover .g-visual-choice-preview > * {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice:hover
+  .g-visual-choice-preview
+  > * {
   transform: translateY(-2px);
 }
-.g-visual-choice-group[data-layout='gallery']
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
   .g-visual-choice:has(input:checked)
   .g-visual-choice-preview
   > *,
-.g-visual-choice-group[data-layout='gallery']
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
   .g-visual-choice:has(input:focus-visible)
   .g-visual-choice-preview
   > * {
   outline: 3px solid var(--g-selection);
   outline-offset: 3px;
 }
-.g-visual-choice-group[data-layout='gallery']
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
   .g-visual-choice:has(input:focus-visible)
   .g-visual-choice-preview
   > * {
   outline-color: var(--g-focus);
 }
-.g-visual-choice-group[data-layout='gallery']
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
   .g-visual-choice:has(input:checked)
   .g-visual-choice-preview::after {
   content: '✓';
@@ -4978,20 +5150,42 @@ body {
   color: var(--g-onSelection);
   font-weight: 700;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-caption {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice-caption {
   padding: 0.6rem 0 0;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-caption > strong {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice-caption
+  > strong {
   font-size: var(--g-type-small-size);
   font-weight: 500;
   color: var(--g-muted);
 }
-.g-visual-choice-group[data-layout='gallery']
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
   .g-visual-choice:has(input:checked)
   .g-visual-choice-caption
   > strong {
   color: var(--g-text);
   font-weight: 650;
+}
+/* Masonry: every preview at the column's full width and its own height, in balanced columns. */
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice-options {
+  display: block;
+  columns: 13rem;
+  column-gap: 1.25rem;
+}
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice {
+  display: block;
+  width: 100%;
+  margin-block-end: 1.5rem;
+  break-inside: avoid;
+}
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice-preview {
+  height: auto;
+}
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice-preview > * {
+  width: 100%;
+  height: auto;
 }
 /* A preview that is not a picture, such as "make your own", is a quiet landscape tile. */
 .g-visual-choice-group[data-layout='gallery'] .g-visual-choice-preview > :not(img, svg, canvas) {
@@ -5805,6 +5999,12 @@ button.g-agenda-event:hover {
   font-size: 0.6875rem;
   text-align: center;
 }
+.g-side-nav-badge[data-tone='attention'] {
+  background: var(--g-primary);
+  color: var(--g-onPrimary);
+  font-weight: 700;
+  line-height: 1.25rem;
+}
 .g-side-nav-disclosure {
   display: inline-flex;
   transition: transform var(--g-duration) var(--g-ease);
@@ -5843,6 +6043,23 @@ button.g-agenda-event:hover {
 .g-sidebar[data-collapsed] .g-brand {
   flex-direction: column;
   padding: 0;
+}
+/* In the rail an attention badge stays as a dot on the item; its text stays for screen readers. */
+.g-sidebar[data-collapsed] .g-side-nav .g-nav-item {
+  position: relative;
+}
+.g-sidebar[data-collapsed] .g-side-nav-badge[data-tone='attention'] {
+  position: absolute;
+  inset-block-start: 6px;
+  inset-inline-end: 6px;
+  width: 8px;
+  min-width: 0;
+  height: 8px;
+  padding: 0;
+  overflow: hidden;
+  font-size: 0;
+  line-height: 0;
+  clip-path: none;
 }
 .g-sidebar[data-collapsed] .g-brand > .g-stack,
 .g-sidebar[data-collapsed] .g-nav-dot,

@@ -135,6 +135,29 @@ it('lets people go back to completed steps when the consumer allows it', async (
   expect(screen.getByText('Words').closest('li')).toHaveAttribute('aria-current', 'step');
 });
 
+it('keeps steps already reached selectable after going back', async () => {
+  const select = vi.fn();
+  render(
+    <Stepper
+      currentStep={0}
+      reachedStep={2}
+      onStepSelect={select}
+      steps={[
+        { value: 'who', label: 'Who' },
+        { value: 'card', label: 'Card' },
+        { value: 'words', label: 'Words' },
+        { value: 'send', label: 'Send' },
+      ]}
+    />,
+  );
+  await userEvent.setup().click(screen.getByRole('button', { name: /Words/ }));
+  expect(select).toHaveBeenCalledWith(2);
+  // Card was finished; Words was reached but not finished; Send was never reached.
+  expect(screen.getByText('Card').closest('li')).toHaveAttribute('data-complete', 'true');
+  expect(screen.getByText('Words').closest('li')).toHaveAttribute('data-complete', 'false');
+  expect(screen.getAllByRole('button')).toHaveLength(2);
+});
+
 it('fits the steps on one row when compact', () => {
   render(
     <Stepper

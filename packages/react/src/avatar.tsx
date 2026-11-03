@@ -13,6 +13,8 @@ export interface AvatarProps {
   status?: AvatarStatus;
   /** Hide from assistive technology when the name is already shown beside the avatar. */
   decorative?: boolean;
+  /** Initials on a soft colour picked from the name, the same for a name every time. */
+  colorful?: boolean;
 }
 const statusMessages = {
   online: 'statusOnline',
@@ -20,13 +22,26 @@ const statusMessages = {
   busy: 'statusBusy',
   offline: 'statusOffline',
 } as const;
+/** One of five theme hues, stable for a name. */
+function hue(name: string) {
+  let sum = 0;
+  for (const char of name.trim().toLocaleLowerCase()) sum = (sum * 31 + char.codePointAt(0)!) | 0;
+  return Math.abs(sum) % 5;
+}
 function initials(name: string, locale: string) {
   const words = name.trim().split(/\s+/).filter(Boolean);
   const first = (word: string | undefined) => (word ? Array.from(word)[0] : '');
   const letters = first(words[0]) + (words.length > 1 ? first(words[words.length - 1]) : '');
   return letters.toLocaleUpperCase(locale);
 }
-export function Avatar({ name, src, size = 'medium', status, decorative = false }: AvatarProps) {
+export function Avatar({
+  name,
+  src,
+  size = 'medium',
+  status,
+  decorative = false,
+  colorful = false,
+}: AvatarProps) {
   const { messages, locale } = useLocale();
   const [failed, setFailed] = useState(false);
   useEffect(() => setFailed(false), [src]);
@@ -35,6 +50,7 @@ export function Avatar({ name, src, size = 'medium', status, decorative = false 
     <span
       className="g-avatar"
       data-size={size}
+      data-hue={colorful ? hue(name) : undefined}
       {...(decorative
         ? { 'aria-hidden': true }
         : { role: 'img', 'aria-label': statusLabel ? `${name}, ${statusLabel}` : name })}
