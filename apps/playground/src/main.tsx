@@ -17,6 +17,8 @@ import {
   FormSection,
   FormActions,
   Stepper,
+  PostcardStage,
+  MailFace,
   AppShell,
   FeaturePanel,
   AccentLink,
@@ -1593,6 +1595,7 @@ function ComponentCatalog({
   }, [onSearchChange]);
   const [radio, setRadio] = useState('monthly');
   const [step, setStep] = useState(1);
+  const [stageSide, setStageSide] = useState('front');
   const [view, setView] = useState('list');
   const [volume, setVolume] = useState(0.6);
   const [quantity, setQuantity] = useState<number | null>(2);
@@ -1634,6 +1637,52 @@ function ComponentCatalog({
         'Controlled pagination with boundary states and a compact page range. Apps own data fetching.',
       api: '<Pagination page={page} pageCount={10} onPageChange={setPage} />',
       demo: <PaginatedListDemo />,
+    },
+    {
+      name: 'Postcard stage',
+      category: 'Patterns',
+      description:
+        'One postcard on the table at true proportions, scaled to fit, turning over between its picture and writing sides; a folded card can show its envelope behind. changeKey makes it settle when the visible side changes. No motion with reduced motion.',
+      api: '<PostcardStage label="Card for Anna" side={side} front={<img …/>} back={<MailFace variant="postcard" …/>} />',
+      demo: (
+        <Stack>
+          <SegmentedControl
+            label="Side"
+            options={[
+              { value: 'front', label: 'Picture' },
+              { value: 'back', label: 'Writing' },
+            ]}
+            value={stageSide}
+            onValueChange={setStageSide}
+          />
+          <PostcardStage
+            label={`Postcard for Anna, ${stageSide === 'front' ? 'picture' : 'writing'} side`}
+            side={stageSide === 'back' ? 'back' : 'front'}
+            changeKey={stageSide}
+            front={<img src={samplePhoto.src} alt="" />}
+            back={
+              <MailFace
+                label="Postcard back"
+                variant="postcard"
+                postageLabel="Stamp"
+                message={{ label: 'Message', content: <p>Happy birthday, Anna!</p> }}
+                recipient={{
+                  label: 'Recipient',
+                  content: (
+                    <p>
+                      Anna Kiss
+                      <br />1 High Street
+                      <br />
+                      London
+                    </p>
+                  ),
+                }}
+                postmark={<Postmark place="London" date="2 Nov 2026" />}
+              />
+            }
+          />
+        </Stack>
+      ),
     },
     {
       name: 'Stepper',

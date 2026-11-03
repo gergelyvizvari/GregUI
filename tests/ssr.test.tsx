@@ -15,12 +15,14 @@ import {
   DataTable,
   FloatingPanel,
   Button,
+  PostcardStage,
 } from '@gregui/react';
 it('hydrates server-rendered themed fields without ID or markup mismatches', async () => {
   const tree = (
     <LocaleProvider locale="hu-HU">
       <ThemeProvider>
         <TextField label="Név" hint="Teljes név" />
+        <PostcardStage label="Képeslap" front={null} back={<p>Szia</p>} />
         <LoginForm onSubmit={() => {}} />
         <Wizard
           steps={[{ value: 'details', label: 'Details', content: <TextField label="Project" /> }]}

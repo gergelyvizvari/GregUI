@@ -171,6 +171,7 @@ export {
 } from './address-fields';
 export { MailFace, type MailFaceProps } from './mail-face';
 export { Postmark, type PostmarkProps } from './postmark';
+export { PostcardStage, type PostcardStageProps } from './postcard-stage';
 export {
   CalendarMonth,
   DatePicker,

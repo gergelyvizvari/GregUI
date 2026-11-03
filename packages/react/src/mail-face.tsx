@@ -3,9 +3,11 @@ import type { ReactNode } from 'react';
 
 export interface MailFaceProps {
   label: string;
-  variant: 'postcard' | 'envelope';
-  recipient: { label: string; content: ReactNode };
-  /** Decorative placeholder only; never represents paid postage. */
+  /** `inside`: the inside of a folded card, the message alone, with no postage or address. */
+  variant: 'postcard' | 'envelope' | 'inside';
+  /** Required for postcards and envelopes; not shown inside a folded card. */
+  recipient?: { label: string; content: ReactNode };
+  /** Decorative placeholder only; never represents paid postage. Not shown inside a card. */
   postageLabel: string;
   message?: { label: string; content: ReactNode };
   sender?: { label: string; content: ReactNode };
@@ -36,23 +38,27 @@ export function MailFace({
           {sender.content}
         </section>
       )}
-      {variant === 'postcard' && message && (
+      {variant !== 'envelope' && message && (
         <section className="g-mail-message" aria-label={message.label} dir="auto">
           {message.content}
         </section>
       )}
       {variant === 'postcard' && <div className="g-mail-divider" aria-hidden="true" />}
-      <div className="g-mail-postage" aria-hidden="true">
-        {postageLabel}
-      </div>
-      {postmark && (
+      {variant !== 'inside' && (
+        <div className="g-mail-postage" aria-hidden="true">
+          {postageLabel}
+        </div>
+      )}
+      {postmark && variant !== 'inside' && (
         <div className="g-mail-postmark" aria-hidden="true">
           {postmark}
         </div>
       )}
-      <section className="g-mail-recipient" aria-label={recipient.label} dir="auto">
-        {recipient.content}
-      </section>
+      {recipient && variant !== 'inside' && (
+        <section className="g-mail-recipient" aria-label={recipient.label} dir="auto">
+          {recipient.content}
+        </section>
+      )}
     </div>
   );
 }

@@ -4708,6 +4708,69 @@ body {
 .g-visual-choice:has(input:disabled) .g-visual-choice-caption > strong {
   color: var(--g-muted);
 }
+/* Tiles: big, centred choices with an avatar, icon or small picture above the label. */
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice-options {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 8.5rem), 1fr));
+  gap: 0.75rem;
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice {
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 0.75rem 0.85rem;
+  border-width: 1px;
+  border-radius: calc(var(--g-radius) * 1.5);
+  text-align: center;
+  transition:
+    transform var(--g-duration) var(--g-ease),
+    border-color var(--g-duration) var(--g-ease),
+    background-color var(--g-duration) var(--g-ease);
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice:hover {
+  transform: translateY(-2px);
+  border-color: var(--g-selection);
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice:has(input:checked) {
+  border-width: 2px;
+  padding: calc(1rem - 1px) calc(0.75rem - 1px) calc(0.85rem - 1px);
+  background: var(--g-tint);
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice input {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice-preview {
+  display: grid;
+  place-items: center;
+  aspect-ratio: auto;
+  min-height: 3rem;
+  background: none;
+  overflow: visible;
+  font-size: var(--g-type-section-size);
+  color: var(--g-selection);
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice-preview .g-icon {
+  width: 2rem;
+  height: 2rem;
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice-caption {
+  padding: 0;
+  justify-items: center;
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice-caption > strong {
+  font-weight: 600;
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-visual-choice-group[data-layout='tiles'] .g-visual-choice {
+    transition: none;
+  }
+  .g-visual-choice-group[data-layout='tiles'] .g-visual-choice:hover {
+    transform: none;
+  }
+}
+
 /* Gallery: previews at their own proportion and one height; the chosen one is ringed and ticked. */
 .g-visual-choice-group[data-layout='gallery'] {
   --g-gallery-height: 10rem;
@@ -5146,6 +5209,11 @@ body {
   font: inherit;
 }
 
+/* Inside a folded card: the message alone, with generous margins. */
+.g-mail-face[data-variant='inside'] .g-mail-message {
+  inset: 14mm 12mm;
+  width: auto;
+}
 .g-mail-face[data-sender='true'] .g-mail-message {
   top: 42mm;
 }
@@ -6182,5 +6250,94 @@ button.g-agenda-event:hover {
     transition:
       opacity calc(var(--g-duration) * 3) var(--g-ease),
       transform calc(var(--g-duration) * 3) var(--g-ease);
+  }
+}
+
+/* PostcardStage: one card on the table at true proportions, scaled to fit, turning over. */
+.g-postcard-stage {
+  position: relative;
+  width: 100%;
+  max-height: 22rem;
+  perspective: 1400px;
+}
+.g-postcard-stage[data-ready='false'] {
+  visibility: hidden;
+}
+/* Drawn at true size, then scaled from its top centre so its true size never affects layout. */
+.g-postcard-table {
+  position: absolute;
+  inset-block-start: 24px;
+  left: 50%;
+  transform: translateX(-50%) scale(var(--g-stage-scale, 1));
+  transform-origin: top center;
+  transform-style: preserve-3d;
+}
+.g-postcard-card {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(7deg) rotateY(-9deg);
+  transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.g-postcard-card[data-side='back'] {
+  transform: rotateX(7deg) rotateY(171deg);
+}
+.g-postcard-card[data-settle='a'] {
+  animation: g-postcard-settle-a 480ms var(--g-ease);
+}
+.g-postcard-card[data-settle='b'] {
+  animation: g-postcard-settle-b 480ms var(--g-ease);
+}
+@keyframes g-postcard-settle-a {
+  40% {
+    translate: 0 -10px;
+  }
+}
+@keyframes g-postcard-settle-b {
+  40% {
+    translate: 0 -10px;
+  }
+}
+.g-postcard-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--g-surface);
+  box-shadow: var(--g-card-shadow);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+.g-postcard-face[data-face='back'] {
+  transform: rotateY(180deg);
+}
+.g-postcard-face > img,
+.g-postcard-face > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.g-postcard-envelope {
+  position: absolute;
+  inset-block-start: 0;
+  left: 50%;
+  rotate: 3deg;
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: var(--g-card-shadow);
+  transform: translateZ(-160px);
+}
+@media (max-width: 760px) /* breakpoints.compact */ {
+  .g-postcard-stage {
+    max-height: 15rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-postcard-card {
+    transition: none;
+  }
+  .g-postcard-card[data-settle] {
+    animation: none;
   }
 }
