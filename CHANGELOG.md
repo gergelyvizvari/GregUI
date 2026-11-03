@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.1 — 3 November 2026
+
+- `VisualChoiceGroup`: `hideCaptions` keeps option labels for assistive technology only, when the pictures speak for themselves.
+
 ## 0.10.0 — 3 November 2026
 
 - `VisualChoiceGroup`: `layout="masonry"` shows previews at a column's full width and their own height, in balanced columns, for a large set of mixed pictures; selection looks the same as `gallery`.

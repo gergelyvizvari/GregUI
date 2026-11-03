@@ -15,6 +15,11 @@ export interface VisualChoiceGroupProps {
   label: string;
   /** Keep the label for assistive technology only, when a heading above already asks it. */
   hideLabel?: boolean;
+  /**
+   * Keep the option labels for assistive technology only, when the pictures speak for
+   * themselves (for example a wall of card designs). Descriptions and status still show.
+   */
+  hideCaptions?: boolean;
   options: readonly VisualChoiceOption[];
   value: string | null;
   onChange: (value: string) => void;
@@ -45,6 +50,7 @@ export interface VisualChoiceGroupProps {
 export function VisualChoiceGroup({
   label,
   hideLabel = false,
+  hideCaptions = false,
   options,
   value,
   onChange,
@@ -141,7 +147,12 @@ export function VisualChoiceGroup({
               </span>
             )}
             <span className="g-visual-choice-caption">
-              <strong id={`${id}-${index}-label`}>{option.label}</strong>
+              <strong
+                id={`${id}-${index}-label`}
+                className={hideCaptions ? 'g-sr-only' : undefined}
+              >
+                {option.label}
+              </strong>
               {option.description && (
                 <span id={`${id}-${index}-description`}>{option.description}</span>
               )}
