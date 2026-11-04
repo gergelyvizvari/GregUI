@@ -510,6 +510,16 @@ const occasions = [
 - The application stores the value and schedules the work; dates are calendar dates without time zones.
 - New locale messages: `recur*` (33 keys). Apps providing a complete `Messages` object must add them.
 
+## Kanban board
+
+- `KanbanBoard` shows `columns` (`{ id, title, limit? }`) of `cards` (`{ id, columnId, title }` plus your own fields, in display order) and reports moves through `onMove({ cardId, fromColumnId, fromIndex, toColumnId, toIndex })`, where `toIndex` is the card's position in the destination column after the move. It is controlled: update `cards` (for one ordered array, `moveKanbanCard(cards, move)` does it) and the board follows. `renderCard` draws the card body (default: the title); keep interactive content to links and buttons.
+- The board is a region named by `label`; each column is a region named by its heading (`headingLevel`, default 3) with a list of cards, a count ("3 cards" for assistive technology) or, with `limit`, "3 of 5", marked and announced when over the limit. Empty columns show `emptyMessage` or `kanbanEmpty`.
+- Keyboard: each card has a grip button ("Move {title}", described by the instructions). Space or Enter picks the card up; Up/Down/Home/End move it within the column and Left/Right to the next column that `canMove(card, columnId)` allows (mirrored under RTL); the board shows the card where it would land. Space or Enter drops it and calls `onMove`; Escape or Tab cancels. Each step is announced through a polite status region and focus stays on the card's grip.
+- Each card's "Move options" menu lists "Move to {column}" for allowed columns, and "Move to top"/"Move to bottom" within its column.
+- Pointer: with `draggable` (default true) cards can be dragged between and within columns; the target column and insertion point are marked. Touch dragging is not supported by native drag and drop; touch users use the menu.
+- The board scrolls sideways inside itself when its columns (at least 16rem each) do not fit. The application owns persistence, permissions and any server reordering.
+- New locale messages: `kanban*` (14 keys). Apps providing a complete `Messages` object must add them.
+
 ## People, keys and hidden text
 
 - `Avatar` shows a person as `src` or, while the image is missing or fails, initials from the first and last words of `name` (so `Vizvári Gergely` → VG), upper-cased in the provider locale. `size` is small/medium/large. `status` (`online`, `away`, `busy`, `offline`) draws a presence marker with its own shape — filled, ring with a dot, bar, hollow ring — and appends the localized status to the accessible name (`Alex Morgan, away`). Use `decorative` when the name is already shown beside the avatar. The application owns images, presence and any link around the avatar.
