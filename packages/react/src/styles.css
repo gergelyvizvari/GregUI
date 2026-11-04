@@ -6967,13 +6967,22 @@ button.g-postcard-stage:focus-visible {
 .g-postcard-card[data-orientation='portrait'] .g-postcard-back {
   rotate: 90deg;
 }
+/*
+ * A card is a physical object on the table: it keeps a hairline edge and a soft cast shadow in
+ * every preset (flat ones included), so a white card stays visible on a white page.
+ */
+.g-postcard-stage {
+  --g-postcard-shadow:
+    0 0 0 1px color-mix(in srgb, var(--g-border) 80%, transparent),
+    0 2px 4px rgba(var(--g-shadow-color), 0.14), 0 14px 32px rgba(var(--g-shadow-color), 0.18);
+}
 .g-postcard-face {
   position: absolute;
   inset: 0;
   overflow: hidden;
   border-radius: 6px;
   background: var(--g-surface);
-  box-shadow: var(--g-card-shadow);
+  box-shadow: var(--g-postcard-shadow);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
@@ -6989,7 +6998,7 @@ button.g-postcard-stage:focus-visible {
   overflow: hidden;
   border-radius: 6px;
   background: var(--g-surface);
-  box-shadow: var(--g-card-shadow);
+  box-shadow: var(--g-postcard-shadow);
 }
 .g-postcard-face > img,
 .g-postcard-face > svg {

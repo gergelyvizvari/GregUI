@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.6 — 4 November 2026
+
+- `PostcardStage`: the card keeps a hairline edge and a soft cast shadow in every preset, so a white card stays visible on a white page.
+
 ## 0.11.5 — 4 November 2026
 
 - `DocumentPreview`: Fit now fits the whole page, height included, so an upright (portrait) page no longer runs off the bottom of the viewport; it updates when the window's height changes.
