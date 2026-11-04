@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.2 — 4 November 2026
+
+- `AppShell`: `toolbarOverflow` holds secondary toolbar items (language, light/dark, sign out): at the end of the toolbar on wide screens, inside the menu drawer on narrow ones, so a phone header stays one row.
+- `AppShell appearance="editorial"`: the one-row masthead needs a wide screen (above 1200px); narrower windows get the menu drawer instead of a squeezed, wrapping masthead, and the header spans the full width. Brand and navigation labels no longer break mid-word.
+
 ## 0.11.1 — 4 November 2026
 
 - `AppShell`: `tone="brand"` with `appearance="editorial"` sets the masthead (brand, navigation and toolbar) on the primary colour, like a website header on its hero; a deep tint in dark mode. The current page stays on the page surface.

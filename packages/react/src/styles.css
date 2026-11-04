@@ -1794,6 +1794,24 @@ body {
 .g-mobile-nav {
   display: none;
 }
+.g-toolbar-actions,
+.g-toolbar-overflow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.g-toolbar-actions {
+  margin-inline-start: auto;
+}
+.g-drawer-settings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--g-line);
+}
 .g-mobile-brand {
   display: inline-flex;
   align-items: center;
@@ -2076,6 +2094,9 @@ body {
 }
 @media (max-width: 760px) /* breakpoints.compact */ {
   .g-sidebar {
+    display: none;
+  }
+  .g-toolbar-overflow {
     display: none;
   }
   .g-mobile-nav {
@@ -3467,10 +3488,11 @@ body {
   color: var(--g-text);
 }
 /*
- * Editorial masthead on wider screens: brand, navigation and the toolbar share one row, like a
- * website header; navigation lists run sideways.
+ * Editorial masthead on wide screens: brand, navigation and the toolbar share one row, like a
+ * website header; navigation lists run sideways. Narrower windows get the menu drawer, since the
+ * row would otherwise squeeze the brand and wrap the navigation.
  */
-@media (min-width: 801px) /* off-scale: component threshold */ {
+@media (min-width: 1201px) /* breakpoints.wide */ {
   .g-app-shell[data-appearance='editorial'] {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -3526,16 +3548,41 @@ body {
     min-height: 0;
     height: 240px;
   }
-  .g-app-shell[data-appearance='editorial'] > .g-sidebar {
-    display: none;
-  }
   .g-app-shell[data-appearance='dashboard'] > .g-sidebar {
     display: none;
   }
-  .g-app-shell[data-appearance='editorial'] .g-mobile-nav,
   .g-app-shell[data-appearance='dashboard'] .g-mobile-nav {
     display: flex;
   }
+  .g-app-shell[data-appearance='dashboard'] .g-toolbar-overflow {
+    display: none;
+  }
+}
+@media (max-width: 1200px) /* breakpoints.wide */ {
+  .g-app-shell[data-appearance='editorial'] > .g-sidebar {
+    display: none;
+  }
+  .g-app-shell[data-appearance='editorial'] .g-mobile-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .g-app-shell[data-appearance='editorial'] .g-toolbar-overflow {
+    display: none;
+  }
+  /* The toolbar is the whole header here, so it spans the width. */
+  .g-app-shell[data-appearance='editorial'] .g-toolbar {
+    max-width: none;
+    margin: 0;
+    flex-wrap: nowrap;
+  }
+}
+/* The brand and navigation labels never break mid-word in the masthead. */
+.g-app-shell[data-appearance='editorial'] .g-brand,
+.g-app-shell[data-appearance='editorial'] .g-mobile-brand,
+.g-app-shell[data-appearance='editorial'] > .g-sidebar .g-nav-item {
+  flex: none;
+  white-space: nowrap;
 }
 
 /* Image-rich editorial discovery. Copy always sits on opaque theme surfaces. */

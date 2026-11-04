@@ -66,3 +66,23 @@ it('marks a brand masthead on the editorial shell', () => {
   expect(shell).toHaveAttribute('data-appearance', 'editorial');
   expect(shell).toHaveAttribute('data-tone', 'brand');
 });
+
+it('shows overflow toolbar items in the toolbar, not duplicated while the drawer is closed', () => {
+  render(
+    <ThemeProvider theme={createTheme()}>
+      <AppShell
+        brand="App"
+        nav={null}
+        appearance="editorial"
+        toolbar={<Button>Bell</Button>}
+        toolbarOverflow={<Button>Sign out</Button>}
+      >
+        <p>Content</p>
+      </AppShell>
+    </ThemeProvider>,
+  );
+  expect(screen.getAllByRole('button', { name: 'Sign out' })).toHaveLength(1);
+  expect(
+    screen.getByRole('button', { name: 'Sign out' }).closest('.g-toolbar-overflow'),
+  ).not.toBeNull();
+});

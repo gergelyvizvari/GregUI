@@ -117,6 +117,7 @@ export function AppShell({
   nav,
   footer,
   toolbar,
+  toolbarOverflow,
   children,
   viewKey,
   appearance = 'standard',
@@ -153,6 +154,11 @@ export function AppShell({
   nav: ReactNode;
   footer?: ReactNode;
   toolbar?: ReactNode;
+  /**
+   * Secondary toolbar items (language, light/dark, sign out): at the end of the toolbar on wide
+   * screens, and inside the menu drawer on narrow ones, so the phone header stays one row.
+   */
+  toolbarOverflow?: ReactNode;
   children: ReactNode;
 }) {
   const { messages, direction } = useLocale();
@@ -254,6 +260,7 @@ export function AppShell({
               >
                 {nav}
               </nav>
+              {toolbarOverflow && <div className="g-drawer-settings">{toolbarOverflow}</div>}
             </Drawer>
             {/* On phones the sidebar is hidden, so the brand rides next to the menu button. */}
             <span className="g-mobile-brand">
@@ -265,7 +272,14 @@ export function AppShell({
               <Text weight="strong">{brand}</Text>
             </span>
           </div>
-          {toolbar}
+          {toolbarOverflow ? (
+            <div className="g-toolbar-actions">
+              {toolbar}
+              <div className="g-toolbar-overflow">{toolbarOverflow}</div>
+            </div>
+          ) : (
+            toolbar
+          )}
         </div>
         <main className="g-main" id={mainId} tabIndex={-1}>
           {viewKey ? (
