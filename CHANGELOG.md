@@ -8,6 +8,9 @@
 - `UploadList`: per-file upload rows with size, status, progress (or an indeterminate bar), the application's error text, and Cancel, Retry and Remove actions. Controlled by `items`; the application owns the transport. Duplicate names get distinct accessible names, focus moves sensibly after removal, and finished or failed files are announced once.
 - `FileUpload`: `showSelection={false}` hides the chosen-names line and clear button when an `UploadList` shows the files.
 - New English and Hungarian `upload*` messages.
+- `RecurrenceField`: once, yearly, monthly or every N days/weeks/months/years, with a lead time in days, a localised summary ("Every year on 12 March, 7 days before") and the next date.
+- `recurrenceDates`, `nextRecurrence` and `recurrenceSummary` helpers for the same rule, built on `yearlyDate`/`addMonths`.
+- New English and Hungarian `recur*` messages.
 
 ## 0.9.0 — 3 November 2026
 

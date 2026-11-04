@@ -198,3 +198,14 @@ export {
   type DatePickerProps,
 } from './calendar';
 export { CalendarAgenda, type CalendarAgendaProps } from './calendar-agenda';
+export {
+  RecurrenceField,
+  recurrenceDates,
+  recurrenceSummary,
+  nextRecurrence,
+  type RecurrenceFieldProps,
+  type RecurrenceFrequency,
+  type RecurrenceOccurrence,
+  type RecurrenceUnit,
+  type RecurrenceValue,
+} from './recurrence';

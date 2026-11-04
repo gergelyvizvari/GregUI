@@ -5,6 +5,7 @@ import {
   CalendarMonth,
   Checkbox,
   DatePicker,
+  RecurrenceField,
   Stack,
   Text,
   TextField,
@@ -12,6 +13,7 @@ import {
   todayDate,
   type CalendarDate,
   type CalendarEvent,
+  type RecurrenceValue,
 } from '@gregui/react';
 
 // Demo policy only: real collection days, holidays and print cut-offs belong to the application.
@@ -158,6 +160,28 @@ export function CalendarAgendaDemo() {
           </div>
         </Stack>
       </form>
+    </Stack>
+  );
+}
+
+export function RecurrenceFieldDemo() {
+  const [value, setValue] = useState<RecurrenceValue>({
+    frequency: 'yearly',
+    start: '1990-03-12',
+    leadDays: 7,
+  });
+  return (
+    <Stack>
+      <RecurrenceField
+        label="When to send"
+        hint="For example a birthday card, posted a week ahead."
+        leadLabel="Send this many days before"
+        value={value}
+        onChange={setValue}
+      />
+      <Text size="small" tone="muted">
+        Stored value: {JSON.stringify(value)}
+      </Text>
     </Stack>
   );
 }

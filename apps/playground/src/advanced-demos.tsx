@@ -1,7 +1,12 @@
 import { PostcardDemo } from './postcard-demo';
 import { BannerDemo, ToastDemo } from './feedback-demo';
 import { BreadcrumbsDemo, MenuDemo, ContextMenuDemo, SideNavDemo } from './navigation-demo';
-import { CalendarAgendaDemo, CalendarMonthDemo, DatePickerDemo } from './calendar-demo';
+import {
+  CalendarAgendaDemo,
+  CalendarMonthDemo,
+  DatePickerDemo,
+  RecurrenceFieldDemo,
+} from './calendar-demo';
 import { samplePhoto, PhotoCredit } from './sample-media';
 import { UploadListDemo } from './upload-demo';
 import { TypographyDemo, PageCompositionDemo } from './content-demo';
@@ -637,6 +642,13 @@ export function useAdvancedExamples(): CatalogEntry[] {
       'Upcoming events grouped by day, with birthdays and anniversaries repeating every year.',
       '<CalendarAgenda label="Coming up" events={occasions} days={45} onSelect={open} renderDetail={({ years }) => `Turns ${years}`} />',
       <CalendarAgendaDemo />,
+    ),
+    entry(
+      'Recurrence Field',
+      'Forms',
+      'Once, yearly, monthly or every N days/weeks/months/years, with a lead time, a localised summary and the next date.',
+      '<RecurrenceField label="When to send" value={rule} onChange={setRule} leadLabel="Send this many days before" />',
+      <RecurrenceFieldDemo />,
     ),
     entry(
       'Date Range Picker',
