@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.5 — 4 November 2026
+
+- `DocumentPreview`: Fit now fits the whole page, height included, so an upright (portrait) page no longer runs off the bottom of the viewport; it updates when the window's height changes.
+
 ## 0.11.4 — 4 November 2026
 
 - `CalendarMonth`: `size="large"` is a planner month with tall days that list their events as small coloured labels (dots on phones); `CalendarEvent tone` (`primary`, `accent`, `neutral`) colours them.

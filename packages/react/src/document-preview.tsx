@@ -95,20 +95,27 @@ export function DocumentPreview({
   const id = useId();
   const viewport = useRef<HTMLDivElement>(null);
   const [available, setAvailable] = useState(0);
+  /** Room for the page's height: the viewport's own height cap, minus its padding. */
+  const [availableHeight, setAvailableHeight] = useState(0);
   const [zoom, setZoom] = useState('fit');
   const [guides, setGuides] = useState(false);
   useEffect(() => {
     const element = viewport.current;
     if (!element) return;
-    const update = () => setAvailable(Math.max(0, element.clientWidth - 32));
+    const update = () => {
+      setAvailable(Math.max(0, element.clientWidth - 32));
+      const cap = Number.parseFloat(getComputedStyle(element).maxHeight);
+      setAvailableHeight(Number.isFinite(cap) ? Math.max(0, cap - 32) : 0);
+    };
     update();
-    if (typeof ResizeObserver === 'undefined') {
-      window.addEventListener('resize', update);
-      return () => window.removeEventListener('resize', update);
-    }
-    const observer = new ResizeObserver(update);
-    observer.observe(element);
-    return () => observer.disconnect();
+    // The window's height changes the viewport's height cap without resizing the element.
+    window.addEventListener('resize', update);
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(update);
+    observer?.observe(element);
+    return () => {
+      window.removeEventListener('resize', update);
+      observer?.disconnect();
+    };
   }, []);
   if (![widthMm, heightMm].every(positive))
     throw new Error('DocumentPreview dimensions must be positive finite millimetres.');
@@ -154,7 +161,15 @@ export function DocumentPreview({
       const dpi = documentImageDpi(image, placedWidth, placedHeight);
       if (dpi < minimumDpi) issues.push({ label: image.label, dpi, minimumDpi });
     }
-  const scale = zoom === 'fit' ? (available ? Math.min(1, available / width) : 1) : Number(zoom);
+  // Fit shows the whole page: an upright card must not run off the bottom of the viewport.
+  const scale =
+    zoom === 'fit'
+      ? Math.min(
+          1,
+          available ? available / width : 1,
+          availableHeight ? availableHeight / height : 1,
+        )
+      : Number(zoom);
   return (
     <section className="g-document-preview" aria-label={label}>
       <div className="g-document-toolbar">
