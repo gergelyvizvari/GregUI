@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.0 — 4 November 2026
+
+- `ThemeProvider`: `displayFont` (`{ family, weight? }`) sets the app's own display face for headings, inherited by nested providers and portals. The app loads the font; theme JSON is unchanged.
+- `AppShell appearance="editorial"`: on wider screens the brand, navigation and toolbar share one masthead row, like a website header, and `SideNav` items run sideways there; phones keep the menu drawer.
+- `PageHeader`: `tone="brand"` puts the header on a bold block of the primary colour (a deep tint in dark mode), like a landing page hero; text and buttons switch to readable colours on it.
+
 ## 0.10.6 — 4 November 2026
 
 - `NumberField`: on an empty field the increase and decrease buttons (and arrow keys) step from 0, so up gives 1 and down −1; before, both jumped to `min`. When 0 is out of range it starts at the nearest limit.

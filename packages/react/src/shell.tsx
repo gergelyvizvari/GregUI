@@ -34,8 +34,14 @@ export function PageHeader({
   breadcrumbs,
   meta,
   size = 'default',
+  tone = 'default',
 }: {
   artwork?: ReactNode;
+  /**
+   * `brand` sets the header on a bold block of the primary colour (a deep tint of it in dark
+   * mode), like a landing page hero; text and buttons switch to readable colours on it.
+   */
+  tone?: 'default' | 'brand';
   breadcrumbs?: ReactNode;
   meta?: ReactNode;
   size?: 'default' | 'compact';
@@ -45,7 +51,12 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <header className="g-page-header" data-editorial={Boolean(artwork)} data-size={size}>
+    <header
+      className="g-page-header"
+      data-editorial={Boolean(artwork)}
+      data-size={size}
+      data-tone={tone === 'brand' ? 'brand' : undefined}
+    >
       <Stack gap={3}>
         {breadcrumbs}
         {eyebrow && (

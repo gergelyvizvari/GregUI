@@ -8,7 +8,13 @@ export {
   messagesFor,
 } from '@gregui/localization';
 export { createTheme, type Theme } from '@gregui/tokens';
-export { useTheme, useSystemMode, ThemeProvider, type ThemeColorScheme } from './theme';
+export {
+  useTheme,
+  useSystemMode,
+  ThemeProvider,
+  type ThemeColorScheme,
+  type ThemeDisplayFont,
+} from './theme';
 export { Stack, Inline, Grid, Split, Container, Card, CardLink, Section } from './layout';
 export {
   Text,
