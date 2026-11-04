@@ -780,3 +780,31 @@ test('kanban board moves cards by keyboard, menu and drag', async ({ page }, tes
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await board.screenshot({ path: `test-results/kanban-${testInfo.project.name}.png` });
 });
+
+test('data import maps columns, fixes a row and skips another', async ({ page }, testInfo) => {
+  await page.goto('/');
+  await navigate(page, 'Components');
+  await page.getByLabel('Find a component').fill('Data Import');
+  await expect(page.getByRole('combobox', { name: 'Full name' })).toHaveValue('name');
+  await expect(page.getByRole('combobox', { name: 'Team' })).toHaveValue('');
+  await expect(page.getByText('2 ready, 2 with problems, 0 skipped')).toBeVisible();
+  const results = await new AxeBuilder({ page })
+    .include('[aria-label="Component preview"]')
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+    .analyze();
+  expect(results.violations).toEqual([]);
+  const email = page.getByRole('textbox', { name: 'Email, row 3' });
+  await email.fill('ben@example.com');
+  await email.press('Enter');
+  await expect(page.getByText('3 ready, 1 with problems, 0 skipped')).toBeVisible();
+  await page.getByRole('radio', { name: 'Rows with problems' }).check();
+  await page.getByRole('button', { name: 'Skip all rows with problems' }).click();
+  await expect(page.getByText('3 ready, 0 with problems, 1 skipped')).toBeVisible();
+  await page.getByRole('combobox', { name: 'Full name' }).selectOption('');
+  await expect(page.getByText('Choose a column for: Name')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole('combobox', { name: 'Full name' }).selectOption('name');
+  await page.locator('.g-import-preview').screenshot({
+    path: `test-results/import-${testInfo.project.name}.png`,
+  });
+});

@@ -742,3 +742,41 @@ test('upload list shows progress, failure, retry and focus after removal', async
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await list.screenshot({ path: `test-results/upload-list-${testInfo.project.name}.png` });
 });
+
+test('kanban board moves cards by keyboard, menu and drag', async ({ page }, testInfo) => {
+  await page.goto('/');
+  await navigate(page, 'Components');
+  await page.getByLabel('Find a component').fill('Kanban Board');
+  const board = page.getByRole('region', { name: 'Print pipeline' });
+  const column = (name: string) => board.getByRole('region', { name });
+  await expect(column('Printing')).toContainText('2 of 2');
+  const handle = board.getByRole('button', { name: 'Move Birthday card #1042' });
+  await handle.focus();
+  await page.keyboard.press('Space');
+  await page.keyboard.press('ArrowRight');
+  await expect(board.getByRole('button', { name: 'Move Birthday card #1042' })).toBeFocused();
+  await page.keyboard.press('Space');
+  await expect(column('Printing')).toContainText('Birthday card #1042');
+  await expect(column('Printing')).toHaveAttribute('data-over-limit', 'true');
+  await expect(board.getByRole('status')).toHaveText(
+    'Birthday card #1042 moved to Printing, position 1 of 3.',
+  );
+  const results = await new AxeBuilder({ page })
+    .include('.g-kanban')
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+    .analyze();
+  expect(results.violations).toEqual([]);
+  await board.getByRole('button', { name: 'Move options: Birthday card #1035' }).focus();
+  await page.keyboard.press('Enter');
+  await page.getByRole('menuitem', { name: 'Move to Posted' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(column('Posted')).toContainText('Birthday card #1035');
+  if (testInfo.project.name !== 'mobile') {
+    await board
+      .locator('[data-card-id="j2"]')
+      .dragTo(column('Packed').getByRole('list'), { targetPosition: { x: 40, y: 8 } });
+    await expect(column('Packed')).toContainText('Thank-you card #1043');
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await board.screenshot({ path: `test-results/kanban-${testInfo.project.name}.png` });
+});

@@ -3158,6 +3158,34 @@ body {
     transition: box-shadow 120ms ease;
   }
 }
+.g-import-choice {
+  display: grid;
+  gap: 0.375rem;
+  min-width: 12rem;
+}
+.g-import-choice > .g-error {
+  margin: 0;
+}
+.g-import-preview td,
+.g-import-preview th[scope='row'] {
+  vertical-align: top;
+}
+.g-import-preview td[data-invalid] {
+  background: color-mix(in srgb, var(--g-danger) 8%, transparent);
+}
+.g-import-preview td .g-input {
+  min-width: 9rem;
+}
+.g-import-issue {
+  display: block;
+  margin-block-start: 0.25rem;
+  color: var(--g-danger);
+  font-size: var(--g-type-small-size);
+}
+.g-import-preview tr[data-skipped] > :not(:last-child) {
+  color: var(--g-muted);
+  text-decoration: line-through;
+}
 .g-list-detail {
   display: grid;
   grid-template-columns: minmax(10rem, 1fr) minmax(0, 2fr);

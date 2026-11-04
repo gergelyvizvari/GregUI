@@ -3055,6 +3055,109 @@ body {
   display: flex;
   gap: 0.25rem;
 }
+/* Size to the container, never to the columns, so a wide board scrolls inside itself. */
+.g-kanban {
+  min-width: 0;
+  contain: inline-size;
+}
+.g-kanban-columns {
+  /* Contains absolutely positioned hidden text so it scrolls with the columns. */
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(16rem, 1fr);
+  gap: 1rem;
+  overflow-x: auto;
+  padding-block-end: 0.5rem;
+  scroll-snap-type: x proximity;
+}
+.g-kanban-column {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-card-radius);
+  background: var(--g-background);
+  scroll-snap-align: start;
+}
+.g-kanban-column[data-over-limit] {
+  border-color: var(--g-danger);
+}
+.g-kanban-column[data-drop-target] {
+  outline: 2px dashed var(--g-focus);
+  outline-offset: -2px;
+}
+.g-kanban-column-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-inline: 0.25rem;
+}
+.g-kanban-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  min-height: 4rem;
+}
+.g-kanban-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-control-radius);
+  background: var(--g-surface);
+  box-shadow: var(--g-nested-card-shadow);
+}
+.g-kanban-card[draggable='true'] {
+  cursor: grab;
+}
+.g-kanban-card-tools {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  gap: 0.125rem;
+  align-self: start;
+}
+.g-kanban-card-body {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.g-kanban-card[data-picked] {
+  outline: 2px solid var(--g-focus);
+  outline-offset: 2px;
+}
+.g-kanban-card[data-dragging] {
+  opacity: 0.5;
+}
+.g-kanban-card[data-drop-before]::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: -0.375rem;
+  border-block-start: 2px solid var(--g-focus);
+}
+.g-kanban-empty {
+  display: grid;
+  place-items: center;
+  min-height: 4rem;
+  border: 1px dashed var(--g-line);
+  border-radius: var(--g-control-radius);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .g-kanban-card {
+    transition: box-shadow 120ms ease;
+  }
+}
 .g-list-detail {
   display: grid;
   grid-template-columns: minmax(10rem, 1fr) minmax(0, 2fr);

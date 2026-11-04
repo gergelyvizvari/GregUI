@@ -10,6 +10,7 @@ import {
 import { samplePhoto, PhotoCredit } from './sample-media';
 import { UploadListDemo } from './upload-demo';
 import { KanbanDemo } from './kanban-demo';
+import { DataImportDemo } from './import-demo';
 import { TypographyDemo, PageCompositionDemo } from './content-demo';
 import { useEffect, useState, type ReactNode } from 'react';
 import {
@@ -664,6 +665,13 @@ export function useAdvancedExamples(): CatalogEntry[] {
       'Columns of cards with counts and limits. Move cards with the keyboard (Space, arrows, Space), a move menu or drag and drop.',
       '<KanbanBoard label="Print pipeline" columns={columns} cards={cards} onMove={(move) => setCards(moveKanbanCard(cards, move))} />',
       <KanbanDemo />,
+    ),
+    entry(
+      'Data Import',
+      'Forms',
+      'Match file columns to fields, then review rows with per-cell problems, fix them inline or skip them. Parsing and validation stay in the app.',
+      '<ImportColumnMapping label="Match columns" columns={headers} fields={fields} value={mapping} onChange={setMapping} />\n<ImportPreview label="Rows to import" fields={fields} rows={rows} onSkipChange={skip} onValueChange={fix} />',
+      <DataImportDemo />,
     ),
     entry(
       'File Upload',
