@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.0 — 4 November 2026
+
+- New `BarChart`: a small stacked bar chart for counts over a few periods (cards per day), with a legend for two or more series, an empty message, and the same numbers in a visually hidden table.
+
 ## 0.11.9 — 4 November 2026
 
 - `CalendarAgenda groupBy="month"`: month headings capitalise only their first letter, so Hungarian reads "2027. február", not "2027. Február".

@@ -6025,6 +6025,97 @@ body {
   flex: none;
   font-weight: 600;
 }
+/* Bar chart: stacked counts over a few periods; the numbers are also in a hidden table. */
+.g-bar-chart {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  min-width: 0;
+}
+.g-bar-chart-title {
+  font-weight: 600;
+}
+.g-bar-chart-empty {
+  margin: 0;
+  color: var(--g-muted);
+}
+.g-bar-chart-bars {
+  display: flex;
+  align-items: stretch;
+  gap: 0.375rem;
+  height: 10rem;
+}
+.g-bar-chart-column {
+  display: grid;
+  flex: 1;
+  grid-template-rows: auto 1fr auto;
+  gap: 0.25rem;
+  min-width: 0;
+  text-align: center;
+}
+.g-bar-chart-track {
+  display: flex;
+  flex-direction: column-reverse;
+  border-block-end: 1px solid var(--g-line);
+}
+.g-bar-chart-part {
+  display: block;
+  border-radius: 0.2rem 0.2rem 0 0;
+  background: var(--g-primary);
+}
+.g-bar-chart-part + .g-bar-chart-part {
+  border-radius: 0.2rem 0.2rem 0 0;
+  border-block-end: 1px solid var(--g-surface);
+}
+.g-bar-chart-part[data-series='1'],
+.g-bar-chart-legend > li[data-series='1']::before {
+  background: color-mix(in srgb, var(--g-warning) 70%, var(--g-surface));
+}
+.g-bar-chart-part[data-series='2'],
+.g-bar-chart-legend > li[data-series='2']::before {
+  background: var(--g-success);
+}
+.g-bar-chart-part[data-series='3'],
+.g-bar-chart-legend > li[data-series='3']::before {
+  background: var(--g-muted);
+}
+.g-bar-chart-total,
+.g-bar-chart-label {
+  overflow: hidden;
+  font-size: var(--g-type-caption-size);
+  color: var(--g-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.g-bar-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--g-type-small-size);
+  color: var(--g-muted);
+}
+.g-bar-chart-legend > li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.g-bar-chart-legend > li::before {
+  content: '';
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 0.2rem;
+  background: var(--g-primary);
+}
+@media (forced-colors: active) {
+  .g-bar-chart-part,
+  .g-bar-chart-legend > li::before {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+}
 /* Agenda: upcoming events grouped by day. */
 .g-agenda {
   display: grid;
