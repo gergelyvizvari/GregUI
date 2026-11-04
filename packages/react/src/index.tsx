@@ -118,7 +118,14 @@ export {
   Tooltip,
   Popover,
 } from './overlays';
-export { PageHeader, NavItem, AppShell, SkipLink, useSidebarCollapsed } from './shell';
+export {
+  PageHeader,
+  NavItem,
+  AppShell,
+  SkipLink,
+  useSidebarCollapsed,
+  type PhoneNavItem,
+} from './shell';
 export {
   PreviewStage,
   PreviewComposition,

@@ -111,7 +111,17 @@ export function NavItem({
 }
 const railContext = { collapsed: true };
 const drawerContext = { collapsed: false };
+export interface PhoneNavItem {
+  id: string;
+  label: string;
+  icon: IconSource;
+  href: string;
+  /** The one main action (such as "Send a card"), raised in the middle of the bar. */
+  primary?: boolean;
+}
+
 export function AppShell({
+  phoneNav,
   brand,
   subtitle,
   nav,
@@ -132,6 +142,17 @@ export function AppShell({
   onSidebarCollapsedChange,
   banner,
 }: {
+  /**
+   * Phones only: a bar of up to five destinations fixed at the bottom of the screen, within
+   * thumb reach, instead of hiding them in the menu drawer. `value` marks the current one;
+   * `linkComponent` routes client-side, like `LinkButton component`.
+   */
+  phoneNav?: {
+    label: string;
+    items: readonly PhoneNavItem[];
+    value?: string;
+    linkComponent?: React.ElementType;
+  };
   /**
    * Page-level Banner shown across the workspace above the toolbar. A sticky banner stays at the
    * top and a sticky toolbar then sits below it.
@@ -195,6 +216,7 @@ export function AppShell({
   return (
     <div
       className="g-app-shell"
+      data-phone-nav={phoneNav && !toolbarOverflow ? 'only' : phoneNav ? true : undefined}
       data-appearance={appearance}
       data-tone={tone === 'brand' ? 'brand' : undefined}
     >
@@ -314,6 +336,27 @@ export function AppShell({
             toolbar
           )}
         </div>
+        {phoneNav && (
+          <nav className="g-phone-nav" aria-label={phoneNav.label}>
+            {phoneNav.items.slice(0, 5).map((item) => {
+              const Link = phoneNav.linkComponent ?? 'a';
+              return (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className="g-phone-nav-item"
+                  data-primary={item.primary || undefined}
+                  aria-current={item.id === phoneNav.value ? 'page' : undefined}
+                >
+                  <span className="g-phone-nav-icon" aria-hidden="true">
+                    {renderIcon(item.icon)}
+                  </span>
+                  <span className="g-phone-nav-label">{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        )}
         <main className="g-main" id={mainId} tabIndex={-1}>
           {viewKey ? (
             <div key={viewKey} className="g-page-content">

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.0 — 4 November 2026
+
+- `AppShell phoneNav`: a bottom tab bar on phones with up to five destinations and an optional raised main action, instead of hiding them in the menu drawer.
+
 ## 0.13.0 — 4 November 2026
 
 - New `VisualMultiChoiceGroup`: several pictures picked with a tap (checkboxes) in the gallery or masonry look, with optional controls under each chosen one.

@@ -7348,3 +7348,80 @@ button.g-postcard-stage:focus-visible {
     animation: none;
   }
 }
+
+/* Phone tab bar: the app's few destinations at the bottom, within thumb reach. */
+.g-phone-nav {
+  display: none;
+}
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-app-shell[data-phone-nav] .g-phone-nav {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: var(--g-z-sticky-actions);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom));
+    border-block-start: 1px solid var(--g-line);
+    background: var(--g-surface);
+  }
+  .g-app-shell[data-phone-nav] .g-main {
+    padding-block-end: calc(5rem + env(safe-area-inset-bottom));
+  }
+  /* Everything is in the bar, so the menu button goes (unless it also holds settings). */
+  .g-app-shell[data-phone-nav='only'] .g-mobile-nav > :first-child {
+    display: none;
+  }
+  .g-phone-nav-item {
+    display: grid;
+    flex: 1;
+    justify-items: center;
+    gap: 0.15rem;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.25rem 0;
+    color: var(--g-muted);
+    font-size: var(--g-type-caption-size);
+    text-decoration: none;
+  }
+  .g-phone-nav-item[aria-current='page'] {
+    color: var(--g-selection);
+    font-weight: 600;
+  }
+  .g-phone-nav-item:focus-visible {
+    outline: 2px solid var(--g-focus);
+    outline-offset: -2px;
+    border-radius: var(--g-control-radius);
+  }
+  .g-phone-nav-icon {
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  .g-phone-nav-label {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  /* The main action is a raised round button in the middle. */
+  .g-phone-nav-item[data-primary] .g-phone-nav-icon {
+    width: 3rem;
+    height: 3rem;
+    margin-block-start: -1.25rem;
+    border-radius: 50%;
+    background: var(--g-primary);
+    color: var(--g-onPrimary);
+    box-shadow: var(--g-card-shadow);
+  }
+  .g-phone-nav-item[data-primary] {
+    color: var(--g-text);
+  }
+}
+@media (forced-colors: active) {
+  .g-phone-nav-item[aria-current='page'] {
+    text-decoration: underline;
+  }
+}
