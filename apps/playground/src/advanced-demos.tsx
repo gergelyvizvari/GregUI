@@ -3,6 +3,7 @@ import { BannerDemo, ToastDemo } from './feedback-demo';
 import { BreadcrumbsDemo, MenuDemo, ContextMenuDemo, SideNavDemo } from './navigation-demo';
 import { CalendarAgendaDemo, CalendarMonthDemo, DatePickerDemo } from './calendar-demo';
 import { samplePhoto, PhotoCredit } from './sample-media';
+import { UploadListDemo } from './upload-demo';
 import { TypographyDemo, PageCompositionDemo } from './content-demo';
 import { useEffect, useState, type ReactNode } from 'react';
 import {
@@ -668,6 +669,13 @@ export function useAdvancedExamples(): CatalogEntry[] {
           onFiles={() => {}}
         />
       </Stack>,
+    ),
+    entry(
+      'Upload List',
+      'Forms',
+      'Per-file upload progress with cancel, retry and remove. Controlled: the app owns the transport and the list.',
+      '<UploadList label="Uploads" items={items} onCancel={cancel} onRetry={retry} onRemove={remove} />',
+      <UploadListDemo />,
     ),
     entry(
       'Action Menu',

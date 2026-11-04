@@ -136,6 +136,12 @@ export {
 } from './workflows';
 export * from './data';
 export * from './advanced-inputs';
+export {
+  UploadList,
+  type UploadItem,
+  type UploadListProps,
+  type UploadStatus,
+} from './upload-list';
 export * from './patterns';
 export { ImageRegion, type ImageRegionValue } from './image-region';
 export { FieldEditorItem, TagInput } from './field-editor';

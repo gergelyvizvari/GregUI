@@ -5,6 +5,9 @@
 - `PasswordlessSignIn`: the passwordless email-code journey in one component: email, code entry naming the address, resend with a countdown, optional expiry (`codeLifetime` or `expiresAt` from `onRequestCode`), wrong-code and failure retry, "Use a different email", and a success step.
 - `AuthForm`: `socialProviders` for any social or single sign-on provider (`{ id, name, label?, icon?, onSignIn }`) next to `onGoogleSignIn`/`onAppleSignIn`, and `socialModes` to show them on registration too. Provider callbacks may return `{ error }`. A provider success now shows `successMessage` when set, as the docs already described.
 - New English and Hungarian messages: `authOrRegisterEmail`, `authContinueWith`, `authCodeSentTo`, `authChangeEmail`, `authResendIn`, `authCodeValidFor`, `authCodeExpired`, `authSignedIn`.
+- `UploadList`: per-file upload rows with size, status, progress (or an indeterminate bar), the application's error text, and Cancel, Retry and Remove actions. Controlled by `items`; the application owns the transport. Duplicate names get distinct accessible names, focus moves sensibly after removal, and finished or failed files are announced once.
+- `FileUpload`: `showSelection={false}` hides the chosen-names line and clear button when an `UploadList` shows the files.
+- New English and Hungarian `upload*` messages.
 
 ## 0.9.0 — 3 November 2026
 
