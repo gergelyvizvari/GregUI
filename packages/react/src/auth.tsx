@@ -158,6 +158,16 @@ export interface AuthFormProps {
    * accounts are made for people (staff tools, invitations).
    */
   registration?: boolean;
+  /**
+   * The email code is the usual way in: the code screen's way back reads "Sign in with a
+   * password" instead of "Back to sign in". Pair with starting on `email-code`.
+   */
+  codeFirst?: boolean;
+  /**
+   * Shows "Keep me signed in" on the login screen. Defaults to true; set false when sessions
+   * always last, so the box would change nothing.
+   */
+  rememberChoice?: boolean;
 }
 /** Providers own authentication, session persistence, token validation and rate limits. */
 export function AuthForm(props: AuthFormProps) {
@@ -182,6 +192,8 @@ function AuthFormScreen({
   headingLevel = 2,
   emailCode = false,
   registration = true,
+  codeFirst = false,
+  rememberChoice = true,
 }: AuthFormProps) {
   const { messages: m } = useLocale();
   const id = useId();
@@ -374,7 +386,9 @@ function AuthFormScreen({
               />
             )}
             {verification && <VerificationCodeField name="code" length={codeLength} required />}
-            {mode === 'login' && <Checkbox name="remember" label={m.authRemember} />}
+            {mode === 'login' && rememberChoice && (
+              <Checkbox name="remember" label={m.authRemember} />
+            )}
             <Button
               type="submit"
               loading={pending && pendingAction === 'submit'}
@@ -411,7 +425,7 @@ function AuthFormScreen({
                   </>
                 ) : (
                   <Button variant="ghost" onClick={() => onNavigate('login')}>
-                    {m.authBackLogin}
+                    {codeFirst && mode === 'email-code' ? m.authUsePassword : m.authBackLogin}
                   </Button>
                 )}
               </div>

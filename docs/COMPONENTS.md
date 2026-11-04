@@ -68,7 +68,7 @@ Themes accept an optional `accent: 'expressive' | 'restrained'`. Omitted means e
 
 ## Authentication
 
-`AuthLayout` and six named forms provide ready-made authentication screens; `AuthForm` selects the flow dynamically. `PasswordField` and `VerificationCodeField` are independently reusable. See [authentication contracts and integration](AUTHENTICATION.md) for callback payloads, validation, async states, translations and provider responsibilities.
+`AuthLayout` and six named forms provide ready-made authentication screens; `AuthForm` selects the flow dynamically; `codeFirst` makes the emailed code the usual way in and `rememberChoice={false}` hides "Keep me signed in". `PasswordField` and `VerificationCodeField` are independently reusable. See [authentication contracts and integration](AUTHENTICATION.md) for callback payloads, validation, async states, translations and provider responsibilities.
 
 ## Editorial composition
 

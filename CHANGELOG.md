@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.15.0 — 4 November 2026
+
+- `AuthForm codeFirst`: for apps where the emailed code is the usual way in, the code screen links to "Sign in with a password" (new message `authUsePassword`).
+- `AuthForm rememberChoice={false}` hides "Keep me signed in" where sessions always last.
+
 ## 0.14.0 — 4 November 2026
 
 - `AppShell phoneNav`: a bottom tab bar on phones with up to five destinations and an optional raised main action, instead of hiding them in the menu drawer.
