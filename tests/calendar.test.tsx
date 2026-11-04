@@ -296,3 +296,49 @@ it('renders the agenda in another locale on the server', () => {
   expect(html).toContain('holnap');
   expect(html).toContain('2026. december 12.');
 });
+
+it('groups the agenda by month with a date tile and the relative day on each row', async () => {
+  const user = userEvent.setup();
+  const onSelect = vi.fn();
+  render(
+    <CalendarAgenda
+      label="Coming up"
+      events={occasions}
+      today="2026-12-12"
+      days={90}
+      groupBy="month"
+      onSelect={onSelect}
+      renderDetail={({ event }) => (event.id === 'lease' ? 'Reminder off' : null)}
+      renderAction={({ event }) => <button type="button">Send to {event.title}</button>}
+    />,
+  );
+  const region = screen.getByRole('region', { name: 'Coming up' });
+  const months = within(region).getAllByRole('heading', { level: 3 });
+  expect(months.map((m) => m.textContent)).toEqual(['December', 'February 2027']);
+  const december = within(region).getByRole('list', { name: 'December' });
+  const rows = within(december).getAllByRole('listitem');
+  expect(rows[0]).toHaveAttribute('data-today');
+  const anna = within(rows[0]!).getByRole('button', { name: /^Anna's birthday/ });
+  expect(anna).toHaveAccessibleName("Anna's birthday today Saturday, 12 December 2026");
+  expect(anna).not.toHaveTextContent('Every year');
+  expect(rows[0]!.querySelector('time')).toHaveAttribute('datetime', '2026-12-12');
+  expect(within(rows[0]!).getByRole('button', { name: /^Send to/ })).toBeInTheDocument();
+  await user.click(anna);
+  expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ date: '2026-12-12' }));
+});
+
+it('starts month headings with a capital letter only, as the locale writes them', () => {
+  const html = renderToString(
+    <LocaleProvider locale="hu-HU">
+      <CalendarAgenda
+        label="Közelgő"
+        events={occasions}
+        today="2026-12-12"
+        days={90}
+        groupBy="month"
+      />
+    </LocaleProvider>,
+  );
+  expect(html).toContain('>December<');
+  expect(html).toContain('>2027. február<');
+});

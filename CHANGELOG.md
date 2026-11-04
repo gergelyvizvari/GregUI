@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.11.9 — 4 November 2026
+
+- `CalendarAgenda groupBy="month"`: month headings capitalise only their first letter, so Hungarian reads "2027. február", not "2027. Február".
+
+## 0.11.8 — 4 November 2026
+
+- `CalendarAgenda groupBy="month"`: on phones the action moves under the entry's text, so titles keep the full row instead of wrapping beside the button.
+
+## 0.11.7 — 4 November 2026
+
+- `CalendarAgenda`: `groupBy="month"` is a compact planner list: a heading per month (with the year only outside the current one) and one row per entry in a card, with a date tile (day number and weekday; filled for today), the title, and a line with the relative day and `renderDetail`. The yearly label is left out, `tone="neutral"` entries are quieter and `renderAction` sits inside the row. Screen readers hear the title before the full date.
+
 ## 0.11.6 — 4 November 2026
 
 - `PostcardStage`: the card keeps a hairline edge and a soft cast shadow in every preset, so a white card stays visible on a white page.

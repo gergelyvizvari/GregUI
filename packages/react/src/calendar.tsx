@@ -122,6 +122,8 @@ export function useDateFormat() {
     const make = (options: Intl.DateTimeFormatOptions) =>
       new Intl.DateTimeFormat(locale, { timeZone: 'UTC', ...options });
     const month = make({ month: 'long', year: 'numeric' });
+    const monthName = make({ month: 'long' });
+    const weekdayOf = make({ weekday: 'short' });
     const full = make({ weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     const medium = make({ day: 'numeric', month: 'short', year: 'numeric' });
     const short = make({ weekday: 'short' });
@@ -129,6 +131,10 @@ export function useDateFormat() {
     const relative = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
     return {
       month: (value: CalendarMonthValue) => month.format(toUTC(`${value}-01`)),
+      /** "November", without the year. */
+      monthName: (value: CalendarMonthValue) => monthName.format(toUTC(`${value}-01`)),
+      /** Short weekday of a date, for example "Wed". */
+      weekdayOf: (date: CalendarDate) => weekdayOf.format(toUTC(date)),
       full: (date: CalendarDate) => full.format(toUTC(date)),
       medium: (date: CalendarDate) => medium.format(toUTC(date)),
       // 2024-01-01 was a Monday, so day index 0..6 maps to Sunday..Saturday from 2023-12-31.
