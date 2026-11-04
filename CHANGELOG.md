@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.6 — 4 November 2026
+
+- `NumberField`: on an empty field the increase and decrease buttons (and arrow keys) step from 0, so up gives 1 and down −1; before, both jumped to `min`. When 0 is out of range it starts at the nearest limit.
+
 ## 0.10.5 — 3 November 2026
 
 - `VisualChoiceGroup`: `layout="people"` shows one calm row per choice, avatar or icon beside the name and a short note; an option's `highlight` sets it apart with a festive edge and the note as a pill, `quiet` makes it a lighter dashed extra.
