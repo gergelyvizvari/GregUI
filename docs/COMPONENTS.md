@@ -508,7 +508,7 @@ const occasions = [
 - `RecurrenceField` is a controlled fieldset for when something happens: `value` is `{ frequency, start, interval?, unit?, leadDays? }` with `frequency` `once`, `yearly`, `monthly` or `custom` (every `interval` `day`/`week`/`month`/`year`s). Frequencies are chips (`frequencies` limits and orders them), the date is a `DatePicker` ("Date" for once, "First date" otherwise, with `min`, `max`, `leapDay`, `today`), custom adds Every and Unit (`units` limits them), and the lead time is a `NumberField` in days (`lead={false}` hides it; `leadLabel`, `leadHint`, `maxLeadDays` default 365). The group is described by the hint, a summary and the next date ("Every year on 12 March, 7 days before" and "Next: 12 March 2027 (from 5 March 2027)"); `summary={false}` hides them. `error` is announced on the group; `name` prefixes native names.
 - Helpers: `recurrenceDates(value, from, to, { leapDay?, limit? })` lists `{ date, leadDate, index }` within a range (skipping ahead rather than walking from the first date; at most 500 by default); `nextRecurrence(value, from?)` gives the first one on or after a date; `recurrenceSummary(value, { locale?, messages? })` gives the sentence without rendering. Monthly dates on the 29th–31st fall on the last day of shorter months (the summary says "on the last day" for the 31st); yearly 29 February follows `leapDay`.
 - The application stores the value and schedules the work; dates are calendar dates without time zones.
-- New locale messages: `recur*` (35 keys). Apps providing a complete `Messages` object must add them.
+- New locale messages: `recur*` (33 keys). Apps providing a complete `Messages` object must add them.
 
 ## People, keys and hidden text
 

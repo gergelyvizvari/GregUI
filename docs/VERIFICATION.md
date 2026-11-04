@@ -14,7 +14,7 @@ Added `UploadList` (`upload-list.tsx`) and `FileUpload showSelection`. Twelve ne
 
 ## RecurrenceField (KH-16) — 4 November 2026
 
-Added `RecurrenceField` and the `recurrenceDates`, `nextRecurrence` and `recurrenceSummary` helpers (`recurrence.tsx`), composed from `SegmentedControl`, `DatePicker`, `NumberField` and `Select`. There are 35 new English/Hungarian `recur*` messages. New CSS uses theme variables only. The workbench catalog gains a **Recurrence Field** entry.
+Added `RecurrenceField` and the `recurrenceDates`, `nextRecurrence` and `recurrenceSummary` helpers (`recurrence.tsx`), composed from `SegmentedControl`, `DatePicker`, `NumberField` and `Select`. There are 33 new English/Hungarian `recur*` messages. New CSS uses theme variables only. The workbench catalog gains a **Recurrence Field** entry.
 
 `npm run check` and `npm run format:check` passed. Nine new unit checks (`tests/recurrence.test.tsx`) cover once inside and outside a range, yearly with 29 February under both leap-day rules, monthly from the 31st, custom days/weeks/months/years with skip-ahead, lead and next dates, and English and Hungarian summaries. For the field they cover switching to custom and editing the interval and unit, the group description, lead time via the stepper, `lead={false}` and `frequencies`, the application error, and Hungarian labels. A new Playwright check in `calendar.spec.ts` (Chromium and mobile) switches to every 3 months, runs axe in light and dark, and checks narrow reflow; the existing calendar checks still pass. Screenshots were reviewed. Not run: Firefox, WebKit, RTL and screen readers. Hungarian strings were written by an AI assistant without native-speaker review.
 
