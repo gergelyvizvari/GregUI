@@ -84,6 +84,7 @@ export {
 } from './feedback';
 export { Banner, type BannerProps } from './banner';
 export { QuantityStepper, type QuantityStepperProps } from './quantity-stepper';
+export { MediaRow } from './media-row';
 export {
   VisualMultiChoiceGroup,
   type VisualMultiChoiceGroupProps,

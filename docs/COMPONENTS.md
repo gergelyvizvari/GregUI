@@ -46,6 +46,7 @@ All public exports go through `packages/react/src/index.tsx`, which re-exports t
 - `Badge` always includes text; status meaning is not color-only. Optional `variant="stamp"` draws a perforated postage-stamp edge with an inner frame; `variant="label"` draws a pointed luggage-label tag with a punched eyelet that points to the inline start and mirrors under RTL. Both keep `tone` and stay plain text for assistive technology. The default is `variant="standard"`.
 - `Table` includes caption, column headers and first-column row headers inside a named scroll region. It deliberately has no sorting, pagination or virtualization.
 - `BarChart` shows counts over a few periods (such as cards per day) as stacked bars: `label` (visible title and accessible name), `series` (`{ label }`, up to four colours: primary, warm accent, success, muted; a legend shows with two or more), `bars` (`{ label, values }`, one value per series, stacked from the bottom), optional `format(value)` for totals and table cells, and `emptyMessage` shown instead of the bars when every value is zero. The bars are decorative; a visually hidden table carries the numbers. It is not a general charting library: no axes, tooltips or negative values.
+- `MediaRow` is one item of a list led by a small picture (a card, a photo, a cover): `media` (decorative), the text as children, and optional `actions` at the end; on phones the actions move under the text. Stack rows in a `Stack`; the text must say what the item is.
 - `DescriptionList`, `EmptyState`, `CodeBlock`, `Divider` provide content structure without application styling. `EmptyState` titles render as `h3`; set `headingLevel` (2–6) to fit the page outline. `CodeBlock wrap` preserves whitespace while wrapping long lines and unbroken strings to the available width; the default retains horizontal scrolling.
 
 ## Theme editing
@@ -68,7 +69,7 @@ Themes accept an optional `accent: 'expressive' | 'restrained'`. Omitted means e
 
 ## Authentication
 
-`AuthLayout` and six named forms provide ready-made authentication screens; `AuthForm` selects the flow dynamically; `codeFirst` makes the emailed code the usual way in and `rememberChoice={false}` hides "Keep me signed in". `PasswordField` and `VerificationCodeField` are independently reusable. See [authentication contracts and integration](AUTHENTICATION.md) for callback payloads, validation, async states, translations and provider responsibilities.
+`AuthLayout` and six named forms provide ready-made authentication screens; `Dialog`, `Drawer` and `FullscreenDialog` may leave out `trigger` when they open from elsewhere (a menu item) with controlled `open`. `AuthForm` selects the flow dynamically; `codeFirst` makes the emailed code the usual way in and `rememberChoice={false}` hides "Keep me signed in". `PasswordField` and `VerificationCodeField` are independently reusable. See [authentication contracts and integration](AUTHENTICATION.md) for callback payloads, validation, async states, translations and provider responsibilities.
 
 ## Editorial composition
 

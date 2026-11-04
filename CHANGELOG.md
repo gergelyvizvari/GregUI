@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.16.0 — 4 November 2026
+
+- New `MediaRow`: a list item led by a small picture, with text and actions (under the text on phones).
+- `Dialog`, `Drawer`, `FullscreenDialog`: `trigger` is optional, for overlays opened from a menu item with controlled `open`.
+
 ## 0.15.0 — 4 November 2026
 
 - `AuthForm codeFirst`: for apps where the emailed code is the usual way in, the code screen links to "Sign in with a password" (new message `authUsePassword`).

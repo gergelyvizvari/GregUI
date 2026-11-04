@@ -14,7 +14,11 @@ import { PortalFrame } from './theme';
 import { useAsyncAction } from './use-async-action';
 interface OverlayProps {
   size?: 'medium' | 'large';
-  trigger: ReactNode;
+  /**
+   * The control that opens it. Leave it out for an overlay opened from elsewhere (a menu item),
+   * with controlled `open`; focus then returns to where it was.
+   */
+  trigger?: ReactNode;
   title: string;
   description: string;
   children: ReactNode;
@@ -36,7 +40,9 @@ function Overlay({
   const { messages } = useLocale();
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
-      <DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger>
+      {trigger !== undefined && (
+        <DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger>
+      )}
       <DialogPrimitive.Portal>
         <PortalFrame>
           <DialogPrimitive.Overlay className="g-backdrop" />

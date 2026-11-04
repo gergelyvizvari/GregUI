@@ -7425,3 +7425,43 @@ button.g-postcard-stage:focus-visible {
     text-decoration: underline;
   }
 }
+
+/* A list item led by a small picture: picture, text, actions; actions under the text on phones. */
+.g-media-row {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-card-radius);
+  background: var(--g-surface);
+}
+.g-media-row-media > * {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: calc(var(--g-radius) / 2);
+  box-shadow: var(--g-card-shadow);
+}
+.g-media-row-body {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.g-media-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-media-row {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+  }
+  .g-media-row-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+}
