@@ -707,3 +707,38 @@ test('refreshed palettes stay readable on Paper in both modes', async ({ page },
     }
   }
 });
+
+test('upload list shows progress, failure, retry and focus after removal', async ({
+  page,
+}, testInfo) => {
+  await page.clock.install();
+  await page.goto('/');
+  await navigate(page, 'Components');
+  await page.getByLabel('Find a component').fill('Upload List');
+  await expect(page.getByRole('heading', { name: 'Upload List', exact: true })).toBeVisible();
+  await page.getByLabel('Demo photos').setInputFiles([
+    { name: 'beach.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('a'.repeat(3000)) },
+    { name: 'fail.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('b') },
+  ]);
+  const list = page.getByRole('group', { name: 'Demo uploads' });
+  await page.clock.runFor(1300);
+  await expect(list.getByRole('progressbar', { name: 'beach.jpg' })).toBeVisible();
+  const results = await new AxeBuilder({ page })
+    .include('.g-upload-list')
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+    .analyze();
+  expect(results.violations).toEqual([]);
+  await page.clock.runFor(4000);
+  await expect(list.getByText('1 of 2 uploaded')).toBeVisible();
+  await expect(list.getByText('The demo server rejected this file.')).toBeVisible();
+  await expect(list.getByRole('status')).toHaveText('beach.jpg uploaded.');
+  await page.getByRole('button', { name: 'Retry upload: fail.jpg' }).click();
+  await page.clock.runFor(900);
+  await expect(list.getByRole('progressbar', { name: 'fail.jpg' })).toBeVisible();
+  await page.getByRole('button', { name: 'Cancel upload: fail.jpg' }).click();
+  await page.getByRole('button', { name: 'Remove file: beach.jpg' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('button', { name: 'Retry upload: fail.jpg' })).toBeFocused();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await list.screenshot({ path: `test-results/upload-list-${testInfo.project.name}.png` });
+});
