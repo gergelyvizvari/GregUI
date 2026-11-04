@@ -135,6 +135,14 @@ export {
   type WizardStep,
 } from './workflows';
 export * from './data';
+export {
+  KanbanBoard,
+  moveKanbanCard,
+  type KanbanBoardProps,
+  type KanbanCard,
+  type KanbanColumn,
+  type KanbanMove,
+} from './kanban';
 export * from './advanced-inputs';
 export {
   UploadList,
