@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.4 — 4 November 2026
+
+- `CalendarMonth`: `size="large"` is a planner month with tall days that list their events as small coloured labels (dots on phones); `CalendarEvent tone` (`primary`, `accent`, `neutral`) colours them.
+- `AppShell`: `brandHref` (with `brandLinkComponent` for a router link) makes the brand a link home in the masthead and the phone header; the phone brand mark no longer shrinks.
+- `AppShell appearance="editorial"`: the one-row masthead now starts above 960px (was 1200px).
+
 ## 0.11.3 — 4 November 2026
 
 - `Container`: `align="start"` keeps a narrow (form or reading) container against the leading edge, under a left-aligned page title.

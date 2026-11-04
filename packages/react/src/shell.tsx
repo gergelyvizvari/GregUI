@@ -124,6 +124,8 @@ export function AppShell({
   tone = 'default',
   stickyToolbar = false,
   brandMark,
+  brandHref,
+  brandLinkComponent: BrandLink = 'a',
   sidebarCollapsible = false,
   sidebarCollapsed,
   defaultSidebarCollapsed = false,
@@ -148,6 +150,10 @@ export function AppShell({
   tone?: 'default' | 'brand';
   stickyToolbar?: boolean;
   brandMark?: ReactNode;
+  /** Makes the brand (masthead and phone header) a link home, for example `/home`. */
+  brandHref?: string;
+  /** Router link component for `brandHref`, like `LinkButton component`; defaults to `a`. */
+  brandLinkComponent?: React.ElementType;
   viewKey?: string;
   brand: string;
   subtitle?: string;
@@ -195,13 +201,29 @@ export function AppShell({
       <SkipLink href={`#${mainId}`} />
       <aside className="g-sidebar" data-collapsed={collapsed || undefined}>
         <div className="g-brand">
-          {brandMark ?? (
-            <span className="g-brand-mark">
-              g<span>↗</span>
-            </span>
-          )}
+          {(() => {
+            const mark = brandMark ?? (
+              <span className="g-brand-mark">
+                g<span>↗</span>
+              </span>
+            );
+            // The mark repeats the brand link for pointers; keyboards use the name's link.
+            return brandHref ? (
+              <BrandLink href={brandHref} className="g-brand-link" tabIndex={-1} aria-hidden="true">
+                {mark}
+              </BrandLink>
+            ) : (
+              mark
+            );
+          })()}
           <Stack gap={0}>
-            <Text weight="strong">{brand}</Text>
+            {brandHref ? (
+              <BrandLink href={brandHref} className="g-brand-link">
+                <Text weight="strong">{brand}</Text>
+              </BrandLink>
+            ) : (
+              <Text weight="strong">{brand}</Text>
+            )}
             {subtitle && (
               <Text size="small" tone="muted">
                 {subtitle}
@@ -263,14 +285,25 @@ export function AppShell({
               {toolbarOverflow && <div className="g-drawer-settings">{toolbarOverflow}</div>}
             </Drawer>
             {/* On phones the sidebar is hidden, so the brand rides next to the menu button. */}
-            <span className="g-mobile-brand">
-              {brandMark ?? (
-                <span className="g-brand-mark" aria-hidden="true">
-                  g<span>↗</span>
-                </span>
-              )}
-              <Text weight="strong">{brand}</Text>
-            </span>
+            {(() => {
+              const content = (
+                <>
+                  {brandMark ?? (
+                    <span className="g-brand-mark" aria-hidden="true">
+                      g<span>↗</span>
+                    </span>
+                  )}
+                  <Text weight="strong">{brand}</Text>
+                </>
+              );
+              return brandHref ? (
+                <BrandLink href={brandHref} className="g-mobile-brand g-brand-link">
+                  {content}
+                </BrandLink>
+              ) : (
+                <span className="g-mobile-brand">{content}</span>
+              );
+            })()}
           </div>
           {toolbarOverflow ? (
             <div className="g-toolbar-actions">

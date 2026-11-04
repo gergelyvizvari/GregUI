@@ -65,6 +65,8 @@ export interface CalendarEvent {
   repeat?: 'yearly';
   /** Last date a repeating event can occur, inclusive. */
   until?: CalendarDate;
+  /** Colour of the event in a large month (`CalendarMonth size="large"`). Defaults to `primary`. */
+  tone?: 'primary' | 'accent' | 'neutral';
 }
 export interface CalendarOccurrence<E extends CalendarEvent = CalendarEvent> {
   event: E;
@@ -162,6 +164,11 @@ export interface CalendarMonthProps {
   today?: CalendarDate;
   /** Move focus into the grid on mount (used by DatePicker). */
   autoFocus?: boolean;
+  /**
+   * `large` is a planner month: tall days listing their events as small coloured labels (dots
+   * on phones), for pages where the calendar is the main view rather than a date picker.
+   */
+  size?: 'default' | 'large';
 }
 
 /** A month grid following the WAI-ARIA date grid pattern. */
@@ -180,6 +187,7 @@ export function CalendarMonth({
   weekStartsOn = 1,
   today: todayProp,
   autoFocus = false,
+  size = 'default',
 }: CalendarMonthProps) {
   const { messages } = useLocale();
   const format = useDateFormat();
@@ -199,7 +207,7 @@ export function CalendarMonth({
     return isDateUnavailable?.(date) || undefined;
   };
   const byDate = useMemo(() => {
-    const map = new Map<CalendarDate, string[]>();
+    const map = new Map<CalendarDate, CalendarEvent[]>();
     if (!events?.length) return map;
     for (const { event, date } of occurrencesBetween(
       events,
@@ -209,7 +217,7 @@ export function CalendarMonth({
         leapDay,
       },
     ))
-      map.set(date, [...(map.get(date) ?? []), event.title]);
+      map.set(date, [...(map.get(date) ?? []), event]);
     return map;
   }, [events, first, leapDay]);
   const start = addDays(first, -((weekday(first) - weekStartsOn + 7) % 7));
@@ -255,7 +263,7 @@ export function CalendarMonth({
   const order = Array.from({ length: 7 }, (_, i) => (i + weekStartsOn) % 7);
   const activeReason = reason(active);
   return (
-    <div className="g-calendar">
+    <div className="g-calendar" data-size={size === 'large' ? 'large' : undefined}>
       <div className="g-calendar-header">
         <IconButton
           variant="ghost"
@@ -301,7 +309,8 @@ export function CalendarMonth({
                 const outOfRange = (!!min && date < min) || (!!max && date > max);
                 const selected = value === date;
                 const extra = renderDay?.(date);
-                const titles = byDate.get(date);
+                const dayEvents = byDate.get(date);
+                const titles = dayEvents?.map((event) => event.title);
                 const described = [
                   blocked && `${id}-reason-${date}`,
                   titles && `${id}-events-${date}`,
@@ -330,13 +339,30 @@ export function CalendarMonth({
                         {Number(date.slice(8))}
                       </span>
                       {extra && <span className="g-calendar-extra">{extra}</span>}
-                      {titles && (
-                        <span className="g-calendar-extra g-calendar-events" aria-hidden="true">
-                          <span className="g-calendar-event-title">{titles[0]}</span>
-                          {titles.length > 1 && (
-                            <span className="g-calendar-more">+{titles.length - 1}</span>
+                      {dayEvents && size === 'large' ? (
+                        <span className="g-calendar-chips" aria-hidden="true">
+                          {dayEvents.slice(0, 3).map((event) => (
+                            <span
+                              key={event.id}
+                              className="g-calendar-chip"
+                              data-tone={event.tone ?? 'primary'}
+                            >
+                              {event.title}
+                            </span>
+                          ))}
+                          {dayEvents.length > 3 && (
+                            <span className="g-calendar-more">+{dayEvents.length - 3}</span>
                           )}
                         </span>
+                      ) : (
+                        titles && (
+                          <span className="g-calendar-extra g-calendar-events" aria-hidden="true">
+                            <span className="g-calendar-event-title">{titles[0]}</span>
+                            {titles.length > 1 && (
+                              <span className="g-calendar-more">+{titles.length - 1}</span>
+                            )}
+                          </span>
+                        )
                       )}
                       {titles && (
                         <span id={`${id}-events-${date}`} className="g-sr-only">

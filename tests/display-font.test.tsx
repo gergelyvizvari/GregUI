@@ -6,6 +6,7 @@ import {
   AppShell,
   Button,
   CalendarAgenda,
+  CalendarMonth,
   Heading,
   PageHeader,
   ThemeProvider,
@@ -110,4 +111,40 @@ it('puts an agenda action beside the entry, not inside its button', () => {
   const action = screen.getByRole('button', { name: 'Send a card' });
   expect(action.closest('.g-agenda-event')).toBeNull();
   expect(screen.getByRole('button', { name: /Christmas/ })).toBeInTheDocument();
+});
+
+it('lists events inside the days of a large month, with their tone', () => {
+  const { container } = render(
+    <ThemeProvider theme={createTheme()}>
+      <CalendarMonth
+        label="Occasions"
+        size="large"
+        month="2026-11"
+        onMonthChange={() => undefined}
+        today="2026-11-04"
+        events={[
+          { id: 'anna', title: "Anna's birthday", date: '1990-11-12', repeat: 'yearly' },
+          { id: 'x', title: 'Holiday', date: '2026-11-12', tone: 'neutral' },
+        ]}
+      />
+    </ThemeProvider>,
+  );
+  const chips = [...container.querySelectorAll('.g-calendar-chip')];
+  expect(chips.map((chip) => chip.textContent)).toEqual(["Anna's birthday", 'Holiday']);
+  expect(chips[1]).toHaveAttribute('data-tone', 'neutral');
+});
+
+it('makes the brand a link home when asked', () => {
+  render(
+    <ThemeProvider theme={createTheme()}>
+      <AppShell brand="App" nav={null} brandHref="/home">
+        <p>Content</p>
+      </AppShell>
+    </ThemeProvider>,
+  );
+  expect(
+    screen
+      .getAllByRole('link', { name: 'App' })
+      .every((link) => link.getAttribute('href') === '/home'),
+  ).toBe(true);
 });
