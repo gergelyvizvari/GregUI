@@ -83,6 +83,12 @@ export {
   ErrorSummary,
 } from './feedback';
 export { Banner, type BannerProps } from './banner';
+export { QuantityStepper, type QuantityStepperProps } from './quantity-stepper';
+export {
+  VisualMultiChoiceGroup,
+  type VisualMultiChoiceGroupProps,
+  type VisualMultiChoiceOption,
+} from './visual-multi-choice-group';
 export { BarChart, type BarChartProps, type BarChartBar, type BarChartSeries } from './bar-chart';
 export { DescriptionList, Table } from './tables';
 export { type BreadcrumbItem, type BreadcrumbsProps, Breadcrumbs, Tabs } from './navigation';

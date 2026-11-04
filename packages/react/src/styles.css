@@ -5003,6 +5003,11 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 8.5rem), 1fr));
   gap: 0.75rem;
 }
+/* Exactly four tiles sit two by two, never three and one. */
+.g-visual-choice-group[data-layout='tiles']
+  .g-visual-choice-options:has(> :nth-child(4):last-child) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 .g-visual-choice-group[data-layout='tiles'] .g-visual-choice {
   align-items: center;
   gap: 0.6rem;
@@ -5359,6 +5364,67 @@ body {
   > strong {
   color: var(--g-text);
   font-weight: 650;
+}
+/* Several picked at once: each choice can show controls (such as a count) beneath it. */
+.g-visual-choice-item {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+  min-width: 0;
+}
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice-item {
+  margin-block-end: 1.5rem;
+  break-inside: avoid;
+}
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice-item > .g-visual-choice {
+  margin-block-end: 0;
+}
+/* A compact count: round minus and plus around the number, in one pill. */
+.g-quantity-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  border: 1px solid var(--g-line);
+  border-radius: 999px;
+  background: var(--g-surface);
+}
+.g-quantity-stepper-button {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--g-tint);
+  color: var(--g-text);
+  cursor: pointer;
+  transition: background-color var(--g-duration-fast) var(--g-ease);
+}
+.g-quantity-stepper-button:hover:not(:disabled) {
+  background: var(--g-selection);
+  color: var(--g-onSelection);
+}
+.g-quantity-stepper-button:focus-visible {
+  outline: 2px solid var(--g-focus);
+  outline-offset: 2px;
+}
+.g-quantity-stepper-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.g-quantity-stepper-value {
+  min-width: 1.75rem;
+  font-weight: 650;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+@media (pointer: coarse) {
+  .g-quantity-stepper-button {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
 }
 /* Masonry: every preview at the column's full width and its own height, in balanced columns. */
 .g-visual-choice-group[data-layout='masonry'] .g-visual-choice-options {

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.13.0 — 4 November 2026
+
+- New `VisualMultiChoiceGroup`: several pictures picked with a tap (checkboxes) in the gallery or masonry look, with optional controls under each chosen one.
+- New `QuantityStepper`: a compact "− 2 +" count in one pill, for small whole numbers such as how many of a card to order.
+
+## 0.12.1 — 4 November 2026
+
+- `VisualChoiceGroup layout="tiles"`: exactly four tiles sit two by two instead of three and one.
+
 ## 0.12.0 — 4 November 2026
 
 - New `BarChart`: a small stacked bar chart for counts over a few periods (cards per day), with a legend for two or more series, an empty message, and the same numbers in a visually hidden table.
