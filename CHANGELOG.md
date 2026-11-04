@@ -13,6 +13,10 @@
 - New English and Hungarian `recur*` messages.
 - `KanbanBoard`: columns of cards with counts and work-in-progress limits. Cards move with the keyboard (Space to pick up, arrows, Space to drop, Escape to cancel, announced at each step), a per-card move menu, or native drag and drop; `canMove` keeps cards out of columns. Controlled through `onMove`; `moveKanbanCard` applies a move to an array.
 - New English and Hungarian `kanban*` messages.
+- `ImportColumnMapping`: match file columns to fields with example values, duplicate and missing-field feedback.
+- `ImportPreview`: the mapped rows before import, with ready/problem/skipped counts, a problem filter, per-cell messages, inline fixes, per-row and bulk skipping, and paging.
+- `suggestImportMapping`, `applyImportMapping` and `missingImportFields` helpers. Parsing and validation stay in the application.
+- New English and Hungarian `import*` messages.
 
 ## 0.9.0 — 3 November 2026
 

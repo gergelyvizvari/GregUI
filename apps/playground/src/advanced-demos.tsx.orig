@@ -9,6 +9,7 @@ import {
 } from './calendar-demo';
 import { samplePhoto, PhotoCredit } from './sample-media';
 import { UploadListDemo } from './upload-demo';
+import { KanbanDemo } from './kanban-demo';
 import { TypographyDemo, PageCompositionDemo } from './content-demo';
 import { useEffect, useState, type ReactNode } from 'react';
 import {
@@ -656,6 +657,13 @@ export function useAdvancedExamples(): CatalogEntry[] {
       'Native localized date controls and range feedback. Apps supply min/max dates and validate before saving.',
       '<DateRangePicker label="Reporting period" {...range} onChange={setRange} />',
       <DateRangePicker label="Reporting period" {...range} onChange={setRange} />,
+    ),
+    entry(
+      'Kanban Board',
+      'Data display',
+      'Columns of cards with counts and limits. Move cards with the keyboard (Space, arrows, Space), a move menu or drag and drop.',
+      '<KanbanBoard label="Print pipeline" columns={columns} cards={cards} onMove={(move) => setCards(moveKanbanCard(cards, move))} />',
+      <KanbanDemo />,
     ),
     entry(
       'File Upload',

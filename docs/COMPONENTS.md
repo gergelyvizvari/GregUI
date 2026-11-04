@@ -520,6 +520,15 @@ const occasions = [
 - The board scrolls sideways inside itself when its columns (at least 16rem each) do not fit. The application owns persistence, permissions and any server reordering.
 - New locale messages: `kanban*` (14 keys). Apps providing a complete `Messages` object must add them.
 
+## Data import
+
+Two controlled components for importing CSV or Excel data the application has already parsed. Parsing files, validation rules and the import itself stay in the application.
+
+- `ImportColumnMapping` is a table of the file's `columns` (header names, in file order), each with a select of the application's `fields` (`{ id, label, required?, aliases? }`) or "Do not import". `value`/`onChange` is an `ImportMapping` (column → field id or `null`). Optional `samples` (column → values) shows up to three example values per column. A field chosen for a second column is marked invalid on that column with "Also chosen for {column}"; required fields with no column are listed in a warning ("Choose a column for: Name"). Required fields show `*` in the options.
+- Helpers: `suggestImportMapping(columns, fields)` matches headers to field ids, labels and `aliases`, ignoring case, accents, spaces and punctuation, using each field once; `applyImportMapping(rows, columns, mapping)` turns parsed rows into objects keyed by field id; `missingImportFields(fields, mapping)` lists required fields still unmapped (block the next step on it).
+- `ImportPreview` shows `rows` (`{ id, line?, values, issues?, skipped? }`, where `issues` are `{ field, message }` from your validation and `line` is the row number in the file) under the mapped `fields`. A summary counts ready, problem and skipped rows and describes the table. "All rows" / "Rows with problems" filters the table; "Skip all rows with problems" calls `onSkipChange(ids, true)`, and each row has a "Skip row {n}" checkbox. Problem cells are tinted with the message under the value; with `onValueChange(id, field, value)` they become inputs (named "{field}, row {n}", described by the message) that report on blur or Enter, so revalidate and pass new `issues` back. Skipped rows are struck through and stop showing problems. `pageSize` (default 50) pages long files with `Pagination`.
+- New locale messages: `import*` (17 keys). Apps providing a complete `Messages` object must add them.
+
 ## People, keys and hidden text
 
 - `Avatar` shows a person as `src` or, while the image is missing or fails, initials from the first and last words of `name` (so `Vizvári Gergely` → VG), upper-cased in the provider locale. `size` is small/medium/large. `status` (`online`, `away`, `busy`, `offline`) draws a presence marker with its own shape — filled, ring with a dot, bar, hollow ring — and appends the localized status to the accessible name (`Alex Morgan, away`). Use `decorative` when the name is already shown beside the avatar. The application owns images, presence and any link around the avatar.

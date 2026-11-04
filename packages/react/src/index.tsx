@@ -136,6 +136,19 @@ export {
 } from './workflows';
 export * from './data';
 export {
+  ImportColumnMapping,
+  ImportPreview,
+  applyImportMapping,
+  missingImportFields,
+  suggestImportMapping,
+  type ImportColumnMappingProps,
+  type ImportField,
+  type ImportMapping,
+  type ImportPreviewProps,
+  type ImportPreviewRow,
+  type ImportRowIssue,
+} from './data-import';
+export {
   KanbanBoard,
   moveKanbanCard,
   type KanbanBoardProps,
