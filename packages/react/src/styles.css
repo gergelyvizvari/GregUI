@@ -3427,6 +3427,45 @@ body {
 .g-media-copy {
   padding: 1.5rem;
 }
+/* Editorial masthead on the primary colour, like a website header on its hero. */
+.g-app-shell[data-tone='brand'] {
+  --g-masthead: var(--g-primary);
+  --g-masthead-ink: var(--g-onPrimary);
+}
+.g-theme[data-mode='dark'] .g-app-shell[data-tone='brand'] {
+  --g-masthead: color-mix(in srgb, var(--g-primary) 24%, var(--g-background));
+  --g-masthead-ink: var(--g-text);
+}
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] > .g-sidebar,
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] .g-toolbar {
+  background: var(--g-masthead);
+  color: var(--g-masthead-ink);
+  border-bottom-color: transparent;
+}
+/* The masthead and toolbar meet at a fractional pixel; overlap them so no seam shows. */
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] > .g-sidebar {
+  box-shadow: 2px 0 0 var(--g-masthead);
+}
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] > .g-sidebar .g-text,
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] .g-toolbar .g-text,
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] > .g-sidebar .g-nav-item,
+.g-app-shell[data-appearance='editorial'][data-tone='brand']
+  .g-toolbar
+  .g-button[data-variant='ghost'] {
+  color: inherit;
+}
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] > .g-sidebar .g-nav-item:hover,
+.g-app-shell[data-appearance='editorial'][data-tone='brand']
+  .g-toolbar
+  .g-button[data-variant='ghost']:hover {
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+.g-app-shell[data-appearance='editorial'][data-tone='brand']
+  > .g-sidebar
+  .g-nav-item[aria-current='page'] {
+  background: var(--g-surface);
+  color: var(--g-text);
+}
 /*
  * Editorial masthead on wider screens: brand, navigation and the toolbar share one row, like a
  * website header; navigation lists run sideways.

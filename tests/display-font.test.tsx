@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import { createTheme } from '@gregui/tokens';
-import { Button, Heading, PageHeader, ThemeProvider } from '@gregui/react';
+import { AppShell, Button, Heading, PageHeader, ThemeProvider } from '@gregui/react';
 
 const frame = (element: HTMLElement) => element.closest<HTMLElement>('.g-theme')!;
 
@@ -52,4 +52,17 @@ it('marks a brand page header so it sits on the primary colour block', () => {
   expect(screen.getByRole('heading', { name: 'Plain' }).closest('header')).not.toHaveAttribute(
     'data-tone',
   );
+});
+
+it('marks a brand masthead on the editorial shell', () => {
+  const { container } = render(
+    <ThemeProvider theme={createTheme()}>
+      <AppShell brand="App" nav={null} appearance="editorial" tone="brand">
+        <p>Content</p>
+      </AppShell>
+    </ThemeProvider>,
+  );
+  const shell = container.querySelector('.g-app-shell')!;
+  expect(shell).toHaveAttribute('data-appearance', 'editorial');
+  expect(shell).toHaveAttribute('data-tone', 'brand');
 });

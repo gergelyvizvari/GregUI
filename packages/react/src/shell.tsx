@@ -120,6 +120,7 @@ export function AppShell({
   children,
   viewKey,
   appearance = 'standard',
+  tone = 'default',
   stickyToolbar = false,
   brandMark,
   sidebarCollapsible = false,
@@ -139,6 +140,11 @@ export function AppShell({
   defaultSidebarCollapsed?: boolean;
   onSidebarCollapsedChange?: (collapsed: boolean) => void;
   appearance?: 'standard' | 'editorial' | 'dashboard';
+  /**
+   * With `appearance="editorial"`, `brand` sets the masthead (brand, navigation and toolbar) on
+   * the primary colour, like a website header on its hero (a deep tint in dark mode).
+   */
+  tone?: 'default' | 'brand';
   stickyToolbar?: boolean;
   brandMark?: ReactNode;
   viewKey?: string;
@@ -175,7 +181,11 @@ export function AppShell({
     return () => observer.disconnect();
   }, [hasBanner]);
   return (
-    <div className="g-app-shell" data-appearance={appearance}>
+    <div
+      className="g-app-shell"
+      data-appearance={appearance}
+      data-tone={tone === 'brand' ? 'brand' : undefined}
+    >
       <SkipLink href={`#${mainId}`} />
       <aside className="g-sidebar" data-collapsed={collapsed || undefined}>
         <div className="g-brand">

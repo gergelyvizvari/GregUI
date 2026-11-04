@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.1 — 4 November 2026
+
+- `AppShell`: `tone="brand"` with `appearance="editorial"` sets the masthead (brand, navigation and toolbar) on the primary colour, like a website header on its hero; a deep tint in dark mode. The current page stays on the page surface.
+
 ## 0.11.0 — 4 November 2026
 
 - `ThemeProvider`: `displayFont` (`{ family, weight? }`) sets the app's own display face for headings, inherited by nested providers and portals. The app loads the font; theme JSON is unchanged.
