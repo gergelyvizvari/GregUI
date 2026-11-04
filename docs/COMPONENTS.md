@@ -67,7 +67,7 @@ Themes accept an optional `accent: 'expressive' | 'restrained'`. Omitted means e
 
 ## Authentication
 
-`AuthLayout` and six named forms provide ready-made authentication screens; `AuthForm` selects the flow dynamically. `PasswordField` and `VerificationCodeField` are independently reusable. See [authentication contracts and integration](AUTHENTICATION.md) for callback payloads, validation, async states, translations and provider responsibilities.
+`AuthLayout` and six named forms provide ready-made authentication screens; `AuthForm` selects the flow dynamically and takes any number of social or SSO providers through `socialProviders`. `PasswordlessSignIn` runs the whole email-code journey (request, entry, resend countdown, expiry, error/retry, success). `PasswordField` and `VerificationCodeField` are independently reusable. See [authentication contracts and integration](AUTHENTICATION.md) for callback payloads, validation, async states, translations and provider responsibilities.
 
 ## Editorial composition
 
@@ -277,7 +277,7 @@ Use Heading `level` for document structure and `size` for appearance: an h6 may 
 
 Container `size="reading"` caps the complete container at 72ch, including its existing insets; `inset={false}` is useful in already padded surfaces. PageHeader `breadcrumbs` renders above the eyebrow/title and `meta` below the description. Applications supply meaningful breadcrumb labels, metadata, translated copy and action behaviour. `size="compact"` opts into a smaller title/spacing; omitted props retain the existing layout.
 
-The main **Typography & pages** navigation destination (`?page=typography`) separates Text styles, Reading content, Page elements and Type scale into tabs. Foundations also renders its typography specimen under the draft theme, and includes a page-composition specimen. The catalog offers **Typography & content** and **Page foundations**. The floating theme editor updates these examples live. Authentication completion remains a deferred milestone in COMPONENT-ROADMAP.md.
+The main **Typography & pages** navigation destination (`?page=typography`) separates Text styles, Reading content, Page elements and Type scale into tabs. Foundations also renders its typography specimen under the draft theme, and includes a page-composition specimen. The catalog offers **Typography & content** and **Page foundations**. The floating theme editor updates these examples live.
 
 Paper is a featured preset (`createTheme('paper')`) with the Paper & ink palette, pure white light mode and graphite dark mode. It uses a shared background/surface colour, square corners by default, fine separators, neutral ink actions and semantic status colours. Cards, controls, navigation and overlays have no depth shadows; buttons remain stationary on hover and press, with colour feedback and keyboard focus retained. Other palettes, corners and fonts remain configurable. Existing preset IDs and version 1 theme JSON are unchanged.
 

@@ -245,6 +245,7 @@ test('all authentication screens pass accessibility and narrow reflow checks', a
     'reset-password',
     'verify-email',
     'two-factor',
+    'passwordless',
   ]) {
     await page.getByLabel('Authentication flow').selectOption(flow);
     const results = await new AxeBuilder({ page })
@@ -289,6 +290,44 @@ test('optional social login providers support configuration, failure and retry',
   expect(results.violations).toEqual([]);
   await page.screenshot({
     path: `test-results/social-auth-${testInfo.project.name}.png`,
+    fullPage: true,
+  });
+});
+
+test('passwordless sign-in sends, rejects, resends and accepts a code', async ({
+  page,
+}, testInfo) => {
+  await page.clock.install();
+  await page.goto('/');
+  await navigate(page, 'Authentication');
+  await page.getByRole('button', { name: 'Email me a code instead' }).click();
+  await expect(page.getByRole('heading', { name: 'Sign in with an email code' })).toBeVisible();
+  await page.getByLabel(/Email address/).fill('ada@example.com');
+  await page.getByRole('button', { name: 'Email me a code' }).click();
+  await page.clock.runFor(700);
+  await expect(page.getByText('Enter the code we sent to ada@example.com.')).toBeVisible();
+  const code = page.getByLabel(/Verification code/);
+  await expect(code).toBeFocused();
+  await expect(page.getByRole('button', { name: /Resend code in \d+ s/ })).toBeDisabled();
+  await code.fill('000000');
+  await page.getByRole('button', { name: 'Verify code' }).click();
+  await page.clock.runFor(700);
+  await expect(page.getByRole('alert')).toContainText('That code is not right.');
+  await page.clock.runFor(21_000);
+  await page.getByRole('button', { name: 'Resend code', exact: true }).click();
+  await page.clock.runFor(700);
+  await expect(page.getByText('A new code has been requested.')).toBeVisible();
+  const results = await new AxeBuilder({ page })
+    .include('.g-auth-layout')
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+    .analyze();
+  expect(results.violations).toEqual([]);
+  await code.fill('123456');
+  await page.getByRole('button', { name: 'Verify code' }).click();
+  await page.clock.runFor(700);
+  await expect(page.getByText('You are signed in.')).toBeVisible();
+  await page.screenshot({
+    path: `test-results/passwordless-${testInfo.project.name}.png`,
     fullPage: true,
   });
 });
