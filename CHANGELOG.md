@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.3 — 4 November 2026
+
+- `Container`: `align="start"` keeps a narrow (form or reading) container against the leading edge, under a left-aligned page title.
+- `CalendarAgenda`: `renderAction` puts an action beside an entry (for example "Send a card"), next to the entry's own button rather than inside it; on phones it wraps below.
+
 ## 0.11.2 — 4 November 2026
 
 - `AppShell`: `toolbarOverflow` holds secondary toolbar items (language, light/dark, sign out): at the end of the toolbar on wide screens, inside the menu drawer on narrow ones, so a phone header stays one row.

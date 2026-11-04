@@ -98,7 +98,7 @@ Package-owned navigation, progress and error labels can be replaced through `Loc
 
 Tree View, Timeline, Data Table, advanced inputs and ten composed application patterns are documented in [Expanded components](EXPANDED-COMPONENTS.md), including current feature boundaries and integration responsibilities.
 
-Container supports `size="page"` (default, 1200px), `size="form"` (42rem) or `size="reading"` (72ch) and `inset={false}` for an already padded parent. The original default padding and page size remain unchanged. Use form width for single-column forms and page width for tables; neither forces a minimum viewport width.
+Container supports `size="page"` (default, 1200px), `size="form"` (42rem) or `size="reading"` (72ch) `inset={false}` for an already padded parent and `align="start"` to keep a narrow container against the leading edge instead of centring it. The original default padding and page size remain unchanged. Use form width for single-column forms and page width for tables; neither forces a minimum viewport width.
 
 ## Editorial application surfaces
 
@@ -496,7 +496,7 @@ const occasions = [
 - `occurrencesBetween(events, from, to)` returns `{ event, date, years }` for every occurrence in the inclusive range, sorted by date and then input order. `years` counts whole years since `event.date` (32 on a 32nd birthday, 0 on the first occurrence). Repeats never appear before `event.date`.
 - 29 February falls on 28 February in common years. Pass `leapDay: 'mar1'` (to `occurrencesBetween`, `CalendarMonth`, `DatePicker` or `CalendarAgenda`) for 1 March. `yearlyDate(date, year, leapDay)` gives the single date for a year. `daysBetween(from, to)` counts whole days.
 - `CalendarMonth events` (and `DatePicker events`) shows the first title in each day with a `+N` count for more. All titles are added to the day button's description, after any blocked-date reason. `renderDay` still works alongside it.
-- `CalendarAgenda` shows `days` days (default 30) from `from` (default `today`). It is a labelled region with a heading (`headingLevel`, default 2) and an ordered list of days; each day has the next heading level, a `<time>` element, the full date and a relative label from `Intl.RelativeTimeFormat` ("today", "tomorrow", "in 5 days"). Yearly entries show the `repeatsYearly` message. Empty ranges show `emptyMessage` or `agendaEmpty`.
+- `CalendarAgenda` shows `days` days (default 30) from `from` (default `today`). It is a labelled region with a heading (`headingLevel`, default 2) and an ordered list of days; each day has the next heading level, a `<time>` element, the full date and a relative label from `Intl.RelativeTimeFormat` ("today", "tomorrow", "in 5 days"). Yearly entries show the `repeatsYearly` message. Empty ranges show `emptyMessage` or `agendaEmpty`. `renderAction` adds an action beside an entry, outside its select button, so both are reachable on their own.
 - With `onSelect`, entries are buttons described by their date. The list is one tab stop; Arrow Up/Down move between entries across days and Home/End jump to the first and last. Without `onSelect` entries are plain text.
 - New locale messages: `repeatsYearly`, `agendaEmpty`. Apps providing a complete `Messages` object must add them.
 - Recurrence beyond yearly (weekly, monthly, "last Friday"), time zones and reminders are application concerns.

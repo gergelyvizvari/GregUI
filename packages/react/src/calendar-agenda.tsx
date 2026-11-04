@@ -30,6 +30,11 @@ export interface CalendarAgendaProps<E extends CalendarEvent = CalendarEvent> {
   onSelect?: (occurrence: CalendarOccurrence<E>) => void;
   /** Short extra line for an entry, for example "Turns 30" or a status badge. */
   renderDetail?: (occurrence: CalendarOccurrence<E>) => ReactNode;
+  /**
+   * An action beside an entry, such as "Send a card". It sits next to the entry (never inside its
+   * button), so both stay separately reachable.
+   */
+  renderAction?: (occurrence: CalendarOccurrence<E>) => ReactNode;
   /** Shown when nothing falls in the range. Defaults to the `agendaEmpty` message. */
   emptyMessage?: string;
 }
@@ -45,6 +50,7 @@ export function CalendarAgenda<E extends CalendarEvent = CalendarEvent>({
   leapDay,
   onSelect,
   renderDetail,
+  renderAction,
   emptyMessage,
 }: CalendarAgendaProps<E>) {
   const { messages } = useLocale();
@@ -113,8 +119,9 @@ export function CalendarAgenda<E extends CalendarEvent = CalendarEvent>({
                         )}
                       </>
                     );
+                    const action = renderAction?.(occurrence);
                     return (
-                      <li key={occurrence.event.id}>
+                      <li key={occurrence.event.id} data-action={action ? true : undefined}>
                         {onSelect ? (
                           <button
                             type="button"
@@ -130,6 +137,7 @@ export function CalendarAgenda<E extends CalendarEvent = CalendarEvent>({
                         ) : (
                           <div className="g-agenda-event">{content}</div>
                         )}
+                        {action && <div className="g-agenda-action">{action}</div>}
                       </li>
                     );
                   })}

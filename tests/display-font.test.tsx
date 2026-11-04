@@ -2,7 +2,14 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import { createTheme } from '@gregui/tokens';
-import { AppShell, Button, Heading, PageHeader, ThemeProvider } from '@gregui/react';
+import {
+  AppShell,
+  Button,
+  CalendarAgenda,
+  Heading,
+  PageHeader,
+  ThemeProvider,
+} from '@gregui/react';
 
 const frame = (element: HTMLElement) => element.closest<HTMLElement>('.g-theme')!;
 
@@ -85,4 +92,22 @@ it('shows overflow toolbar items in the toolbar, not duplicated while the drawer
   expect(
     screen.getByRole('button', { name: 'Sign out' }).closest('.g-toolbar-overflow'),
   ).not.toBeNull();
+});
+
+it('puts an agenda action beside the entry, not inside its button', () => {
+  render(
+    <ThemeProvider theme={createTheme()}>
+      <CalendarAgenda
+        label="Coming up"
+        today="2026-11-04"
+        events={[{ id: 'xmas', title: 'Christmas', date: '2026-12-25' }]}
+        days={60}
+        onSelect={() => undefined}
+        renderAction={() => <Button>Send a card</Button>}
+      />
+    </ThemeProvider>,
+  );
+  const action = screen.getByRole('button', { name: 'Send a card' });
+  expect(action.closest('.g-agenda-event')).toBeNull();
+  expect(screen.getByRole('button', { name: /Christmas/ })).toBeInTheDocument();
 });

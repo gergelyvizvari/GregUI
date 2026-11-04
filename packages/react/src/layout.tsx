@@ -56,10 +56,22 @@ export function Container({
   children,
   size = 'page',
   inset = true,
+  align = 'center',
   ...props
-}: DivProps & { size?: 'page' | 'form' | 'reading'; inset?: boolean }) {
+}: DivProps & {
+  size?: 'page' | 'form' | 'reading';
+  inset?: boolean;
+  /** `start` keeps a narrow container against the page's leading edge, under a left-aligned title. */
+  align?: 'center' | 'start';
+}) {
   return (
-    <div {...props} className="g-container" data-size={size} data-inset={inset}>
+    <div
+      {...props}
+      className="g-container"
+      data-size={size}
+      data-inset={inset}
+      data-align={align === 'start' ? 'start' : undefined}
+    >
       {children}
     </div>
   );
