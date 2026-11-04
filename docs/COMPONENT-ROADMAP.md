@@ -14,9 +14,11 @@ The next delivered composition adds flat/folded card selection, cover/open-insid
 
 Owner-selected priority: a shared foundation for all app types. First increment delivered: shared typography roles, h1–h6, lead/caption text, Prose reading flow, a reading-width container and compact page-header breadcrumbs/metadata with nested section levels. Foundations and catalog specimens support review of the shared foundation. Keep existing defaults and theme JSON compatible; application content remains consumer-owned. FileUpload and other interaction extensions follow this work.
 
-## Future milestone — complete authentication journeys
+## Authentication journeys — delivered 4 November 2026 (KH-14)
 
-Recorded at the owner's request on 28 October 2026; implementation is deferred while typography/page foundations take priority. Complete passwordless email sign-in with code request, entry, resend, expiry, pending, error/retry and success states through typed provider-independent interfaces. Then generalise social sign-in configuration beyond the current Google/Apple callbacks while preserving existing usage. Applications own code delivery/verification, OAuth, sessions and security policies. Acceptance includes an interactive local workbench journey, keyboard/focus and localisation checks, and adapter examples. These capabilities are planned, not shipped.
+`PasswordlessSignIn` and `AuthForm socialProviders`/`socialModes` deliver this milestone; see AUTHENTICATION.md. Account linking, passkeys and magic links remain candidates. The original record follows.
+
+Recorded at the owner's request on 28 October 2026. Complete passwordless email sign-in with code request, entry, resend, expiry, pending, error/retry and success states through typed provider-independent interfaces. Then generalise social sign-in configuration beyond the current Google/Apple callbacks while preserving existing usage. Applications own code delivery/verification, OAuth, sessions and security policies. Acceptance includes an interactive local workbench journey, keyboard/focus and localisation checks, and adapter examples.
 
 ## Interaction candidates
 
