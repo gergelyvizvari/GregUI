@@ -740,12 +740,19 @@ export function CommentsPanel({
   comments,
   onSubmit,
   headingLevel = 2,
+  inputLabel,
+  submitLabel,
 }: {
   title: string;
   comments: CommentItem[];
-  onSubmit: (body: string) => void | Promise<void>;
+  /** Posts a comment. Leave it out for a read-only thread: no composer is shown. */
+  onSubmit?: (body: string) => void | Promise<void>;
   /** Level of the title heading; nested headings follow it. Defaults to 2. */
   headingLevel?: 2 | 3 | 4 | 5 | 6;
+  /** Label of the text box; defaults to the localized "Comment". */
+  inputLabel?: string;
+  /** Text of the submit button, such as "Send answer by email"; defaults to "Post comment". */
+  submitLabel?: string;
 }) {
   const { messages } = useLocale();
   const [body, setBody] = useState('');
@@ -765,34 +772,36 @@ export function CommentsPanel({
             <p className="g-comment-body">{comment.body}</p>
           </article>
         ))}
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (!body.trim()) return;
-            void run(async () => {
-              await onSubmit(body.trim());
-              setBody('');
-            });
-          }}
-        >
-          <Stack>
-            <Field label={messages.comment}>
-              {(p) => (
-                <Textarea
-                  {...p}
-                  required
-                  disabled={busy}
-                  value={body}
-                  onChange={(e) => setBody(e.target.value)}
-                />
-              )}
-            </Field>
-            {error && <Alert tone="danger" live title={messages.workflowError} />}
-            <Button type="submit" loading={busy} disabled={!body.trim()}>
-              {messages.postComment}
-            </Button>
-          </Stack>
-        </form>
+        {onSubmit && (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (!body.trim()) return;
+              void run(async () => {
+                await onSubmit(body.trim());
+                setBody('');
+              });
+            }}
+          >
+            <Stack>
+              <Field label={inputLabel ?? messages.comment}>
+                {(p) => (
+                  <Textarea
+                    {...p}
+                    required
+                    disabled={busy}
+                    value={body}
+                    onChange={(e) => setBody(e.target.value)}
+                  />
+                )}
+              </Field>
+              {error && <Alert tone="danger" live title={messages.workflowError} />}
+              <Button type="submit" loading={busy} disabled={!body.trim()}>
+                {submitLabel ?? messages.postComment}
+              </Button>
+            </Stack>
+          </form>
+        )}
       </Stack>
     </Card>
   );

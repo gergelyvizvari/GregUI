@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.20.0 — 5 November 2026
+
+- `CommentsPanel`: `inputLabel` and `submitLabel` name the text box and button for what posting does (for example "Send answer by email"); `onSubmit` is optional, and without it the thread is read-only with no composer.
+
 ## 0.19.0 — 5 November 2026
 
 - Phone tab bar: a form's sticky buttons (`FormActions`) sit above the bar instead of under it.

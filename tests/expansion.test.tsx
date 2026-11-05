@@ -228,6 +228,31 @@ it('preserves a comment draft after rejection then clears it on success', async 
   await user.click(screen.getByRole('button', { name: 'Post comment' }));
   await waitFor(() => expect(screen.getByLabelText('Comment')).toHaveValue(''));
 });
+it('names the comment box and button for what posting does, or shows a read-only thread', async () => {
+  const user = userEvent.setup(),
+    save = vi.fn().mockResolvedValue(undefined);
+  const { rerender } = render(
+    <CommentsPanel
+      title="Conversation"
+      comments={[{ id: '1', author: 'Pat', dateLabel: 'Today', body: 'Hello' }]}
+      onSubmit={save}
+      inputLabel="Your answer"
+      submitLabel="Send answer by email"
+    />,
+  );
+  await user.type(screen.getByLabelText('Your answer'), 'Hi Pat');
+  await user.click(screen.getByRole('button', { name: 'Send answer by email' }));
+  expect(save).toHaveBeenCalledWith('Hi Pat');
+  rerender(
+    <CommentsPanel
+      title="Conversation"
+      comments={[{ id: '1', author: 'Pat', dateLabel: 'Today', body: 'Hello' }]}
+    />,
+  );
+  expect(screen.getByText('Hello')).toBeInTheDocument();
+  expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button')).not.toBeInTheDocument();
+});
 it('blocks both approval actions during a pending decision', async () => {
   let resolve!: () => void;
   const save = vi.fn(
