@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.19.0 — 5 November 2026
+
+- Phone tab bar: a form's sticky buttons (`FormActions`) sit above the bar instead of under it.
+- `VisualChoiceGroup layout="masonry"`: on phones a preview that is not a picture is only as tall as its words.
+
 ## 0.18.0 — 5 November 2026
 
 - `Inline wrap={false}`: items stay on one row and long text wraps inside its own item, so an icon or button stays beside its sentence on narrow screens; buttons, badges and icons never shrink.

@@ -5469,6 +5469,14 @@ body {
   color: var(--g-muted);
   text-align: center;
 }
+@media (max-width: 600px) /* breakpoints.phone */ {
+  /* On a phone one column holds everything: the quiet tile is only as tall as its words, so the
+     pictures start right below it. */
+  .g-visual-choice-group[data-layout='masonry'] .g-visual-choice-preview > :not(img, svg, canvas) {
+    aspect-ratio: auto;
+    padding: 1rem 1.25rem;
+  }
+}
 /* A preview that is not a picture, such as "make your own", is a quiet landscape tile. */
 .g-visual-choice-group[data-layout='gallery'] .g-visual-choice-preview > :not(img, svg, canvas) {
   display: grid;
@@ -7392,6 +7400,10 @@ button.g-postcard-stage:focus-visible {
   }
   .g-app-shell[data-phone-nav] .g-main {
     padding-block-end: calc(5rem + env(safe-area-inset-bottom));
+  }
+  /* A form's sticky buttons sit above the tab bar, never under it. */
+  .g-app-shell[data-phone-nav] .g-form-actions {
+    bottom: calc(5rem + env(safe-area-inset-bottom));
   }
   /* Everything is in the bar, so the menu button goes (unless it also holds settings). */
   .g-app-shell[data-phone-nav='only'] .g-mobile-nav > :first-child {
