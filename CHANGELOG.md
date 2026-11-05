@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.17.0 — 5 November 2026
+
+- `SegmentedControl phoneRow` (with `variant="chips"`): on phones the chips stay on one row that scrolls sideways, with the chosen chip in view.
+- `Stepper compact`: on phones one row of numbers; finished steps' summaries stay for screen readers only, so the stepper no longer wraps into several rows.
+
 ## 0.16.1 — 5 November 2026
 
 - `VisualChoiceGroup layout="masonry"`: a preview that is not a picture (such as "your own picture") is a quiet dashed tile across the column, as in the gallery layout, instead of bare text.

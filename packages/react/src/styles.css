@@ -7479,3 +7479,34 @@ button.g-postcard-stage:focus-visible {
     justify-content: flex-start;
   }
 }
+
+/* Phones: chips on one row that scrolls sideways, so filters do not push the content down. */
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-segmented[data-variant='chips'][data-phone-row] {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    padding-block: 0.25rem;
+  }
+  .g-segmented[data-variant='chips'][data-phone-row]::-webkit-scrollbar {
+    display: none;
+  }
+  .g-segmented[data-variant='chips'][data-phone-row] .g-segment {
+    flex: none;
+    scroll-snap-align: start;
+  }
+  /* Compact steppers: one row of numbers on phones; the summaries of finished steps stay for
+     assistive technology only, so the row never wraps into three. */
+  .g-stepper[data-compact='true'] {
+    flex-wrap: nowrap;
+  }
+  .g-stepper[data-compact='true'] li:not([aria-current='step']) .g-step-summary {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
