@@ -1,6 +1,7 @@
 'use client';
 import React, {
   forwardRef,
+  useEffect,
   useId,
   useRef,
   useState,
@@ -205,10 +206,15 @@ function AuthFormScreen({
   const [mismatch, setMismatch] = useState(false);
   const feedback = useRef<HTMLDivElement>(null);
   const confirm = useRef<HTMLInputElement>(null);
+  const code = useRef<HTMLInputElement>(null);
   const email = ['login', 'register', 'forgot-password', 'email-code'].includes(mode);
   const password = ['login', 'register', 'reset-password'].includes(mode);
   const newPassword = mode === 'register' || mode === 'reset-password';
   const verification = mode === 'verify-email' || mode === 'two-factor';
+  // A code screen always follows a step the person just took, so put them straight in the field.
+  useEffect(() => {
+    if (verification) code.current?.focus();
+  }, [verification]);
   const titles = {
     login: m.authLogin,
     register: m.authRegister,
@@ -385,7 +391,9 @@ function AuthFormScreen({
                 onInput={() => setMismatch(false)}
               />
             )}
-            {verification && <VerificationCodeField name="code" length={codeLength} required />}
+            {verification && (
+              <VerificationCodeField ref={code} name="code" length={codeLength} required />
+            )}
             {mode === 'login' && rememberChoice && (
               <Checkbox name="remember" label={m.authRemember} />
             )}

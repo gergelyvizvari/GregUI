@@ -14,12 +14,15 @@ export function Inline({
   gap = 3,
   align = 'center',
   justify = 'start',
+  wrap = true,
   children,
   ...props
 }: DivProps & {
   gap?: Space;
   align?: 'start' | 'center' | 'end';
   justify?: 'start' | 'between' | 'end';
+  /** false keeps every child on one row, so long text wraps inside its own item (an icon beside a sentence). */
+  wrap?: boolean;
 }) {
   return (
     <div
@@ -27,6 +30,7 @@ export function Inline({
       className="g-inline"
       data-align={align}
       data-justify={justify}
+      data-wrap={wrap ? undefined : 'false'}
       style={{ gap: spacing[gap] }}
     >
       {children}

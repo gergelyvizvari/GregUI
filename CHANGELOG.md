@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.18.0 — 5 November 2026
+
+- `Inline wrap={false}`: items stay on one row and long text wraps inside its own item, so an icon or button stays beside its sentence on narrow screens; buttons, badges and icons never shrink.
+- `AuthForm`: the code screens (`verify-email`, `two-factor`) put the cursor in the code field when they open, so the phone keyboard is ready.
+
 ## 0.17.0 — 5 November 2026
 
 - `SegmentedControl phoneRow` (with `variant="chips"`): on phones the chips stay on one row that scrolls sideways, with the chosen chip in view.

@@ -108,6 +108,16 @@ body {
 .g-inline[data-justify='between'] {
   justify-content: space-between;
 }
+.g-inline[data-wrap='false'] {
+  flex-wrap: nowrap;
+}
+.g-inline[data-wrap='false'] > * {
+  min-width: 0;
+}
+/* Only the text gives way: buttons, badges and icons keep their size. */
+.g-inline[data-wrap='false'] > :is(.g-button, .g-badge, .g-icon) {
+  flex: none;
+}
 .g-inline[data-justify='end'] {
   justify-content: flex-end;
 }
