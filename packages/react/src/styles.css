@@ -5445,6 +5445,20 @@ body {
   width: 100%;
   height: auto;
 }
+/* Masonry: a preview that is not a picture is a quiet tile as wide as the column. */
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice-preview > :not(img, svg, canvas) {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  box-sizing: border-box;
+  aspect-ratio: 4 / 3;
+  padding: 1rem;
+  border: 1px dashed var(--g-line);
+  background: var(--g-quiet-fill);
+  box-shadow: none;
+  color: var(--g-muted);
+  text-align: center;
+}
 /* A preview that is not a picture, such as "make your own", is a quiet landscape tile. */
 .g-visual-choice-group[data-layout='gallery'] .g-visual-choice-preview > :not(img, svg, canvas) {
   display: grid;

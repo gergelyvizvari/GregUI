@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.16.1 — 5 November 2026
+
+- `VisualChoiceGroup layout="masonry"`: a preview that is not a picture (such as "your own picture") is a quiet dashed tile across the column, as in the gallery layout, instead of bare text.
+
 ## 0.16.0 — 4 November 2026
 
 - New `MediaRow`: a list item led by a small picture, with text and actions (under the text on phones).
