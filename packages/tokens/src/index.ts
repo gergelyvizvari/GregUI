@@ -623,6 +623,8 @@ export const typography = {
   page: { fontSize: 'clamp(2rem, 3.4vw, 3.25rem)', lineHeight: '1.15', letterSpacing: '-0.035em' },
   section: { fontSize: '1.125rem', lineHeight: '1.15', letterSpacing: '-0.02em' },
   card: { fontSize: '1rem', lineHeight: '1.15', letterSpacing: '-0.01em' },
+  /** The brand name in a compact header, such as an app's phone masthead. */
+  brand: { fontSize: '1.3rem', lineHeight: '1.1', letterSpacing: '-0.02em' },
 } as const;
 export type TypographyRole = keyof typeof typography;
 /**

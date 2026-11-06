@@ -3608,11 +3608,31 @@ body {
   .g-app-shell[data-appearance='editorial'] .g-toolbar-overflow {
     display: none;
   }
-  /* The toolbar is the whole header here, so it spans the width. */
+  /* The toolbar is the whole header here, so it spans the width: the brand on one side, the
+     tools on the other, sized like a website header rather than a row of small print. */
   .g-app-shell[data-appearance='editorial'] .g-toolbar {
     max-width: none;
     margin: 0;
     flex-wrap: nowrap;
+    justify-content: space-between;
+    padding-block: 0.85rem;
+    font-size: var(--g-type-body-size);
+  }
+  .g-app-shell[data-appearance='editorial'] .g-mobile-brand .g-text {
+    font-family: var(--g-display-font);
+    font-size: var(--g-type-brand-size);
+    line-height: var(--g-type-brand-line-height);
+    font-weight: 800;
+    letter-spacing: var(--g-type-brand-tracking);
+  }
+  .g-app-shell[data-appearance='editorial'] .g-mobile-brand > :first-child,
+  .g-app-shell[data-appearance='editorial'] .g-mobile-brand svg {
+    width: 36px;
+    height: 36px;
+  }
+  .g-app-shell[data-appearance='editorial'] .g-toolbar .g-button[data-icon-only='true'] {
+    min-width: 44px;
+    min-height: 44px;
   }
 }
 /* The brand and navigation labels never break mid-word in the masthead. */

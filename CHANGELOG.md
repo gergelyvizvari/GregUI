@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.22.0 — 6 November 2026
+
+- Editorial `AppShell` on phones and small tablets: the header reads like a website header, with the brand in the display face at a readable size, the toolbar at the other end, and 44px icon buttons. New `brand` type role (`--g-type-brand-size`, `-line-height`, `-tracking`).
+
 ## 0.21.0 — 6 November 2026
 
 - `AppShell stickyMasthead` (with `appearance="editorial"`): on wide screens the masthead (brand, navigation and toolbar) stays at the top while the page scrolls; phones keep their own bars.
