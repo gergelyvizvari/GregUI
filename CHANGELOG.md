@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.23.0 — 6 November 2026
+
+- `AppShell stickyMasthead` now also keeps the phone and small-tablet header at the top while the page scrolls, so it stays in reach and Safari tints its own bars in the header's colour.
+
 ## 0.22.0 — 6 November 2026
 
 - Editorial `AppShell` on phones and small tablets: the header reads like a website header, with the brand in the display face at a readable size, the toolbar at the other end, and 44px icon buttons. New `brand` type role (`--g-type-brand-size`, `-line-height`, `-tracking`).

@@ -3608,6 +3608,13 @@ body {
   .g-app-shell[data-appearance='editorial'] .g-toolbar-overflow {
     display: none;
   }
+  /* stickyMasthead: the phone header stays at the top too, so it is always in reach and the
+     browser's own bars (Safari tints them from what sits at the top) take its colour. */
+  .g-app-shell[data-appearance='editorial'][data-sticky-masthead] .g-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: var(--g-z-sticky);
+  }
   /* The toolbar is the whole header here, so it spans the width: the brand on one side, the
      tools on the other, sized like a website header rather than a row of small print. */
   .g-app-shell[data-appearance='editorial'] .g-toolbar {

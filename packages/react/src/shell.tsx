@@ -173,7 +173,7 @@ export function AppShell({
   stickyToolbar?: boolean;
   /**
    * With `appearance="editorial"`, keeps the masthead (brand, navigation and toolbar) at the top
-   * of wide screens while the page scrolls. Phones keep their own bars.
+   * while the page scrolls; on phones and small tablets, the header with the brand and tools.
    */
   stickyMasthead?: boolean;
   brandMark?: ReactNode;
