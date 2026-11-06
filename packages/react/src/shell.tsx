@@ -133,6 +133,7 @@ export function AppShell({
   appearance = 'standard',
   tone = 'default',
   stickyToolbar = false,
+  stickyMasthead = false,
   brandMark,
   brandHref,
   brandLinkComponent: BrandLink = 'a',
@@ -170,6 +171,11 @@ export function AppShell({
    */
   tone?: 'default' | 'brand';
   stickyToolbar?: boolean;
+  /**
+   * With `appearance="editorial"`, keeps the masthead (brand, navigation and toolbar) at the top
+   * of wide screens while the page scrolls. Phones keep their own bars.
+   */
+  stickyMasthead?: boolean;
   brandMark?: ReactNode;
   /** Makes the brand (masthead and phone header) a link home, for example `/home`. */
   brandHref?: string;
@@ -218,6 +224,7 @@ export function AppShell({
       className="g-app-shell"
       data-phone-nav={phoneNav && !toolbarOverflow ? 'only' : phoneNav ? true : undefined}
       data-appearance={appearance}
+      data-sticky-masthead={(appearance === 'editorial' && stickyMasthead) || undefined}
       data-tone={tone === 'brand' ? 'brand' : undefined}
     >
       <SkipLink href={`#${mainId}`} />

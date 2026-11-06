@@ -75,6 +75,26 @@ it('marks a brand masthead on the editorial shell', () => {
   expect(shell).toHaveAttribute('data-tone', 'brand');
 });
 
+it('keeps an editorial masthead at the top only when asked', () => {
+  const { container, rerender } = render(
+    <ThemeProvider theme={createTheme()}>
+      <AppShell brand="App" nav={null} appearance="editorial" stickyMasthead>
+        <p>Content</p>
+      </AppShell>
+    </ThemeProvider>,
+  );
+  expect(container.querySelector('.g-app-shell')).toHaveAttribute('data-sticky-masthead', 'true');
+  rerender(
+    <ThemeProvider theme={createTheme()}>
+      <AppShell brand="App" nav={null} stickyMasthead>
+        <p>Content</p>
+      </AppShell>
+    </ThemeProvider>,
+  );
+  // Only the editorial masthead sticks; the standard sidebar has its own behaviour.
+  expect(container.querySelector('.g-app-shell')).not.toHaveAttribute('data-sticky-masthead');
+});
+
 it('shows overflow toolbar items in the toolbar, not duplicated while the drawer is closed', () => {
   render(
     <ThemeProvider theme={createTheme()}>

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.21.0 — 6 November 2026
+
+- `AppShell stickyMasthead` (with `appearance="editorial"`): on wide screens the masthead (brand, navigation and toolbar) stays at the top while the page scrolls; phones keep their own bars.
+
 ## 0.20.0 — 5 November 2026
 
 - `CommentsPanel`: `inputLabel` and `submitLabel` name the text box and button for what posting does (for example "Send answer by email"); `onSubmit` is optional, and without it the thread is read-only with no composer.

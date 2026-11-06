@@ -3545,6 +3545,13 @@ body {
   .g-app-shell[data-appearance='editorial'] .g-shell-banner {
     grid-area: banner;
   }
+  /* stickyMasthead: brand, navigation and toolbar stay at the top while the page scrolls. */
+  .g-app-shell[data-appearance='editorial'][data-sticky-masthead] > .g-sidebar,
+  .g-app-shell[data-appearance='editorial'][data-sticky-masthead] .g-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: var(--g-z-sticky);
+  }
   .g-app-shell[data-appearance='editorial'] .g-toolbar {
     grid-area: tools;
     max-width: none;
