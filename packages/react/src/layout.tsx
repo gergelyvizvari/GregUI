@@ -1,6 +1,7 @@
 'use client';
-import { useId, type ComponentPropsWithoutRef, type ReactNode } from 'react';
+import { Children, useId, type ComponentPropsWithoutRef, type ReactNode } from 'react';
 import { spacing, type Space } from '@gregui/tokens';
+import { Badge } from './feedback';
 import type { Clean, DivProps } from './internal-types';
 import { Heading, Text } from './typography';
 export function Stack({ gap = 4, children, ...props }: DivProps & { gap?: Space }) {
@@ -148,5 +149,70 @@ export function Section({
       </Inline>
       {children}
     </section>
+  );
+}
+
+export interface BoardColumn {
+  id: string;
+  title: string;
+  /** How many items the column holds, shown beside its title. */
+  count?: number;
+  /** Shown instead of the items when there are none. */
+  emptyLabel?: string;
+  children?: ReactNode;
+}
+/**
+ * Items by where they stand, in side-by-side lanes (a print queue by step, tickets by status).
+ * Each lane is a named section with a bounded surface, so the eye can tell where one ends and
+ * the next begins; lanes keep equal widths and the board scrolls sideways rather than wrapping
+ * when they no longer fit. The app owns the items, their order and any moving between lanes.
+ */
+export function Board({
+  label,
+  columns,
+  headingLevel = 2,
+  gap = 3,
+  ...props
+}: DivProps & {
+  /** Names the board for assistive technology. */
+  label: string;
+  columns: readonly BoardColumn[];
+  /** The heading level of each lane's title; the default fits a board under a page title. */
+  headingLevel?: 2 | 3 | 4;
+  gap?: Space;
+}) {
+  const id = useId();
+  return (
+    <div
+      {...props}
+      className="g-board"
+      role="group"
+      aria-label={label}
+      style={{ gap: spacing[gap] }}
+    >
+      {columns.map((column) => {
+        const headingId = `${id}-${column.id}`;
+        const empty = Children.count(column.children) === 0;
+        return (
+          <section key={column.id} className="g-board-column" aria-labelledby={headingId}>
+            <div className="g-board-column-head">
+              <Heading id={headingId} level={headingLevel} size="card">
+                {column.title}
+              </Heading>
+              {column.count !== undefined && <Badge>{String(column.count)}</Badge>}
+            </div>
+            <div className="g-board-column-body">
+              {empty && column.emptyLabel ? (
+                <Text size="small" tone="muted">
+                  {column.emptyLabel}
+                </Text>
+              ) : (
+                column.children
+              )}
+            </div>
+          </section>
+        );
+      })}
+    </div>
   );
 }

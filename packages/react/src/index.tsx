@@ -15,7 +15,18 @@ export {
   type ThemeColorScheme,
   type ThemeDisplayFont,
 } from './theme';
-export { Stack, Inline, Grid, Split, Container, Card, CardLink, Section } from './layout';
+export {
+  Stack,
+  Inline,
+  Grid,
+  Split,
+  Container,
+  Card,
+  CardLink,
+  Section,
+  Board,
+  type BoardColumn,
+} from './layout';
 export {
   Text,
   Heading,

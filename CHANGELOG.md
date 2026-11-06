@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.24.0 — 6 November 2026
+
+- `Board`: items by where they stand in side-by-side lanes (`label`, `columns: { id, title, count?, emptyLabel?, children }[]`, `headingLevel`). Each lane is a named section on a quiet bounded surface with its title and an optional count badge; lanes keep equal widths and the board scrolls sideways instead of wrapping when they no longer fit.
+
 ## 0.23.0 — 6 November 2026
 
 - `AppShell stickyMasthead` now also keeps the phone and small-tablet header at the top while the page scrolls, so it stays in reach and Safari tints its own bars in the header's colour.

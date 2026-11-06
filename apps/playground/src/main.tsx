@@ -1,6 +1,7 @@
 import { samplePhoto, PhotoCredit } from './sample-media';
 import {
   TypographyDemo,
+  BoardDemo,
   PageCompositionDemo,
   TextStylesDemo,
   ReadingContentDemo,
@@ -1132,6 +1133,16 @@ function App() {
                   <ThemeProvider theme={theme} colorScheme={colorScheme}>
                     <PreviewStage label="Page composition preview">
                       <PageCompositionDemo />
+                    </PreviewStage>
+                  </ThemeProvider>
+                </Section>
+                <Section
+                  title="Board"
+                  description="Items by where they stand, in lanes that keep their width and scroll sideways on narrow screens."
+                >
+                  <ThemeProvider theme={theme} colorScheme={colorScheme}>
+                    <PreviewStage label="Board preview">
+                      <BoardDemo />
                     </PreviewStage>
                   </ThemeProvider>
                 </Section>

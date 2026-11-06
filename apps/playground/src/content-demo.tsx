@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import {
   Badge,
+  Board,
   Breadcrumbs,
   Button,
+  Card,
   Container,
   Heading,
   PageHeader,
@@ -152,5 +154,43 @@ export function PageCompositionDemo() {
         </Section>
       </Stack>
     </Container>
+  );
+}
+
+/** A board: items by where they stand, in lanes that scroll sideways on narrow screens. */
+export function BoardDemo() {
+  const card = (name: string, note: string) => (
+    <Card key={name}>
+      <Stack gap={1}>
+        <Text weight="strong">{name}</Text>
+        <Text size="small" tone="muted">
+          {note}
+        </Text>
+      </Stack>
+    </Card>
+  );
+  return (
+    <Board
+      label="Print board example"
+      columns={[
+        {
+          id: 'waiting',
+          title: 'Waiting',
+          count: 2,
+          emptyLabel: 'Nothing here.',
+          children: [card('Anna Kovács', 'Ordered today'), card('Tom Clarke', 'Ordered yesterday')],
+        },
+        { id: 'batched', title: 'In a batch', count: 0, emptyLabel: 'Nothing here.' },
+        {
+          id: 'printed',
+          title: 'Printed',
+          count: 1,
+          emptyLabel: 'Nothing here.',
+          children: card('Zsuzsa Nagy', 'Printed this morning'),
+        },
+        { id: 'posted', title: 'Posted', count: 0, emptyLabel: 'Nothing here.' },
+        { id: 'returned', title: 'Returned', count: 0, emptyLabel: 'Nothing here.' },
+      ]}
+    />
   );
 }
