@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.25.0 — 7 November 2026
+
+- `VisualChoiceGroup layout="tiles"`: on a phone, three tiles put the last one across the row instead of two and a lone one.
+
 ## 0.24.0 — 6 November 2026
 
 - `Board`: items by where they stand in side-by-side lanes (`label`, `columns: { id, title, count?, emptyLabel?, children }[]`, `headingLevel`). Each lane is a named section on a quiet bounded surface with its title and an optional count badge; lanes keep equal widths and the board scrolls sideways instead of wrapping when they no longer fit.

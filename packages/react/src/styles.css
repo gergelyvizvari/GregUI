@@ -5093,6 +5093,18 @@ body {
   .g-visual-choice-options:has(> :nth-child(4):last-child) {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+/* On a phone, three tiles put the last one across the row, never two and a lone one. */
+@media (max-width: 760px) /* breakpoints.compact */ {
+  .g-visual-choice-group[data-layout='tiles']
+    .g-visual-choice-options:has(> :nth-child(3):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .g-visual-choice-group[data-layout='tiles']
+    .g-visual-choice-options:has(> :nth-child(3):last-child)
+    > :last-child {
+    grid-column: 1 / -1;
+  }
+}
 .g-visual-choice-group[data-layout='tiles'] .g-visual-choice {
   align-items: center;
   gap: 0.6rem;
