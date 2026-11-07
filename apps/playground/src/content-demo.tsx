@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   Badge,
   Board,
+  BoardItem,
   Breadcrumbs,
   Button,
   Card,
@@ -159,38 +160,51 @@ export function PageCompositionDemo() {
 
 /** A board: items by where they stand, in lanes that scroll sideways on narrow screens. */
 export function BoardDemo() {
-  const card = (name: string, note: string) => (
-    <Card key={name}>
-      <Stack gap={1}>
-        <Text weight="strong">{name}</Text>
-        <Text size="small" tone="muted">
-          {note}
-        </Text>
-      </Stack>
-    </Card>
-  );
+  const lanes = ['waiting', 'batched', 'printed', 'posted', 'returned'] as const;
+  type Lane = (typeof lanes)[number];
+  const titles: Record<Lane, string> = {
+    waiting: 'Waiting',
+    batched: 'In a batch',
+    printed: 'Printed',
+    posted: 'Posted',
+    returned: 'Returned',
+  };
+  const [cards, setCards] = useState<{ id: string; name: string; note: string; lane: Lane }[]>([
+    { id: 'anna', name: 'Anna Kovács', note: 'Ordered today', lane: 'waiting' },
+    { id: 'tom', name: 'Tom Clarke', note: 'Ordered yesterday', lane: 'waiting' },
+    { id: 'zsuzsa', name: 'Zsuzsa Nagy', note: 'Printed this morning', lane: 'printed' },
+  ]);
+  // Cards walk the lanes in order, one step at a time, and only forwards; a batch is a lane of its own.
+  const next: Partial<Record<Lane, Lane>> = { waiting: 'printed', printed: 'posted' };
   return (
     <Board
       label="Print board example"
-      columns={[
-        {
-          id: 'waiting',
-          title: 'Waiting',
-          count: 2,
-          emptyLabel: 'Nothing here.',
-          children: [card('Anna Kovács', 'Ordered today'), card('Tom Clarke', 'Ordered yesterday')],
-        },
-        { id: 'batched', title: 'In a batch', count: 0, emptyLabel: 'Nothing here.' },
-        {
-          id: 'printed',
-          title: 'Printed',
-          count: 1,
-          emptyLabel: 'Nothing here.',
-          children: card('Zsuzsa Nagy', 'Printed this morning'),
-        },
-        { id: 'posted', title: 'Posted', count: 0, emptyLabel: 'Nothing here.' },
-        { id: 'returned', title: 'Returned', count: 0, emptyLabel: 'Nothing here.' },
-      ]}
+      canMove={({ from, to }) => next[from as Lane] === to}
+      onMove={({ item, to }) =>
+        setCards((all) =>
+          all.map((card) => (card.id === item ? { ...card, lane: to as Lane } : card)),
+        )
+      }
+      columns={lanes.map((lane) => ({
+        id: lane,
+        title: titles[lane],
+        count: cards.filter((card) => card.lane === lane).length,
+        emptyLabel: 'Nothing here.',
+        children: cards
+          .filter((card) => card.lane === lane)
+          .map((card) => (
+            <BoardItem key={card.id} id={card.id} label={card.name}>
+              <Card>
+                <Stack gap={1}>
+                  <Text weight="strong">{card.name}</Text>
+                  <Text size="small" tone="muted">
+                    {card.note}
+                  </Text>
+                </Stack>
+              </Card>
+            </BoardItem>
+          )),
+      }))}
     />
   );
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.27.0 — 7 November 2026
+
+- `Board onMove` / `canMove` and `BoardItem` (`id`, `label`, `movable`): items drag between lanes with the mouse, and a handle menu in each item's corner moves it by keyboard or touch (package messages `move`, `moveItem`, `moveTo`, in English and Hungarian). Lanes an item may go to show a dashed edge while it drags and fill in under it. The app does the moving.
+- `ConfirmDialog`: `trigger` is optional; controlled `open` / `onOpenChange` let the app open it after an action of its own, such as a drop on a board.
+- New `grip` icon.
+- `AppShell` (standard): a menu taller than the screen scrolls inside the sidebar, so its last items stay in reach.
+
 ## 0.26.0 — 7 November 2026
 
 - `ThemeProvider page`: the page never pans sideways; whatever pokes past its edge is clipped (sticky headers and bars keep working).

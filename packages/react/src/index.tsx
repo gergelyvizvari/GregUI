@@ -25,7 +25,9 @@ export {
   CardLink,
   Section,
   Board,
+  BoardItem,
   type BoardColumn,
+  type BoardMove,
 } from './layout';
 export {
   Text,

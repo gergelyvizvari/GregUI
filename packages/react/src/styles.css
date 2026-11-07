@@ -177,8 +177,33 @@ body {
   gap: 0.75rem;
   min-width: 0;
 }
-.g-board-column-body > .g-card {
+.g-board-column-body > .g-card,
+.g-board-item > .g-card {
   background: var(--g-surface);
+}
+/* A lane an item may be dropped on shows a dashed edge, and fills in while it is over it. */
+.g-board-column[data-droppable] {
+  outline: 2px dashed var(--g-focus);
+  outline-offset: -2px;
+}
+.g-board-column[data-over] {
+  background: color-mix(in srgb, var(--g-primary) 12%, var(--g-quiet-fill));
+}
+.g-board-item {
+  position: relative;
+  min-width: 0;
+}
+.g-board-item[draggable='true'] {
+  cursor: grab;
+}
+.g-board-item[data-dragging] {
+  opacity: 0.5;
+}
+/* The move handle sits in the item's top corner, over the card's own padding. */
+.g-board-item-handle {
+  position: absolute;
+  top: 0.25rem;
+  inset-inline-end: 0.25rem;
 }
 .g-split {
   display: grid;
@@ -3411,6 +3436,17 @@ body {
 }
 .g-container[data-align='start'] {
   margin-inline: 0;
+}
+
+/* A long menu scrolls inside the standard sidebar, so its last items stay in reach on a short
+   screen instead of being cut off below the fold. */
+.g-app-shell[data-appearance='standard'] > .g-sidebar {
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+.g-app-shell[data-appearance='standard'] > .g-sidebar > * {
+  flex-shrink: 0;
 }
 
 /* Editorial and operational applications opt in; existing shells keep their defaults. */

@@ -173,7 +173,8 @@ export function FloatingPanel({
   );
 }
 export interface ConfirmDialogProps {
-  trigger: ReactNode;
+  /** The button that opens it; leave out when the app opens it itself with `open`. */
+  trigger?: ReactNode;
   title: string;
   description: string;
   confirmLabel: string;
@@ -181,6 +182,9 @@ export interface ConfirmDialogProps {
   /** Returned promises are awaited; synchronous and resolved values are ignored. */
   onConfirm: () => unknown;
   errorMessage?: string;
+  /** Controlled open state, for a confirmation that follows an action elsewhere (a drop on a board). */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 export function ConfirmDialog({
   trigger,
@@ -190,9 +194,16 @@ export function ConfirmDialog({
   cancelLabel,
   onConfirm,
   errorMessage,
+  open: controlledOpen,
+  onOpenChange,
 }: ConfirmDialogProps) {
   const { messages } = useLocale();
-  const [open, setOpen] = useState(false);
+  const [localOpen, setLocalOpen] = useState(false);
+  const open = controlledOpen ?? localOpen;
+  const setOpen = (next: boolean) => {
+    if (controlledOpen === undefined) setLocalOpen(next);
+    onOpenChange?.(next);
+  };
   const { pending, failed, run, reset, locked } = useAsyncAction();
   const content = useRef<HTMLDivElement>(null);
   const action = useRef<HTMLButtonElement>(null);
@@ -216,7 +227,7 @@ export function ConfirmDialog({
         reset();
       }}
     >
-      <AlertPrimitive.Trigger asChild>{trigger}</AlertPrimitive.Trigger>
+      {trigger !== undefined && <AlertPrimitive.Trigger asChild>{trigger}</AlertPrimitive.Trigger>}
       <AlertPrimitive.Portal>
         <PortalFrame>
           <AlertPrimitive.Overlay className="g-backdrop" />

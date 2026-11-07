@@ -91,3 +91,23 @@ test('the app sidebar collapses to a labelled icon rail', async ({ page }, testI
   await page.getByRole('button', { name: 'Expand sidebar' }).click();
   await expect(sidebar).not.toHaveAttribute('data-collapsed');
 });
+
+test('a long sidebar menu scrolls on a short screen, so its last item stays in reach', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile', 'Phones use the drawer, not the sidebar.');
+  await page.setViewportSize({ width: 1280, height: 360 });
+  await page.goto('/');
+  const sidebar = page.locator('aside');
+  const size = await sidebar.evaluate((el) => ({
+    scroll: el.scrollHeight,
+    client: el.clientHeight,
+  }));
+  expect(size.scroll).toBeGreaterThan(size.client);
+  const last = sidebar.getByRole('navigation').first().getByRole('button').last();
+  await expect(last).not.toBeInViewport();
+  await sidebar.evaluate((el) => el.scrollTo({ top: el.scrollHeight }));
+  await expect(last).toBeInViewport();
+  // The page itself stays where it was: only the sidebar moved.
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+});
