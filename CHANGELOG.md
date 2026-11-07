@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.26.0 — 7 November 2026
+
+- `ThemeProvider page`: the page never pans sideways; whatever pokes past its edge is clipped (sticky headers and bars keep working).
+- `AppShell stickyMasthead` with `tone="brand"`: pulled past its top (Safari's bounce), the page shows the masthead's colour above the header instead of a white gap.
+
 ## 0.25.0 — 7 November 2026
 
 - `VisualChoiceGroup layout="tiles"`: on a phone, three tiles put the last one across the row instead of two and a lone one.

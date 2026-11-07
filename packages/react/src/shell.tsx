@@ -174,6 +174,8 @@ export function AppShell({
   /**
    * With `appearance="editorial"`, keeps the masthead (brand, navigation and toolbar) at the top
    * while the page scrolls; on phones and small tablets, the header with the brand and tools.
+   * With `tone="brand"`, the room above the header takes its colour when the page is pulled past
+   * its top (Safari's bounce).
    */
   stickyMasthead?: boolean;
   brandMark?: ReactNode;

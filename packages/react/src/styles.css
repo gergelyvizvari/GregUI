@@ -24,6 +24,10 @@ body {
 .g-theme[data-page] {
   min-height: 100vh;
   min-height: 100dvh;
+  /* A page never pans sideways: what pokes past its edge is clipped, not scrolled to. Clipping
+     on this element (not the root) also stops iOS Safari's sideways rubber-banding, and unlike
+     hidden it keeps sticky headers and bars working. */
+  overflow-x: clip;
 }
 :root:has(> body .g-theme[data-page][data-mode='dark']:not(.g-portal)) {
   color-scheme: dark;
@@ -3538,6 +3542,18 @@ body {
 /* The masthead and toolbar meet at a fractional pixel; overlap them so no seam shows. */
 .g-app-shell[data-appearance='editorial'][data-tone='brand'] > .g-sidebar {
   box-shadow: 2px 0 0 var(--g-masthead);
+}
+/* Pulled past its top (Safari's bounce), the page shows the room above the masthead in the
+   masthead's colour, so the header reads as the page's own top edge rather than a sheet lifting
+   off a white table. The strip sits above the viewport and only shows while bouncing. */
+.g-app-shell[data-appearance='editorial'][data-tone='brand'][data-sticky-masthead]::before {
+  content: '';
+  position: fixed;
+  inset-inline: 0;
+  top: -100vh;
+  height: 100vh;
+  background: var(--g-masthead);
+  pointer-events: none;
 }
 .g-app-shell[data-appearance='editorial'][data-tone='brand'] > .g-sidebar .g-text,
 .g-app-shell[data-appearance='editorial'][data-tone='brand'] .g-toolbar .g-text,
