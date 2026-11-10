@@ -14,6 +14,7 @@ export {
   ThemeProvider,
   type ThemeColorScheme,
   type ThemeDisplayFont,
+  type ThemeHighlight,
 } from './theme';
 export {
   Stack,

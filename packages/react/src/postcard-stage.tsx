@@ -39,6 +39,11 @@ export interface PostcardStageProps {
   turnLabel?: string;
   /** `large` gives the card more room, for a final look before sending. */
   size?: 'default' | 'large';
+  /**
+   * A handwritten note tucked over the card's lower end corner while its picture side shows
+   * (usually the greeting and message), in the theme's handwriting face. Decorative like the card.
+   */
+  note?: ReactNode;
 }
 
 /**
@@ -60,6 +65,7 @@ export function PostcardStage({
   onTurn,
   turnLabel,
   size = 'default',
+  note,
 }: PostcardStageProps) {
   const portrait = orientation === 'portrait';
   const long = sizeMm.width * pxPerMm;
@@ -168,6 +174,13 @@ export function PostcardStage({
     </div>
   );
   const stageHeight = scale ? `${extent.height * scale + 48}px` : undefined;
+  // The note belongs to the picture side: it slips away while the writing side or inside shows.
+  const noteShown = note != null && note !== false && (fold ? fold === 'closed' : side === 'front');
+  const tucked = note != null && note !== false && (
+    <div className="g-postcard-note" aria-hidden="true" data-shown={noteShown}>
+      {note}
+    </div>
+  );
   return onTurn ? (
     <button
       ref={room}
@@ -180,6 +193,7 @@ export function PostcardStage({
       onClick={onTurn}
     >
       {table}
+      {tucked}
     </button>
   ) : (
     <div
@@ -192,6 +206,7 @@ export function PostcardStage({
       style={{ height: stageHeight }}
     >
       {table}
+      {tucked}
     </div>
   );
 }

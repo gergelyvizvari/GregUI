@@ -1878,11 +1878,33 @@ body {
   flex: 0 1 auto;
   min-width: 0;
   padding-inline-end: 0.85rem;
-  background: var(--g-surface);
-  color: var(--g-text);
+  background: var(--g-mark, var(--g-surface));
+  color: var(--g-onMark, var(--g-text));
+}
+/* On the block every step shows its name, like the website's pills; phones keep numbers only. */
+.g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li .g-step-label {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  white-space: nowrap;
+  font-weight: 650;
+}
+.g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li:not([aria-current='step']) {
+  padding-inline-end: 0.85rem;
 }
 .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] .g-step-summary {
-  margin-inline-end: 0.5rem;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.g-page-header[data-tone='brand'][data-size='compact'] .g-heading {
+  font-size: calc(var(--g-type-page-size) * 0.85);
+  line-height: 1.05;
 }
 .g-page-header[data-tone='brand']
   .g-stepper[data-compact='true']
@@ -1905,11 +1927,24 @@ body {
   .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] {
     gap: 0.35rem;
   }
+  .g-page-header[data-tone='brand']
+    .g-stepper[data-compact='true']
+    li:not([aria-current='step'])
+    .g-step-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li:not([aria-current='step']) {
+    padding-inline-end: 0.25rem;
+  }
 }
 .g-page-header[data-tone='brand'] .g-stepper li[aria-current='step'] .g-step-number {
-  background: var(--g-primary);
-  border-color: var(--g-primary);
-  color: var(--g-onPrimary);
+  background: var(--g-onMark, var(--g-primary));
+  border-color: var(--g-onMark, var(--g-primary));
+  color: var(--g-mark, var(--g-onPrimary));
 }
 .g-page-header[data-tone='brand'] .g-stepper li[data-complete='true'] .g-step-number {
   background: var(--g-surface);
@@ -4826,6 +4861,39 @@ body {
 .g-editor-main :where(input, select, textarea, button, a) {
   scroll-margin-block: 5rem 10rem;
 }
+/* Panels: the document on one soft surface, its actions as the panel's footer; the preview on a
+   tinted stage. Corners stay soft in square themes. */
+.g-editor-layout[data-appearance='panels'] {
+  --g-panel-pad: clamp(1rem, 3vw, 1.75rem);
+  --g-panel-radius: max(calc(var(--g-radius) * 2), 1.5rem);
+  align-items: stretch;
+}
+.g-editor-layout[data-appearance='panels'] > .g-editor-main {
+  display: flex;
+  flex-direction: column;
+  padding: var(--g-panel-pad) var(--g-panel-pad) 0;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-panel-radius);
+  background: var(--g-surface);
+  box-shadow: 0 2px 10px rgba(var(--g-shadow-color), 0.05);
+}
+.g-editor-layout[data-appearance='panels'] > .g-editor-main > :last-child {
+  flex: 1;
+}
+.g-editor-layout[data-appearance='panels'] .g-form-actions {
+  margin: auto calc(-1 * var(--g-panel-pad)) 0;
+  padding-inline: var(--g-panel-pad);
+  bottom: 0;
+  border-width: 1px 0 0;
+  border-radius: 0 0 var(--g-panel-radius) var(--g-panel-radius);
+  box-shadow: none;
+}
+.g-editor-layout[data-appearance='panels'][data-aside-kind='preview'] > .g-editor-aside {
+  align-self: start;
+  padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem) clamp(2rem, 4vw, 3rem);
+  border-radius: var(--g-panel-radius);
+  background: var(--g-tint);
+}
 @media (max-width: 1100px) /* off-scale: component threshold */ {
   .g-editor-layout[data-aside='true'] {
     grid-template-columns: minmax(0, 1fr);
@@ -4838,6 +4906,9 @@ body {
   .g-editor-layout[data-aside='true'][data-aside-kind='preview'] > .g-editor-aside {
     position: static;
     order: -1;
+  }
+  .g-editor-layout[data-appearance='panels'][data-aside-kind='preview'] > .g-editor-aside {
+    padding: 0.5rem 0.75rem 1.75rem;
   }
 }
 @media (max-width: 600px) /* breakpoints.phone */ {
@@ -5580,6 +5651,62 @@ body {
   > strong {
   color: var(--g-text);
   font-weight: 650;
+}
+/* With an app highlight (ThemeProvider highlight), what is chosen right now takes it: tiles,
+   people rows and pictures get its ring and tick; without one the selection colour stays. */
+.g-visual-choice-group:is([data-layout='tiles'], [data-layout='people'])
+  .g-visual-choice:has(input:checked) {
+  border-color: var(--g-mark, var(--g-selection));
+  background: color-mix(in srgb, var(--g-mark, var(--g-selection)) 14%, var(--g-surface));
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice:has(input:checked) {
+  box-shadow: 0 0 0 1px var(--g-mark, var(--g-selection));
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice:has(input:checked)::after,
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice:has(input:checked)
+  .g-visual-choice-preview::after {
+  background: var(--g-mark, var(--g-selection));
+  color: var(--g-onMark, var(--g-onSelection));
+}
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice:has(input:checked)
+  .g-visual-choice-preview
+  > * {
+  outline-color: var(--g-mark, var(--g-selection));
+}
+/* Tiles read like the website's: the icon in a soft rounded box, the words beneath, left aligned. */
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice {
+  align-items: flex-start;
+  padding: 1rem 1.1rem;
+  border-radius: max(calc(var(--g-radius) * 2), 1.25rem);
+  text-align: start;
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice:has(input:checked) {
+  padding: calc(1rem - 1px) calc(1.1rem - 1px);
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice-preview {
+  width: 2.75rem;
+  height: 2.75rem;
+  min-height: 0;
+  border-radius: 0.85rem;
+  background: var(--g-tint);
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice-preview .g-icon {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+.g-visual-choice-group[data-layout='tiles']
+  .g-visual-choice:has(input:checked)
+  .g-visual-choice-preview {
+  background: var(--g-mark, var(--g-selection));
+  color: var(--g-onMark, var(--g-onSelection));
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice-caption {
+  justify-items: start;
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice-caption > strong {
+  font-weight: 700;
 }
 /* Several picked at once: each choice can show controls (such as a count) beneath it. */
 .g-visual-choice-item {
@@ -7488,6 +7615,50 @@ button.g-agenda-event:hover {
 }
 .g-postcard-stage[data-size='large'] {
   max-height: 40rem;
+}
+/* A handwritten note tucked over the card's lower end corner, like one left on the table. */
+.g-postcard-note {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-end: -1.25rem;
+  width: min(56%, 18rem);
+  max-height: 55%;
+  overflow: hidden;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.6rem;
+  background: color-mix(in srgb, var(--g-mark, var(--g-surface)) 6%, var(--g-surface));
+  color: color-mix(in srgb, var(--g-primary) 75%, var(--g-text));
+  box-shadow: 0 10px 24px rgba(var(--g-shadow-color), 0.18);
+  font-family: var(--g-hand-font, var(--g-font));
+  font-size: var(--g-type-lead-size);
+  line-height: 1.15;
+  text-align: start;
+  rotate: 3deg;
+  transition:
+    opacity var(--g-duration) var(--g-ease),
+    translate var(--g-duration) var(--g-ease);
+}
+.g-postcard-note :is(.g-text, .g-heading) {
+  font: inherit;
+  color: inherit;
+}
+.g-postcard-note :is(.g-text, .g-heading)[data-weight='strong'] {
+  font-weight: 700;
+}
+.g-postcard-note[data-shown='false'] {
+  opacity: 0;
+  translate: 0 0.75rem;
+}
+@media (max-width: 760px) /* breakpoints.compact */ {
+  .g-postcard-note {
+    font-size: var(--g-type-body-size);
+    padding: 0.5rem 0.65rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-postcard-note {
+    transition: none;
+  }
 }
 button.g-postcard-stage {
   cursor: pointer;

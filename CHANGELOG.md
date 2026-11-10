@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.30.0 — 10 November 2026
+
+- `ThemeProvider highlight` (`{ color, on }`) and `handFont`: an app-supplied warm highlight for what is chosen right now (the current step on a brand header, chosen tiles, people rows and pictures) and a handwriting face for card notes. Inherited like `displayFont`.
+- `PostcardStage note`: a handwritten note tucked over the card's lower corner while its picture side shows.
+- `EditorLayout appearance="panels"`: the document on one soft panel with its actions as the footer, the preview on a tinted stage.
+- `PageHeader tone="brand"`: a compact `Stepper` shows every step's name on wide screens (numbers only on phones), and the compact title is a little smaller.
+- `VisualChoiceGroup layout="tiles"`: the icon sits in a soft rounded box and the words are left aligned.
+
 ## 0.29.0 — 10 November 2026
 
 - `PageHeader progress`, `headingLevel` (1 or 2) and `titleId`: a step's progress above its question, a second-level title for pages that already have an `h1`, and a title code can focus. On a `brand` header a compact `Stepper` takes readable pill colours, and the block keeps soft corners in square themes.

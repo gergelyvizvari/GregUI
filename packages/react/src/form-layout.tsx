@@ -4,8 +4,14 @@ import { useId, type ReactNode } from 'react';
 export function EditorLayout({
   children,
   aside,
+  appearance = 'plain',
 }: {
   children: ReactNode;
+  /**
+   * `panels` sets the document on one soft surface panel (its `FormActions` become the panel's
+   * footer) and a preview aside on a tinted stage beside it, like a website's product shot.
+   */
+  appearance?: 'plain' | 'panels';
   /**
    * A named column beside the document. With `preview` it is a live preview of the work: a
    * wider column that stays in view while the document scrolls, and above it when stacked.
@@ -17,6 +23,7 @@ export function EditorLayout({
       className="g-editor-layout"
       data-aside={!!aside}
       data-aside-kind={aside?.preview ? 'preview' : undefined}
+      data-appearance={appearance === 'panels' ? 'panels' : undefined}
     >
       <div className="g-editor-main">{children}</div>
       {aside && (
