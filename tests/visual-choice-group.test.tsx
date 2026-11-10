@@ -172,3 +172,32 @@ it('marks highlighted and quiet people choices', () => {
     'true',
   );
 });
+it('opens a large view from the eye button without choosing, and chooses from there', async () => {
+  const onChange = vi.fn();
+  const onPick = vi.fn();
+  render(
+    <VisualChoiceGroup
+      label="Design"
+      layout="masonry"
+      options={[
+        { value: 'a', label: 'Alpine', preview: 'Mountains', enlarge: 'Big mountains' },
+        { value: 'c', label: 'Greeting', preview: 'Hello' },
+      ]}
+      value={null}
+      onChange={onChange}
+      onPick={onPick}
+      enlargeLabels={{ open: 'View larger', choose: 'Choose this' }}
+    />,
+  );
+  const user = userEvent.setup();
+  // Only options with a large view get the button.
+  expect(screen.getAllByRole('button', { name: /View larger/ })).toHaveLength(1);
+  await user.click(screen.getByRole('button', { name: 'View larger: Alpine' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Alpine' });
+  expect(dialog).toHaveTextContent('Big mountains');
+  expect(onChange).not.toHaveBeenCalled();
+  await user.click(screen.getByRole('button', { name: 'Choose this' }));
+  expect(onChange).toHaveBeenCalledWith('a');
+  expect(onPick).toHaveBeenCalledWith('a');
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});

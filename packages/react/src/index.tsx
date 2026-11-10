@@ -182,6 +182,7 @@ export {
   VisualChoiceGroup,
   type VisualChoiceGroupProps,
   type VisualChoiceOption,
+  type VisualChoiceEnlargeLabels,
 } from './visual-choice-group';
 export {
   DocumentPreview,

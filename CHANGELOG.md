@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.28.0 — 10 November 2026
+
+- `VisualChoiceGroup enlargeLabels` (`open`, optional `choose`) with an option's `enlarge`: an eye button on the choice opens its large view in a dialog without choosing it; `choose` adds a button there that chooses it (calls `onChange` then `onPick`). Gallery and masonry put the button on the preview's top start corner, away from the tick; it grows to 44px on touch screens.
+
 ## 0.27.0 — 7 November 2026
 
 - `Board onMove` / `canMove` and `BoardItem` (`id`, `label`, `movable`): items drag between lanes with the mouse, and a handle menu in each item's corner moves it by keyboard or touch (package messages `move`, `moveItem`, `moveTo`, in English and Hungarian). Lanes an item may go to show a dashed edge while it drags and fill in under it. The app does the moving.

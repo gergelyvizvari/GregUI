@@ -1,5 +1,9 @@
 # Verification record — 29 September 2026
 
+## Visual choice large view (0.28.0)
+
+Added `VisualChoiceGroup enlargeLabels` and an option's `enlarge`. `npm run check` passed with 601 unit/interaction/SSR tests and all builds. A new interaction check covers the eye button only on options with a large view, opening the dialog without changing the selection, and choosing from it. Browser suites were not run for this change and the button was not visually reviewed in dark mode or RTL.
+
 ## Hungarian package messages
 
 Added a complete Hungarian `Messages` catalog and language-based selection in `LocaleProvider`. `npm run check` passed with 416 unit/interaction/SSR tests and all builds. Five new unit checks cover catalog completeness against English, locale-to-catalog selection and English fallback, Hungarian Pagination copy with an application override, Hungarian number/date formatting and Hungarian calendar month, weekday and navigation labels in server rendering. The workbench and calendar browser suites passed in Chromium only (89 tests), including the Hungarian authentication demo, which now relies on the built-in catalog. Translations were written by an AI assistant and have not had a native-speaker review; Firefox, WebKit and mobile were not run locally.
