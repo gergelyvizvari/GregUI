@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.31.0 — 10 November 2026
+
+- `EditorLayout` preview: the sticky preview stays below a sticky `AppShell` masthead instead of sliding under it (AppShell measures it into `--g-shell-sticky-size`).
+- `PostcardStage note`: smaller and lower, so it covers only the card's corner; longer text fades out.
+
 ## 0.30.0 — 10 November 2026
 
 - `ThemeProvider highlight` (`{ color, on }`) and `handFont`: an app-supplied warm highlight for what is chosen right now (the current step on a brand header, chosen tiles, people rows and pictures) and a handwriting face for card notes. Inherited like `displayFont`.

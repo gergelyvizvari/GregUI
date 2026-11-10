@@ -237,6 +237,23 @@ export function AppShell({
     observer.observe(area);
     return () => observer.disconnect();
   }, [hasBanner]);
+  const toolbarRef = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const bar = toolbarRef.current;
+    if (!stickyMasthead || appearance !== 'editorial' || !bar) return;
+    if (typeof ResizeObserver === 'undefined') return;
+    // Sticky content below a sticky masthead (a preview beside a form) starts under it, never
+    // behind it. The toolbar row is the masthead's height on every width.
+    const shell = bar.closest<HTMLElement>('.g-app-shell');
+    const observer = new ResizeObserver(() =>
+      shell?.style.setProperty('--g-shell-sticky-size', `${bar.offsetHeight}px`),
+    );
+    observer.observe(bar);
+    return () => {
+      observer.disconnect();
+      shell?.style.removeProperty('--g-shell-sticky-size');
+    };
+  }, [stickyMasthead, appearance]);
   return (
     <div
       className="g-app-shell"
@@ -304,7 +321,7 @@ export function AppShell({
             {banner}
           </div>
         )}
-        <div className="g-toolbar" data-sticky={stickyToolbar || undefined}>
+        <div className="g-toolbar" ref={toolbarRef} data-sticky={stickyToolbar || undefined}>
           <div className="g-mobile-nav">
             <Drawer
               open={navOpen}

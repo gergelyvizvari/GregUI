@@ -4794,7 +4794,8 @@ body {
 }
 .g-editor-layout[data-aside='true'][data-aside-kind='preview'] > .g-editor-aside {
   position: sticky;
-  top: 1rem;
+  /* Below a sticky masthead, not behind it: AppShell measures it into --g-shell-sticky-size. */
+  top: calc(var(--g-shell-sticky-size, 0px) + 1rem);
 }
 .g-editor-layout[data-aside='false'] {
   max-width: 56rem;
@@ -7616,22 +7617,24 @@ button.g-agenda-event:hover {
 .g-postcard-stage[data-size='large'] {
   max-height: 40rem;
 }
-/* A handwritten note tucked over the card's lower end corner, like one left on the table. */
+/* A small handwritten note tucked under the card's lower end corner, like one left on the
+   table: it overlaps only the corner and fades out rather than covering the picture. */
 .g-postcard-note {
   position: absolute;
   inset-inline-end: 0;
-  inset-block-end: -1.25rem;
-  width: min(56%, 18rem);
-  max-height: 55%;
+  inset-block-end: -1.75rem;
+  width: min(40%, 13rem);
+  max-height: 30%;
   overflow: hidden;
-  padding: 0.75rem 0.9rem;
+  mask-image: linear-gradient(to bottom, var(--g-text) 70%, transparent);
+  padding: 0.5rem 0.7rem;
   border-radius: 0.6rem;
   background: color-mix(in srgb, var(--g-mark, var(--g-surface)) 6%, var(--g-surface));
   color: color-mix(in srgb, var(--g-primary) 75%, var(--g-text));
   box-shadow: 0 10px 24px rgba(var(--g-shadow-color), 0.18);
   font-family: var(--g-hand-font, var(--g-font));
-  font-size: var(--g-type-lead-size);
-  line-height: 1.15;
+  font-size: var(--g-type-body-size);
+  line-height: 1.1;
   text-align: start;
   rotate: 3deg;
   transition:
@@ -7651,8 +7654,8 @@ button.g-agenda-event:hover {
 }
 @media (max-width: 760px) /* breakpoints.compact */ {
   .g-postcard-note {
-    font-size: var(--g-type-body-size);
-    padding: 0.5rem 0.65rem;
+    width: min(46%, 11rem);
+    padding: 0.4rem 0.55rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {
