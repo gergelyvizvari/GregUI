@@ -1858,6 +1858,72 @@ body {
 .g-page-header[data-tone='brand'] .g-text[data-tone='muted'] {
   opacity: 0.88;
 }
+/* The block keeps soft corners even in a square theme, like the website's hero. */
+.g-page-header[data-tone='brand'] {
+  border-radius: max(calc(var(--g-radius) * 1.5), 1.25rem);
+}
+.g-page-header > .g-stack:has(> .g-page-progress) {
+  max-width: none;
+}
+/* Steps on the block: the current one is a light pill, finished ones are soft, later ones faint. */
+.g-page-header[data-tone='brand'] .g-stepper li {
+  border-color: color-mix(in srgb, currentColor 30%, transparent);
+}
+.g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li {
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+.g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li[aria-current='step'] {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding-inline-end: 0.85rem;
+  background: var(--g-surface);
+  color: var(--g-text);
+}
+.g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] .g-step-summary {
+  margin-inline-end: 0.5rem;
+}
+.g-page-header[data-tone='brand']
+  .g-stepper[data-compact='true']
+  li[aria-current='step']
+  > span:last-child {
+  min-width: 0;
+}
+.g-page-header[data-tone='brand']
+  .g-stepper[data-compact='true']
+  li[aria-current='step']
+  .g-step-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-page-header[data-tone='brand'] {
+    padding: 1.25rem;
+  }
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] {
+    gap: 0.35rem;
+  }
+}
+.g-page-header[data-tone='brand'] .g-stepper li[aria-current='step'] .g-step-number {
+  background: var(--g-primary);
+  border-color: var(--g-primary);
+  color: var(--g-onPrimary);
+}
+.g-page-header[data-tone='brand'] .g-stepper li[data-complete='true'] .g-step-number {
+  background: var(--g-surface);
+  border-color: var(--g-surface);
+  color: var(--g-primary);
+}
+.g-page-header[data-tone='brand'] .g-step-summary,
+.g-page-header[data-tone='brand'] .g-step-description {
+  color: inherit;
+  opacity: 0.85;
+}
+.g-page-header[data-tone='brand'] .g-step-button {
+  color: inherit;
+}
 /* A primary action would vanish into the block, so it takes the page surface instead. */
 .g-page-header[data-tone='brand'] .g-button[data-variant='primary'] {
   background: var(--g-surface);
@@ -5162,7 +5228,8 @@ body {
   gap: 0.6rem;
   padding: 1rem 0.75rem 0.85rem;
   border-width: 1px;
-  border-radius: calc(var(--g-radius) * 1.5);
+  /* Big friendly choices keep soft corners even in a square theme. */
+  border-radius: max(calc(var(--g-radius) * 1.5), 0.75rem);
   text-align: center;
   transition:
     transform var(--g-duration) var(--g-ease),
@@ -5218,7 +5285,7 @@ body {
   min-height: 4.25rem;
   padding: 0.75rem 1rem;
   border: 1px solid color-mix(in srgb, var(--g-border) 40%, transparent);
-  border-radius: calc(var(--g-radius) * 1.5);
+  border-radius: max(calc(var(--g-radius) * 1.5), 0.75rem);
   background: var(--g-surface);
   box-shadow: 0 1px 2px color-mix(in srgb, var(--g-text) 6%, transparent);
   transition:

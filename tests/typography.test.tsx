@@ -92,3 +92,21 @@ it('preserves native content semantics and accessible links inside a reading con
   expect(within(article).getByRole('link', { name: 'guide' })).toHaveAttribute('href', '/guide');
   expect(screen.getByText('A quotation.').closest('blockquote')).not.toBeNull();
 });
+
+it('puts progress above a second-level page title that code can focus', () => {
+  render(
+    <PageHeader
+      tone="brand"
+      headingLevel={2}
+      titleId="step-question"
+      title="Who is it for?"
+      progress={<ol aria-label="Progress" />}
+    />,
+  );
+  const title = screen.getByRole('heading', { level: 2, name: 'Who is it for?' });
+  expect(title).toHaveAttribute('id', 'step-question');
+  expect(title).toHaveAttribute('tabindex', '-1');
+  const progress = screen.getByRole('list', { name: 'Progress' });
+  expect(progress.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(screen.queryByRole('heading', { level: 1 })).toBeNull();
+});

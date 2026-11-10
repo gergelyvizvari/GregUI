@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.29.0 — 10 November 2026
+
+- `PageHeader progress`, `headingLevel` (1 or 2) and `titleId`: a step's progress above its question, a second-level title for pages that already have an `h1`, and a title code can focus. On a `brand` header a compact `Stepper` takes readable pill colours, and the block keeps soft corners in square themes.
+- `VisualChoiceGroup` tiles and people rows keep soft corners (at least 0.75rem) in square themes.
+
 ## 0.28.0 — 10 November 2026
 
 - `VisualChoiceGroup enlargeLabels` (`open`, optional `choose`) with an option's `enlarge`: an eye button on the choice opens its large view in a dialog without choosing it; `choose` adds a button there that chooses it (calls `onChange` then `onPick`). Gallery and masonry put the button on the preview's top start corner, away from the tick; it grows to 44px on touch screens.

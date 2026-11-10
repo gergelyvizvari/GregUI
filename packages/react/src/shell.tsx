@@ -33,6 +33,9 @@ export function PageHeader({
   artwork,
   breadcrumbs,
   meta,
+  progress,
+  headingLevel = 1,
+  titleId,
   size = 'default',
   tone = 'default',
 }: {
@@ -44,6 +47,18 @@ export function PageHeader({
   tone?: 'default' | 'brand';
   breadcrumbs?: ReactNode;
   meta?: ReactNode;
+  /**
+   * Where a multi-step task stands, above the title (normally a compact `Stepper`). In a `brand`
+   * header the steps take readable colours on the block.
+   */
+  progress?: ReactNode;
+  /** 2 when the page already has its `h1`, such as a wizard asking one question per step. */
+  headingLevel?: 1 | 2;
+  /**
+   * The title's id. The title can then take focus from code (`tabIndex={-1}`), so moving to a
+   * new step can announce its question.
+   */
+  titleId?: string;
   size?: 'default' | 'compact';
   eyebrow?: string;
   title: string;
@@ -59,12 +74,13 @@ export function PageHeader({
     >
       <Stack gap={3}>
         {breadcrumbs}
+        {progress && <div className="g-page-progress">{progress}</div>}
         {eyebrow && (
           <Text size="eyebrow" tone="primary">
             {eyebrow}
           </Text>
         )}
-        <Heading level={1} size="page">
+        <Heading level={headingLevel} size="page" id={titleId} tabIndex={titleId ? -1 : undefined}>
           {title}
         </Heading>
         {description && (
