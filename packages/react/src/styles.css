@@ -6228,7 +6228,7 @@ body {
   place-content: center;
   text-align: center;
   font-family: var(--g-hand-font, var(--g-font));
-  font-size: 1.3em;
+  font-size: var(--g-type-lead-size);
   line-height: 1.2;
 }
 .g-mail-face[data-variant='postcard'] .g-mail-message :is(.g-text, .g-heading) {
