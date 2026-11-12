@@ -6222,6 +6222,21 @@ body {
   font: inherit;
 }
 
+/* A postcard's message: handwriting, centred in its half of the card, as it is printed. */
+.g-mail-face[data-variant='postcard'] .g-mail-message {
+  display: grid;
+  place-content: center;
+  text-align: center;
+  font-family: var(--g-hand-font, var(--g-font));
+  font-size: 1.3em;
+  line-height: 1.2;
+}
+.g-mail-face[data-variant='postcard'] .g-mail-message :is(.g-text, .g-heading) {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
 /* Inside a folded card: the message alone, centred, in the display face. */
 .g-mail-face[data-variant='inside'] .g-mail-message {
   inset: 14mm 12mm;

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.32.0 — 12 November 2026
+
+- `MailFace` postcard: the message is written in the handwriting face (`ThemeProvider handFont`) and centred in its half of the card, matching how it is printed.
+
 ## 0.31.0 — 10 November 2026
 
 - `EditorLayout` preview: the sticky preview stays below a sticky `AppShell` masthead instead of sliding under it (AppShell measures it into `--g-shell-sticky-size`).
