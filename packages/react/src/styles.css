@@ -1902,8 +1902,11 @@ body {
   clip-path: inset(50%);
   white-space: nowrap;
 }
-.g-page-header[data-tone='brand'][data-size='compact'] .g-heading {
-  font-size: calc(var(--g-type-page-size) * 0.85);
+/* The brand block's question is set the same inside an editorial AppShell and on its own (such
+   as a page under a website header), so a flow looks alike signed in and signed out. */
+.g-page-header[data-tone='brand'] .g-heading[data-size='page'] {
+  letter-spacing: -0.055em;
+  font-size: clamp(2.2rem, 4vw, 3.65rem);
   line-height: 1.05;
 }
 .g-page-header[data-tone='brand']

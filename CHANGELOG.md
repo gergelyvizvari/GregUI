@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.33.0 — 14 November 2026
+
+- `PageHeader tone="brand"`: the title has the same size and tracking on its own as inside an editorial `AppShell`, so a page under a website header matches the app.
+
 ## 0.32.0 — 12 November 2026
 
 - `MailFace` postcard: the message is written in the handwriting face (`ThemeProvider handFont`) and centred in its half of the card, matching how it is printed.
