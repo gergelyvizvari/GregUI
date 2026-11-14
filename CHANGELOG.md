@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.35.0 — 14 November 2026
+
+- `PageHeader tone="brand" size="compact"`: a tighter block and a smaller question, for a step in a flow, so the form under it fits on one screen.
+- `EditorLayout appearance="panels"` with a preview: the card shrinks with a short window, so form and preview fit together; on a narrow screen the form comes first and the preview follows.
+- `PageHeader hideTitle`: the title stays for screen readers (and focus) but takes no room, so a brand block can show just the steps.
+
 ## 0.33.0 — 14 November 2026
 
 - `PageHeader tone="brand"`: the title has the same size and tracking on its own as inside an editorial `AppShell`, so a page under a website header matches the app.

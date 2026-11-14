@@ -13,7 +13,7 @@ All public exports go through `packages/react/src/index.tsx`, which re-exports t
 - `CardLink` (`href`, `onClick`, children) inside a `Card` makes the whole card open one record: the title reads as plain heading text, the card lifts on hover and shows the focus ring when the link has keyboard focus. Buttons, checkboxes and other links in the card stay clickable on their own. One per card; the app owns navigation (pass `onClick` and call `preventDefault` for client-side routing).
 - `Text`, `Heading`: explicit semantic heading levels (h1–h6) and separate visual sizes. Text adds opt-in `lead` and `caption` roles. Application authors must choose logical heading order.
 - `Prose`: opt-in reading flow for native headings, paragraphs, lists, quotes, figures/captions, links, code and simple tables; defaults to a 65ch reading measure. `measure="full"` removes that cap.
-- `Section level` chooses h2–h6 for correctly nested named sections; the default remains h2. PageHeader adds optional breadcrumbs/meta slots and `size="compact"`. See [typography and page foundations](#typography-and-page-foundations).
+- `Section level` chooses h2–h6 for correctly nested named sections; the default remains h2. PageHeader adds optional breadcrumbs/meta slots and `size="compact"` (on a `brand` block: a tighter block and smaller title, for a step in a flow); `hideTitle` keeps the title for screen readers and focus only, taking no room. See [typography and page foundations](#typography-and-page-foundations).
 
 ## Forms and actions
 

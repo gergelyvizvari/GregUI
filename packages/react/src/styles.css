@@ -1944,6 +1944,41 @@ body {
     padding-inline-end: 0.25rem;
   }
 }
+/* A compact brand block (a step in a flow) keeps the question smaller and the block tighter, so
+   the form under it fits on one screen. */
+.g-page-header[data-tone='brand'][data-size='compact'] {
+  margin-bottom: 0;
+  padding: clamp(1rem, 2.5vw, 1.5rem) clamp(1.25rem, 3vw, 2rem);
+}
+.g-page-header[data-tone='brand'][data-size='compact'] .g-heading[data-size='page'] {
+  letter-spacing: -0.04em;
+  font-size: clamp(1.6rem, 2.6vw, 2.35rem);
+}
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-page-header[data-tone='brand'][data-size='compact'] {
+    padding: 1rem;
+  }
+}
+/* PageHeader hideTitle: the title is kept for screen readers only and takes no room, so a brand
+   block can hold just the steps. */
+.g-page-header .g-heading[data-size='page']:has(> .g-sr-only:only-child) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+/* Panels beside a card preview: the card shrinks with a short window, so the form and its preview
+   fit on one screen together. On a narrow screen the form comes first and the preview follows. */
+.g-editor-layout[data-appearance='panels'][data-aside-kind='preview'] .g-postcard-stage {
+  max-height: max(14rem, min(28rem, calc(100dvh - 26rem)));
+}
+@media (max-width: 860px) /* off-scale: component threshold */ {
+  .g-editor-layout[data-appearance='panels'][data-aside='true'][data-aside-kind='preview']
+    > .g-editor-aside {
+    order: 1;
+  }
+}
 .g-page-header[data-tone='brand'] .g-stepper li[aria-current='step'] .g-step-number {
   background: var(--g-onMark, var(--g-primary));
   border-color: var(--g-onMark, var(--g-primary));

@@ -36,6 +36,7 @@ export function PageHeader({
   progress,
   headingLevel = 1,
   titleId,
+  hideTitle = false,
   size = 'default',
   tone = 'default',
 }: {
@@ -59,6 +60,11 @@ export function PageHeader({
    * new step can announce its question.
    */
   titleId?: string;
+  /**
+   * Keeps the title for screen readers only, taking no room, such as when the steps above it
+   * already say where you are.
+   */
+  hideTitle?: boolean;
   size?: 'default' | 'compact';
   eyebrow?: string;
   title: string;
@@ -81,7 +87,7 @@ export function PageHeader({
           </Text>
         )}
         <Heading level={headingLevel} size="page" id={titleId} tabIndex={titleId ? -1 : undefined}>
-          {title}
+          {hideTitle ? <span className="g-sr-only">{title}</span> : title}
         </Heading>
         {description && (
           <Text tone="muted" size="large">
