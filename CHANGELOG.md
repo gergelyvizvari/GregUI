@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.35.2 — 15 November 2026
+
+- `Stepper compact` in a `PageHeader tone="brand"` block: on phones every step shows its short name under its number, not only the current one; long names are cut with an ellipsis. Wider screens are unchanged.
+- `AuthForm codeFirst`: on the email-code screen, "Sign in with a password" is a small, muted text link under the form instead of a ghost button as large as the main action. Other modes keep "Back to sign in" as before.
+
 ## 0.35.0 — 14 November 2026
 
 - `PageHeader tone="brand" size="compact"`: a tighter block and a smaller question, for a step in a flow, so the form under it fits on one screen.

@@ -431,9 +431,19 @@ function AuthFormScreen({
                       </Button>
                     )}
                   </>
+                ) : codeFirst && mode === 'email-code' ? (
+                  // Code first: the password way stays available but quiet, so the code is the
+                  // one clear action.
+                  <button
+                    type="button"
+                    className="g-auth-quiet-link"
+                    onClick={() => onNavigate('login')}
+                  >
+                    {m.authUsePassword}
+                  </button>
                 ) : (
                   <Button variant="ghost" onClick={() => onNavigate('login')}>
-                    {codeFirst && mode === 'email-code' ? m.authUsePassword : m.authBackLogin}
+                    {m.authBackLogin}
                   </Button>
                 )}
               </div>

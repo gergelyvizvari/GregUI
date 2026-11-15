@@ -1,4 +1,6 @@
 import React from 'react';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, it, vi } from 'vitest';
@@ -188,4 +190,14 @@ it('shows what each finished step chose when compact', () => {
   expect(document.querySelectorAll('.g-step-summary')[0]).toHaveTextContent('Anna Kiss');
   // Without a summary, the step's own label stands in.
   expect(document.querySelectorAll('.g-step-summary')[1]).toHaveTextContent('Which card?');
+});
+
+it('names every step under its number on phones in a brand block', () => {
+  const css = readFileSync(join(process.cwd(), 'packages/react/src/styles.css'), 'utf8');
+  const phone = css.slice(css.indexOf('Phones: every step is an equal column'));
+  const rules = phone.slice(0, phone.indexOf('\n}\n'));
+  // Labels are no longer hidden on phones; each step is a column with a small, cut-off name.
+  expect(rules).not.toContain('clip-path');
+  expect(rules).toContain('flex-direction: column');
+  expect(rules).toContain('text-overflow: ellipsis');
 });

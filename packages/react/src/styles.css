@@ -1927,21 +1927,55 @@ body {
   .g-page-header[data-tone='brand'] {
     padding: 1.25rem;
   }
-  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] {
-    gap: 0.35rem;
+  /* Phones: every step is an equal column, its number above a short name in small type, so
+     five steps fit side by side; a longer name is cut with an ellipsis (its title says it all). */
+  .g-page-header[data-tone='brand'] > .g-stack:has(> .g-page-progress) {
+    flex: 1 1 auto;
+    min-width: 0;
   }
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] {
+    gap: 0.25rem;
+  }
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] .g-step-number {
+    flex: none;
+    width: 1.75rem;
+  }
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li,
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li[aria-current='step'] {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.3rem 0.2rem 0.25rem;
+    border-radius: max(var(--g-radius), 0.85rem);
+  }
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] .g-step-button {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    width: 100%;
+    min-width: 0;
+  }
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li > span:last-child,
   .g-page-header[data-tone='brand']
     .g-stepper[data-compact='true']
-    li:not([aria-current='step'])
-    .g-step-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
+    .g-step-button
+    > span:last-child {
+    max-width: 100%;
+    min-width: 0;
   }
-  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li:not([aria-current='step']) {
-    padding-inline-end: 0.25rem;
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li .g-step-label,
+  .g-page-header[data-tone='brand']
+    .g-stepper[data-compact='true']
+    li[aria-current='step']
+    .g-step-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    font-size: var(--g-type-caption-size);
+    line-height: 1.2;
+    animation: none;
   }
 }
 /* A compact brand block (a step in a flow) keeps the question smaller and the block tighter, so
@@ -2615,6 +2649,29 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.5rem;
+}
+/* AuthForm codeFirst: the way back to a password is a small, muted text link, not a button. */
+.g-auth-quiet-link {
+  min-block-size: 2.75rem;
+  margin: 0;
+  padding: 0.5rem 0.25rem;
+  border: 0;
+  background: none;
+  color: var(--g-muted);
+  font: inherit;
+  font-size: var(--g-type-small-size);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+.g-auth-quiet-link:hover {
+  color: var(--g-text);
+}
+.g-auth-quiet-link:focus-visible {
+  outline: 2px solid var(--g-focus);
+  outline-offset: 2px;
+  border-radius: var(--g-radius);
 }
 .g-auth-feedback:has(> div:empty):not(:has(.g-alert)) {
   display: none;

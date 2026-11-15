@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import { AuthForm } from '@gregui/react';
 
@@ -17,4 +17,19 @@ it('puts the cursor in the code field when the code screen opens, but not on the
   expect(document.activeElement).not.toBe(screen.getByRole('textbox', { name: /email/i }));
   rerender(<AuthForm mode="verify-email" onSubmit={vi.fn()} />);
   expect(screen.getByLabelText(/code/i, { selector: 'input' })).toHaveFocus();
+});
+
+it('keeps the password way quiet on the code screen and the full button elsewhere', () => {
+  const onNavigate = vi.fn();
+  const { unmount } = render(
+    <AuthForm mode="email-code" codeFirst onSubmit={vi.fn()} onNavigate={onNavigate} />,
+  );
+  const quiet = screen.getByRole('button', { name: 'Sign in with a password' });
+  expect(quiet).toHaveClass('g-auth-quiet-link');
+  expect(quiet).not.toHaveClass('g-button');
+  fireEvent.click(quiet);
+  expect(onNavigate).toHaveBeenCalledWith('login');
+  unmount();
+  render(<AuthForm mode="email-code" onSubmit={vi.fn()} onNavigate={vi.fn()} />);
+  expect(screen.getByRole('button', { name: 'Back to sign in' })).toHaveClass('g-button');
 });
