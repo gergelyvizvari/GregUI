@@ -958,6 +958,44 @@ export function useAdvancedExamples(): CatalogEntry[] {
       />,
     ),
     entry(
+      'Credit Packs',
+      'Patterns',
+      'Pricing cards as one-off packs: a per-pack action, a custom recommended label and the same facts on the same line of every card. No payments are taken.',
+      '<PricingCards label="Credit packs" recommendedLabel="Best value" plans={packs} onSelect={buy} />',
+      <PricingCards
+        label="Credit packs"
+        recommendedLabel="Best value"
+        onSelect={() => undefined}
+        plans={[
+          {
+            id: 'one',
+            name: '1 printed card',
+            price: '£2.99',
+            description: '£2.99 a printed card',
+            features: ['3 credits', 'Single-card price'],
+            action: 'Buy 3 credits',
+          },
+          {
+            id: 'five',
+            name: '5 printed cards',
+            price: '£12.99',
+            description: '£2.60 a printed card',
+            features: ['15 credits', 'Save 13% on every card'],
+            action: 'Buy 15 credits',
+            recommended: true,
+          },
+          {
+            id: 'ten',
+            name: '10 printed cards, enough for a whole family season',
+            price: '£24.99',
+            description: '£2.50 a printed card',
+            features: ['30 credits', 'Save 16% on every card'],
+            action: 'Buy 30 credits',
+          },
+        ]}
+      />,
+    ),
+    entry(
       'Comments Panel',
       'Patterns',
       'Plain-text discussion with pending submission, preserved drafts on failure and retry.',

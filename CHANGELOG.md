@@ -1,5 +1,10 @@
 # Changelog
 
+## react 0.36.1 — 16 November 2026
+
+- `PricingCards` layout: the cards share their rows (CSS subgrid), so a plan name that wraps keeps every price, feature list and button level with its neighbours. Two to four plans sit side by side when they all fit their container and otherwise stack; three plans never break into two plus a lone one.
+- `PricingCards` look: the price is large in the display face with the description under it, features are a checkmarked list under a hairline, and the recommended badge is a filled primary pill. The recommended border and lift now also show when the cards sit inside another card.
+
 ## react 0.36.0 — 16 November 2026
 
 - `PricingCards`: `PricingPlan.action` sets a plan's button text (e.g. "Buy 12 credits"; default "Choose plan"), also used in its accessible label. `recommendedLabel` replaces the "Recommended" badge text.

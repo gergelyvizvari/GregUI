@@ -3535,19 +3535,54 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
 }
 
+/*
+ * Pricing cards share their rows through subgrid, so a plan name that wraps keeps every price,
+ * feature list and button on the same line as its neighbours. Two to four plans sit side by side
+ * when they all fit, otherwise they stack: never a lone card on a second row.
+ */
+.g-pricing {
+  container-type: inline-size;
+}
+.g-pricing-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+@container (min-width: 25rem) {
+  .g-pricing-grid[data-count='2'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container (min-width: 37rem) {
+  .g-pricing-grid[data-count='3'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@container (min-width: 50rem) {
+  .g-pricing-grid[data-count='4'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@container (min-width: 50rem) {
+  .g-pricing-grid:not([data-count='1'], [data-count='2'], [data-count='3'], [data-count='4']) {
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  }
+}
+
 /* Persistent selection must be distinguishable from recommendation and hover. */
 .g-pricing-card {
   padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 5;
+  row-gap: 1rem;
+  align-content: start;
   position: relative;
 }
-/* Recommended: primary border and a lift; the current outline (selection colour) still wins. */
-.g-pricing-card[data-recommended='true'] {
+.g-pricing-grid > .g-pricing-card[data-recommended='true'] {
   border: 2px solid var(--g-primary);
   padding: calc(1.5rem - 2px + var(--g-card-border-width));
-  box-shadow: 0 14px 32px -18px rgba(var(--g-shadow-color), 0.45);
+  box-shadow: 0 18px 36px -20px rgba(var(--g-shadow-color), 0.5);
 }
 .g-pricing-card[data-current='true'] {
   outline: 3px solid var(--g-selection);
@@ -3557,14 +3592,58 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  min-height: 2rem;
   align-items: flex-start;
 }
+.g-plan-flag > .g-badge {
+  background: var(--g-primary);
+  border-color: var(--g-primary);
+  color: var(--g-onPrimary);
+}
+.g-pricing-card .g-heading {
+  margin: 0;
+  align-self: end;
+}
+.g-plan-price {
+  display: grid;
+  gap: 0.25rem;
+  align-content: start;
+}
+.g-plan-amount {
+  margin: 0;
+  font-family: var(--g-display-font);
+  font-weight: var(--g-display-weight);
+  font-size: calc(var(--g-type-section-size) * 2);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--g-text);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.g-plan-features {
+  list-style: none;
+  margin: 0;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--g-line);
+  display: grid;
+  gap: 0.625rem;
+  align-content: start;
+}
+.g-plan-features li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+.g-plan-features .g-icon {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.125rem;
+  color: var(--g-primary);
+}
 .g-plan-action {
-  margin-top: auto;
   display: grid;
   gap: 0.75rem;
-  padding-top: 1rem;
+  align-content: end;
 }
 .g-plan-action .g-button {
   width: 100%;

@@ -8,6 +8,7 @@ import { Checkbox, Field, Select, Textarea, TextField } from './forms';
 import { Card, Inline, Stack } from './layout';
 import { DescriptionList } from './tables';
 import { Heading, Text } from './typography';
+import { Icon } from './icons';
 import { Metric } from './workbench';
 import { useAsyncAction } from './use-async-action';
 
@@ -684,8 +685,8 @@ export function PricingCards({
     void run(() => onSelect(id));
   }
   return (
-    <section aria-label={label}>
-      <div className="g-pattern-cards g-pricing-grid">
+    <section className="g-pricing" aria-label={label}>
+      <div className="g-pricing-grid" data-count={plans.length}>
         {plans.map((plan) => {
           const current = currentId === plan.id;
           const recommended = Boolean(plan.recommended);
@@ -707,17 +708,22 @@ export function PricingCards({
                   </Badge>
                 )}
                 {recommended && (
-                  <Badge tone="primary">{recommendedLabel ?? messages.recommended}</Badge>
+                  <span className="g-plan-flag">
+                    <Badge tone="primary">{recommendedLabel ?? messages.recommended}</Badge>
+                  </span>
                 )}
               </div>
               <Heading level={headingLevel}>{plan.name}</Heading>
-              <Text size="large" weight="strong">
-                {plan.price}
-              </Text>
-              <Text tone="muted">{plan.description}</Text>
-              <ul className="g-feature-list">
+              <div className="g-plan-price">
+                <p className="g-plan-amount">{plan.price}</p>
+                {plan.description && <Text tone="muted">{plan.description}</Text>}
+              </div>
+              <ul className="g-plan-features">
                 {plan.features.map((feature) => (
-                  <li key={feature}>{feature}</li>
+                  <li key={feature}>
+                    <Icon name="check" />
+                    <span>{feature}</span>
+                  </li>
                 ))}
               </ul>
               <div className="g-plan-action">
