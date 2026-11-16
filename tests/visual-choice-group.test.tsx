@@ -92,6 +92,33 @@ it('lays previews out as a gallery and still selects by clicking the picture', a
   await userEvent.setup().click(screen.getByText('Mountains'));
   expect(screen.getByRole('radio', { name: 'Alpine' })).toBeChecked();
 });
+it('lays previews out in masonry columns', () => {
+  render(
+    <VisualChoiceGroup
+      label="Design"
+      layout="masonry"
+      options={options}
+      value={null}
+      onChange={() => {}}
+    />,
+  );
+  expect(screen.getByRole('group', { name: 'Design' })).toHaveAttribute('data-layout', 'masonry');
+  expect(screen.getAllByRole('radio')).toHaveLength(options.length);
+});
+it('keeps hidden captions as the radios’ names', () => {
+  render(
+    <VisualChoiceGroup
+      label="Design"
+      layout="masonry"
+      hideCaptions
+      options={options}
+      value={null}
+      onChange={() => {}}
+    />,
+  );
+  expect(screen.getByRole('radio', { name: 'Alpine' })).toBeInTheDocument();
+  expect(screen.getByText('Alpine')).toHaveClass('g-sr-only');
+});
 it('reports a pointer pick, but not arrow keys or Space', async () => {
   const onPick = vi.fn();
   function Fixture() {
@@ -121,4 +148,56 @@ it('reports a pointer pick, but not arrow keys or Space', async () => {
   await user.click(screen.getByRole('radio', { name: 'Greeting' }));
   expect(onPick).toHaveBeenLastCalledWith('c');
   expect(onPick).toHaveBeenCalledTimes(2);
+});
+
+it('marks highlighted and quiet people choices', () => {
+  render(
+    <VisualChoiceGroup
+      label="Who"
+      layout="people"
+      options={[
+        { value: 'a', label: 'Anna', description: 'Birthday tomorrow', highlight: true },
+        { value: 'new', label: 'Someone else', quiet: true },
+      ]}
+      value={null}
+      onChange={() => {}}
+    />,
+  );
+  expect(screen.getByRole('radio', { name: 'Anna' }).closest('label')).toHaveAttribute(
+    'data-highlight',
+    'true',
+  );
+  expect(screen.getByRole('radio', { name: 'Someone else' }).closest('label')).toHaveAttribute(
+    'data-quiet',
+    'true',
+  );
+});
+it('opens a large view from the eye button without choosing, and chooses from there', async () => {
+  const onChange = vi.fn();
+  const onPick = vi.fn();
+  render(
+    <VisualChoiceGroup
+      label="Design"
+      layout="masonry"
+      options={[
+        { value: 'a', label: 'Alpine', preview: 'Mountains', enlarge: 'Big mountains' },
+        { value: 'c', label: 'Greeting', preview: 'Hello' },
+      ]}
+      value={null}
+      onChange={onChange}
+      onPick={onPick}
+      enlargeLabels={{ open: 'View larger', choose: 'Choose this' }}
+    />,
+  );
+  const user = userEvent.setup();
+  // Only options with a large view get the button.
+  expect(screen.getAllByRole('button', { name: /View larger/ })).toHaveLength(1);
+  await user.click(screen.getByRole('button', { name: 'View larger: Alpine' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Alpine' });
+  expect(dialog).toHaveTextContent('Big mountains');
+  expect(onChange).not.toHaveBeenCalled();
+  await user.click(screen.getByRole('button', { name: 'Choose this' }));
+  expect(onChange).toHaveBeenCalledWith('a');
+  expect(onPick).toHaveBeenCalledWith('a');
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });

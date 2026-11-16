@@ -1,5 +1,8 @@
 'use client';
-import { useId, useRef, type ReactNode } from 'react';
+import { Fragment, useId, useRef, useState, type ReactNode } from 'react';
+import { Button } from './buttons';
+import { Icon } from './icons';
+import { Dialog } from './overlays';
 
 export interface VisualChoiceOption {
   value: string;
@@ -10,11 +13,31 @@ export interface VisualChoiceOption {
   disabled?: boolean;
   /** Supply translated pending/unavailable feedback alongside disabled. */
   status?: string;
+  /** `people` layout: set this choice apart, such as someone celebrating soon. */
+  highlight?: boolean;
+  /** `people` layout: a lighter, dashed choice, such as "someone else". */
+  quiet?: boolean;
+  /**
+   * A large view of the choice, such as the picture at full size. With `enlargeLabels` an eye
+   * button on the choice opens it in a dialog, so people can look closely before choosing.
+   */
+  enlarge?: ReactNode;
+}
+export interface VisualChoiceEnlargeLabels {
+  /** The eye button's name, followed by the option's label ("View larger: Balloons"). */
+  open: string;
+  /** When given, the large view has a button with this text that chooses the option. */
+  choose?: string;
 }
 export interface VisualChoiceGroupProps {
   label: string;
   /** Keep the label for assistive technology only, when a heading above already asks it. */
   hideLabel?: boolean;
+  /**
+   * Keep the option labels for assistive technology only, when the pictures speak for
+   * themselves (for example a wall of card designs). Descriptions and status still show.
+   */
+  hideCaptions?: boolean;
   options: readonly VisualChoiceOption[];
   value: string | null;
   onChange: (value: string) => void;
@@ -26,22 +49,30 @@ export interface VisualChoiceGroupProps {
   /**
    * `gallery`: previews keep their own shape at one height, like prints laid out on a table;
    * the chosen one is ringed and ticked. Suits pictures of different proportions.
+   * `masonry`: like `gallery`, but each preview fills a column's width at its own height, in
+   * balanced columns, so many pictures of mixed proportions sit close together. Options run
+   * down the first column, then the next.
+   * `people`: one row per choice, an avatar or icon beside the name and a short note, for
+   * choosing a person; `highlight` sets a choice apart and `quiet` makes it a lighter extra.
    * `tiles`: big centred choices with a small preview (an avatar, icon or picture) above the
    * label, for quick choices such as who or how.
    * `notes`: text choices as small note cards, the label as a title and the description as the
    * text, for picking among written suggestions.
    */
-  layout?: 'grid' | 'gallery' | 'tiles' | 'notes';
+  layout?: 'grid' | 'gallery' | 'masonry' | 'tiles' | 'notes' | 'people';
   /**
    * Called when an option is clicked or tapped, after `onChange`, so an app can move on at
    * once. Arrow keys only change the selection; keyboard users confirm in the form as usual.
    */
   onPick?: (value: string) => void;
+  /** Turns on the eye button for options with `enlarge`. */
+  enlargeLabels?: VisualChoiceEnlargeLabels;
 }
 /** Controlled native radio selection with consistent directional keyboard navigation. */
 export function VisualChoiceGroup({
   label,
   hideLabel = false,
+  hideCaptions = false,
   options,
   value,
   onChange,
@@ -52,9 +83,12 @@ export function VisualChoiceGroup({
   required,
   layout = 'grid',
   onPick,
+  enlargeLabels,
 }: VisualChoiceGroupProps) {
   const id = useId();
   const pointer = useRef(false);
+  const [enlarged, setEnlarged] = useState<string | null>(null);
+  const shown = options.find((option) => option.value === enlarged && option.enlarge);
   const feedback =
     [hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ') || undefined;
   return (
@@ -71,82 +105,131 @@ export function VisualChoiceGroup({
         </p>
       )}
       <div className="g-visual-choice-options">
-        {options.map((option, index) => (
-          <label
-            className="g-visual-choice"
-            key={option.value}
-            data-disabled={!!option.disabled}
-            onPointerDown={() => {
-              pointer.current = true;
-            }}
-          >
-            <input
-              type="radio"
-              name={name ?? id}
-              value={option.value}
-              checked={value === option.value}
-              disabled={option.disabled}
-              required={required}
-              aria-labelledby={`${id}-${index}-label`}
-              aria-invalid={error ? true : undefined}
-              aria-describedby={
-                [
-                  option.description && `${id}-${index}-description`,
-                  option.status && `${id}-${index}-status`,
-                  feedback,
-                ]
-                  .filter(Boolean)
-                  .join(' ') || undefined
-              }
-              onChange={() => onChange(option.value)}
-              onClick={() => {
-                // Only a click or tap that started on this choice; Space also clicks a radio.
-                if (pointer.current) onPick?.(option.value);
-                pointer.current = false;
+        {options.map((option, index) => {
+          const choice = (
+            <label
+              className="g-visual-choice"
+              data-disabled={!!option.disabled}
+              data-highlight={option.highlight || undefined}
+              data-quiet={option.quiet || undefined}
+              onPointerDown={() => {
+                pointer.current = true;
               }}
-              onKeyDown={(event) => {
-                pointer.current = false;
-                if (
-                  !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(
-                    event.key,
+            >
+              <input
+                type="radio"
+                name={name ?? id}
+                value={option.value}
+                checked={value === option.value}
+                disabled={option.disabled}
+                required={required}
+                aria-labelledby={`${id}-${index}-label`}
+                aria-invalid={error ? true : undefined}
+                aria-describedby={
+                  [
+                    option.description && `${id}-${index}-description`,
+                    option.status && `${id}-${index}-status`,
+                    feedback,
+                  ]
+                    .filter(Boolean)
+                    .join(' ') || undefined
+                }
+                onChange={() => onChange(option.value)}
+                onClick={() => {
+                  // Only a click or tap that started on this choice; Space also clicks a radio.
+                  if (pointer.current) onPick?.(option.value);
+                  pointer.current = false;
+                }}
+                onKeyDown={(event) => {
+                  pointer.current = false;
+                  if (
+                    !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(
+                      event.key,
+                    )
                   )
-                )
-                  return;
-                event.preventDefault();
-                const radios = Array.from(
-                  event.currentTarget
-                    .closest('fieldset')!
-                    .querySelectorAll<HTMLInputElement>('input[type="radio"]:not(:disabled)'),
-                );
-                const current = radios.indexOf(event.currentTarget);
-                const rtl = getComputedStyle(event.currentTarget).direction === 'rtl';
-                const forward =
-                  event.key === 'ArrowDown' || event.key === (rtl ? 'ArrowLeft' : 'ArrowRight');
-                const next =
-                  event.key === 'Home'
-                    ? 0
-                    : event.key === 'End'
-                      ? radios.length - 1
-                      : (current + (forward ? 1 : -1) + radios.length) % radios.length;
-                radios[next]?.focus();
-                if (radios[next] && radios[next].value !== value) onChange(radios[next].value);
-              }}
-            />
-            {option.preview !== undefined && (
-              <span className="g-visual-choice-preview" aria-hidden="true">
-                {option.preview}
-              </span>
-            )}
-            <span className="g-visual-choice-caption">
-              <strong id={`${id}-${index}-label`}>{option.label}</strong>
-              {option.description && (
-                <span id={`${id}-${index}-description`}>{option.description}</span>
+                    return;
+                  event.preventDefault();
+                  const radios = Array.from(
+                    event.currentTarget
+                      .closest('fieldset')!
+                      .querySelectorAll<HTMLInputElement>('input[type="radio"]:not(:disabled)'),
+                  );
+                  const current = radios.indexOf(event.currentTarget);
+                  const rtl = getComputedStyle(event.currentTarget).direction === 'rtl';
+                  const forward =
+                    event.key === 'ArrowDown' || event.key === (rtl ? 'ArrowLeft' : 'ArrowRight');
+                  const next =
+                    event.key === 'Home'
+                      ? 0
+                      : event.key === 'End'
+                        ? radios.length - 1
+                        : (current + (forward ? 1 : -1) + radios.length) % radios.length;
+                  radios[next]?.focus();
+                  if (radios[next] && radios[next].value !== value) onChange(radios[next].value);
+                }}
+              />
+              {option.preview !== undefined && (
+                <span className="g-visual-choice-preview" aria-hidden="true">
+                  {option.preview}
+                </span>
               )}
-              {option.status && <span id={`${id}-${index}-status`}>{option.status}</span>}
-            </span>
-          </label>
-        ))}
+              <span className="g-visual-choice-caption">
+                <strong
+                  id={`${id}-${index}-label`}
+                  className={hideCaptions ? 'g-sr-only' : undefined}
+                >
+                  {option.label}
+                </strong>
+                {option.description && (
+                  <span id={`${id}-${index}-description`}>{option.description}</span>
+                )}
+                {option.status && <span id={`${id}-${index}-status`}>{option.status}</span>}
+              </span>
+            </label>
+          );
+          if (!enlargeLabels || option.enlarge === undefined)
+            return <Fragment key={option.value}>{choice}</Fragment>;
+          return (
+            <div className="g-visual-choice-item" data-enlargeable key={option.value}>
+              {choice}
+              <button
+                type="button"
+                className="g-visual-choice-enlarge"
+                aria-label={`${enlargeLabels.open}: ${option.label}`}
+                title={enlargeLabels.open}
+                disabled={disabled}
+                onClick={() => setEnlarged(option.value)}
+              >
+                <Icon name="eye" />
+              </button>
+            </div>
+          );
+        })}
       </div>
+      {shown && (
+        <Dialog
+          open
+          onOpenChange={(open) => !open && setEnlarged(null)}
+          size="large"
+          title={shown.label}
+          description={shown.description ?? ''}
+          footer={
+            enlargeLabels?.choose && !shown.disabled ? (
+              <Button
+                onClick={() => {
+                  setEnlarged(null);
+                  onChange(shown.value);
+                  onPick?.(shown.value);
+                }}
+              >
+                {enlargeLabels.choose}
+              </Button>
+            ) : undefined
+          }
+        >
+          <div className="g-visual-choice-enlarged">{shown.enlarge}</div>
+        </Dialog>
+      )}
       {/* One persistent live region, so status changes are announced reliably. */}
       <p className="g-sr-only" role="status">
         {options

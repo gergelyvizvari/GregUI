@@ -171,6 +171,7 @@ export const english = {
   authCodeSent: 'A new code has been requested.',
   authResend: 'Resend code',
   authBackLogin: 'Back to sign in',
+  authUsePassword: 'Sign in with a password',
   authOrRegisterEmail: 'or sign up with email',
   authContinueWith: 'Continue with {provider}',
   authCodeSentTo: 'Enter the code we sent to {email}.',
@@ -206,6 +207,9 @@ export const english = {
   numberInvalid: 'Enter a number.',
   numberTooLow: 'Enter {min} or more.',
   numberTooHigh: 'Enter {max} or less.',
+  move: 'Move',
+  moveItem: 'Move {item}',
+  moveTo: 'Move to {column}',
 };
 export type Messages = typeof english;
 /** Hungarian package messages. Uses the informal register common in Hungarian product UI. */
@@ -380,6 +384,7 @@ export const hungarian: Messages = {
   authCodeSent: 'Új kódot kértél.',
   authResend: 'Kód újraküldése',
   authBackLogin: 'Vissza a bejelentkezéshez',
+  authUsePassword: 'Belépés jelszóval',
   authOrRegisterEmail: 'vagy regisztrálj e-maillel',
   authContinueWith: 'Folytatás: {provider}',
   authCodeSentTo: 'Add meg a kódot, amelyet ide küldtünk: {email}.',
@@ -415,6 +420,9 @@ export const hungarian: Messages = {
   numberInvalid: 'Adj meg egy számot.',
   numberTooLow: 'Az érték legalább {min} legyen.',
   numberTooHigh: 'Az érték legfeljebb {max} lehet.',
+  move: 'Áthelyezés',
+  moveItem: '{item} áthelyezése',
+  moveTo: 'Áthelyezés ide: {column}',
 };
 const catalogs: Record<string, Messages> = { en: english, hu: hungarian };
 /** Built-in package messages for a BCP 47 locale's language, falling back to English. */

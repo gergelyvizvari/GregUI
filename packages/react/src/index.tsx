@@ -8,8 +8,28 @@ export {
   messagesFor,
 } from '@gregui/localization';
 export { createTheme, type Theme } from '@gregui/tokens';
-export { useTheme, useSystemMode, ThemeProvider, type ThemeColorScheme } from './theme';
-export { Stack, Inline, Grid, Split, Container, Card, CardLink, Section } from './layout';
+export {
+  useTheme,
+  useSystemMode,
+  ThemeProvider,
+  type ThemeColorScheme,
+  type ThemeDisplayFont,
+  type ThemeHighlight,
+} from './theme';
+export {
+  Stack,
+  Inline,
+  Grid,
+  Split,
+  Container,
+  Card,
+  CardLink,
+  Section,
+  Board,
+  BoardItem,
+  type BoardColumn,
+  type BoardMove,
+} from './layout';
 export {
   Text,
   Heading,
@@ -77,6 +97,14 @@ export {
   ErrorSummary,
 } from './feedback';
 export { Banner, type BannerProps } from './banner';
+export { QuantityStepper, type QuantityStepperProps } from './quantity-stepper';
+export { MediaRow } from './media-row';
+export {
+  VisualMultiChoiceGroup,
+  type VisualMultiChoiceGroupProps,
+  type VisualMultiChoiceOption,
+} from './visual-multi-choice-group';
+export { BarChart, type BarChartProps, type BarChartBar, type BarChartSeries } from './bar-chart';
 export { DescriptionList, Table } from './tables';
 export { type BreadcrumbItem, type BreadcrumbsProps, Breadcrumbs, Tabs } from './navigation';
 export {
@@ -105,7 +133,14 @@ export {
   Tooltip,
   Popover,
 } from './overlays';
-export { PageHeader, NavItem, AppShell, SkipLink, useSidebarCollapsed } from './shell';
+export {
+  PageHeader,
+  NavItem,
+  AppShell,
+  SkipLink,
+  useSidebarCollapsed,
+  type PhoneNavItem,
+} from './shell';
 export {
   PreviewStage,
   PreviewComposition,
@@ -175,6 +210,7 @@ export {
   VisualChoiceGroup,
   type VisualChoiceGroupProps,
   type VisualChoiceOption,
+  type VisualChoiceEnlargeLabels,
 } from './visual-choice-group';
 export {
   DocumentPreview,

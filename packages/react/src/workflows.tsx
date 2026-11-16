@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocale } from '@gregui/localization';
 import { Button } from './buttons';
 import { Alert } from './feedback';
@@ -113,6 +113,7 @@ export function Stepper({
   currentStep,
   label,
   onStepSelect,
+  reachedStep,
   compact = false,
 }: {
   steps: StepItem[];
@@ -120,42 +121,85 @@ export function Stepper({
   label?: string;
   /**
    * Makes completed steps buttons that go back to them; the consumer moves `currentStep`.
-   * Steps after the current one stay plain text.
+   * Steps after the current one stay plain text, unless `reachedStep` says they were reached.
    */
   onStepSelect?: (index: number) => void;
+  /**
+   * The furthest step reached so far. After going back, steps up to it stay finished and
+   * selectable, so people can jump forward again; the consumer checks the steps in between.
+   */
+  reachedStep?: number;
   /** One short row: numbers only, with the current step's label beside its number. */
   compact?: boolean;
 }) {
   const { messages } = useLocale();
+  const furthest = Math.max(reachedStep ?? currentStep, currentStep);
+  const done = (i: number) => i !== currentStep && i < furthest;
+  const selectable = (i: number) => i !== currentStep && i <= furthest;
+  const list = useRef<HTMLOListElement>(null);
+  const places = useRef(new Map<string, { x: number; y: number }>());
+  // Moving between steps, each number glides from where it was to its new place (FLIP), so the
+  // change reads as a move rather than a flash. Skipped when motion is reduced.
+  useLayoutEffect(() => {
+    const ol = list.current;
+    if (!ol) return;
+    const origin = ol.getBoundingClientRect();
+    const duration = parseFloat(getComputedStyle(ol).getPropertyValue('--g-duration-enter'));
+    const still =
+      !duration || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches !== false;
+    const next = new Map<string, { x: number; y: number }>();
+    ol.querySelectorAll<HTMLElement>('[data-step]').forEach((item) => {
+      const number = item.querySelector<HTMLElement>('.g-step-number');
+      if (!number) return;
+      const rect = number.getBoundingClientRect();
+      const place = { x: rect.left - origin.left, y: rect.top - origin.top };
+      const before = places.current.get(item.dataset.step!);
+      next.set(item.dataset.step!, place);
+      if (still || !before || !number.animate) return;
+      const [dx, dy] = [before.x - place.x, before.y - place.y];
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+      number.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], {
+        duration,
+        easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+      });
+    });
+    places.current = next;
+  }, [currentStep, furthest]);
   return (
-    <ol className="g-stepper" data-compact={compact} aria-label={label ?? messages.steps}>
+    <ol
+      ref={list}
+      className="g-stepper"
+      data-compact={compact}
+      aria-label={label ?? messages.steps}
+    >
       {steps.map((step, i) => {
         const content = (
           <>
             <span className="g-step-number" aria-hidden="true">
-              {i < currentStep ? '✓' : i + 1}
+              {done(i) ? '✓' : i + 1}
             </span>
             <span>
               {/* Compact: a finished step shows what was chosen (or its label) beside the tick. */}
-              {compact && i < currentStep && (
+              {compact && done(i) && (
                 <span className="g-step-summary" aria-hidden="true">
                   {step.description || step.label}
                 </span>
               )}
               <span className="g-step-label">{step.label}</span>
               {step.description && <span className="g-step-description">{step.description}</span>}
-              {i < currentStep && <span className="g-sr-only"> · {messages.completed}</span>}
+              {done(i) && <span className="g-sr-only"> · {messages.completed}</span>}
             </span>
           </>
         );
         return (
           <li
             key={step.value}
+            data-step={step.value}
             title={compact ? step.label : undefined}
             aria-current={i === currentStep ? 'step' : undefined}
-            data-complete={i < currentStep}
+            data-complete={done(i)}
           >
-            {onStepSelect && i < currentStep ? (
+            {onStepSelect && selectable(i) ? (
               <button type="button" className="g-step-button" onClick={() => onStepSelect(i)}>
                 {content}
               </button>

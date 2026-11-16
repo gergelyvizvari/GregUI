@@ -18,6 +18,214 @@
 - `suggestImportMapping`, `applyImportMapping` and `missingImportFields` helpers. Parsing and validation stay in the application.
 - New English and Hungarian `import*` messages.
 
+## react 0.36.1 — 16 November 2026
+
+- `PricingCards` layout: the cards share their rows (CSS subgrid), so a plan name that wraps keeps every price, feature list and button level with its neighbours. Two to four plans sit side by side when they all fit their container and otherwise stack; three plans never break into two plus a lone one.
+- `PricingCards` look: the price is large in the display face with the description under it, features are a checkmarked list under a hairline, and the recommended badge is a filled primary pill. The recommended border and lift now also show when the cards sit inside another card.
+
+## react 0.36.0 — 16 November 2026
+
+- `PricingCards`: `PricingPlan.action` sets a plan's button text (e.g. "Buy 12 credits"; default "Choose plan"), also used in its accessible label. `recommendedLabel` replaces the "Recommended" badge text.
+- `PricingCards` recommended plan stands out: a 2px primary border, a soft lift, a primary badge and a primary button (others stay secondary). The current plan keeps its own outline and checkmarked badge. The card carries `data-recommended="true"`. Same on phones.
+
+## 0.35.2 — 15 November 2026
+
+- `Stepper compact` in a `PageHeader tone="brand"` block: on phones every step shows its short name under its number, not only the current one; long names are cut with an ellipsis. Wider screens are unchanged.
+- `AuthForm codeFirst`: on the email-code screen, "Sign in with a password" is a small, muted text link under the form instead of a ghost button as large as the main action. Other modes keep "Back to sign in" as before.
+
+## 0.35.0 — 14 November 2026
+
+- `PageHeader tone="brand" size="compact"`: a tighter block and a smaller question, for a step in a flow, so the form under it fits on one screen.
+- `EditorLayout appearance="panels"` with a preview: the card shrinks with a short window, so form and preview fit together; on a narrow screen the form comes first and the preview follows.
+- `PageHeader hideTitle`: the title stays for screen readers (and focus) but takes no room, so a brand block can show just the steps.
+
+## 0.33.0 — 14 November 2026
+
+- `PageHeader tone="brand"`: the title has the same size and tracking on its own as inside an editorial `AppShell`, so a page under a website header matches the app.
+
+## 0.32.0 — 12 November 2026
+
+- `MailFace` postcard: the message is written in the handwriting face (`ThemeProvider handFont`) and centred in its half of the card, matching how it is printed.
+
+## 0.31.0 — 10 November 2026
+
+- `EditorLayout` preview: the sticky preview stays below a sticky `AppShell` masthead instead of sliding under it (AppShell measures it into `--g-shell-sticky-size`).
+- `PostcardStage note`: smaller and lower, so it covers only the card's corner; longer text fades out.
+
+## 0.30.0 — 10 November 2026
+
+- `ThemeProvider highlight` (`{ color, on }`) and `handFont`: an app-supplied warm highlight for what is chosen right now (the current step on a brand header, chosen tiles, people rows and pictures) and a handwriting face for card notes. Inherited like `displayFont`.
+- `PostcardStage note`: a handwritten note tucked over the card's lower corner while its picture side shows.
+- `EditorLayout appearance="panels"`: the document on one soft panel with its actions as the footer, the preview on a tinted stage.
+- `PageHeader tone="brand"`: a compact `Stepper` shows every step's name on wide screens (numbers only on phones), and the compact title is a little smaller.
+- `VisualChoiceGroup layout="tiles"`: the icon sits in a soft rounded box and the words are left aligned.
+
+## 0.29.0 — 10 November 2026
+
+- `PageHeader progress`, `headingLevel` (1 or 2) and `titleId`: a step's progress above its question, a second-level title for pages that already have an `h1`, and a title code can focus. On a `brand` header a compact `Stepper` takes readable pill colours, and the block keeps soft corners in square themes.
+- `VisualChoiceGroup` tiles and people rows keep soft corners (at least 0.75rem) in square themes.
+
+## 0.28.0 — 10 November 2026
+
+- `VisualChoiceGroup enlargeLabels` (`open`, optional `choose`) with an option's `enlarge`: an eye button on the choice opens its large view in a dialog without choosing it; `choose` adds a button there that chooses it (calls `onChange` then `onPick`). Gallery and masonry put the button on the preview's top start corner, away from the tick; it grows to 44px on touch screens.
+
+## 0.27.0 — 7 November 2026
+
+- `Board onMove` / `canMove` and `BoardItem` (`id`, `label`, `movable`): items drag between lanes with the mouse, and a handle menu in each item's corner moves it by keyboard or touch (package messages `move`, `moveItem`, `moveTo`, in English and Hungarian). Lanes an item may go to show a dashed edge while it drags and fill in under it. The app does the moving.
+- `ConfirmDialog`: `trigger` is optional; controlled `open` / `onOpenChange` let the app open it after an action of its own, such as a drop on a board.
+- New `grip` icon.
+- `AppShell` (standard): a menu taller than the screen scrolls inside the sidebar, so its last items stay in reach.
+
+## 0.26.0 — 7 November 2026
+
+- `ThemeProvider page`: the page never pans sideways; whatever pokes past its edge is clipped (sticky headers and bars keep working).
+- `AppShell stickyMasthead` with `tone="brand"`: pulled past its top (Safari's bounce), the page shows the masthead's colour above the header instead of a white gap.
+
+## 0.25.0 — 7 November 2026
+
+- `VisualChoiceGroup layout="tiles"`: on a phone, three tiles put the last one across the row instead of two and a lone one.
+
+## 0.24.0 — 6 November 2026
+
+- `Board`: items by where they stand in side-by-side lanes (`label`, `columns: { id, title, count?, emptyLabel?, children }[]`, `headingLevel`). Each lane is a named section on a quiet bounded surface with its title and an optional count badge; lanes keep equal widths and the board scrolls sideways instead of wrapping when they no longer fit.
+
+## 0.23.0 — 6 November 2026
+
+- `AppShell stickyMasthead` now also keeps the phone and small-tablet header at the top while the page scrolls, so it stays in reach and Safari tints its own bars in the header's colour.
+
+## 0.22.0 — 6 November 2026
+
+- Editorial `AppShell` on phones and small tablets: the header reads like a website header, with the brand in the display face at a readable size, the toolbar at the other end, and 44px icon buttons. New `brand` type role (`--g-type-brand-size`, `-line-height`, `-tracking`).
+
+## 0.21.0 — 6 November 2026
+
+- `AppShell stickyMasthead` (with `appearance="editorial"`): on wide screens the masthead (brand, navigation and toolbar) stays at the top while the page scrolls; phones keep their own bars.
+
+## 0.20.0 — 5 November 2026
+
+- `CommentsPanel`: `inputLabel` and `submitLabel` name the text box and button for what posting does (for example "Send answer by email"); `onSubmit` is optional, and without it the thread is read-only with no composer.
+
+## 0.19.0 — 5 November 2026
+
+- Phone tab bar: a form's sticky buttons (`FormActions`) sit above the bar instead of under it.
+- `VisualChoiceGroup layout="masonry"`: on phones a preview that is not a picture is only as tall as its words.
+
+## 0.18.0 — 5 November 2026
+
+- `Inline wrap={false}`: items stay on one row and long text wraps inside its own item, so an icon or button stays beside its sentence on narrow screens; buttons, badges and icons never shrink.
+- `AuthForm`: the code screens (`verify-email`, `two-factor`) put the cursor in the code field when they open, so the phone keyboard is ready.
+
+## 0.17.0 — 5 November 2026
+
+- `SegmentedControl phoneRow` (with `variant="chips"`): on phones the chips stay on one row that scrolls sideways, with the chosen chip in view.
+- `Stepper compact`: on phones one row of numbers; finished steps' summaries stay for screen readers only, so the stepper no longer wraps into several rows.
+
+## 0.16.1 — 5 November 2026
+
+- `VisualChoiceGroup layout="masonry"`: a preview that is not a picture (such as "your own picture") is a quiet dashed tile across the column, as in the gallery layout, instead of bare text.
+
+## 0.16.0 — 4 November 2026
+
+- New `MediaRow`: a list item led by a small picture, with text and actions (under the text on phones).
+- `Dialog`, `Drawer`, `FullscreenDialog`: `trigger` is optional, for overlays opened from a menu item with controlled `open`.
+
+## 0.15.0 — 4 November 2026
+
+- `AuthForm codeFirst`: for apps where the emailed code is the usual way in, the code screen links to "Sign in with a password" (new message `authUsePassword`).
+- `AuthForm rememberChoice={false}` hides "Keep me signed in" where sessions always last.
+
+## 0.14.0 — 4 November 2026
+
+- `AppShell phoneNav`: a bottom tab bar on phones with up to five destinations and an optional raised main action, instead of hiding them in the menu drawer.
+
+## 0.13.0 — 4 November 2026
+
+- New `VisualMultiChoiceGroup`: several pictures picked with a tap (checkboxes) in the gallery or masonry look, with optional controls under each chosen one.
+- New `QuantityStepper`: a compact "− 2 +" count in one pill, for small whole numbers such as how many of a card to order.
+
+## 0.12.1 — 4 November 2026
+
+- `VisualChoiceGroup layout="tiles"`: exactly four tiles sit two by two instead of three and one.
+
+## 0.12.0 — 4 November 2026
+
+- New `BarChart`: a small stacked bar chart for counts over a few periods (cards per day), with a legend for two or more series, an empty message, and the same numbers in a visually hidden table.
+
+## 0.11.9 — 4 November 2026
+
+- `CalendarAgenda groupBy="month"`: month headings capitalise only their first letter, so Hungarian reads "2027. február", not "2027. Február".
+
+## 0.11.8 — 4 November 2026
+
+- `CalendarAgenda groupBy="month"`: on phones the action moves under the entry's text, so titles keep the full row instead of wrapping beside the button.
+
+## 0.11.7 — 4 November 2026
+
+- `CalendarAgenda`: `groupBy="month"` is a compact planner list: a heading per month (with the year only outside the current one) and one row per entry in a card, with a date tile (day number and weekday; filled for today), the title, and a line with the relative day and `renderDetail`. The yearly label is left out, `tone="neutral"` entries are quieter and `renderAction` sits inside the row. Screen readers hear the title before the full date.
+
+## 0.11.6 — 4 November 2026
+
+- `PostcardStage`: the card keeps a hairline edge and a soft cast shadow in every preset, so a white card stays visible on a white page.
+
+## 0.11.5 — 4 November 2026
+
+- `DocumentPreview`: Fit now fits the whole page, height included, so an upright (portrait) page no longer runs off the bottom of the viewport; it updates when the window's height changes.
+
+## 0.11.4 — 4 November 2026
+
+- `CalendarMonth`: `size="large"` is a planner month with tall days that list their events as small coloured labels (dots on phones); `CalendarEvent tone` (`primary`, `accent`, `neutral`) colours them.
+- `AppShell`: `brandHref` (with `brandLinkComponent` for a router link) makes the brand a link home in the masthead and the phone header; the phone brand mark no longer shrinks.
+- `AppShell appearance="editorial"`: the one-row masthead now starts above 960px (was 1200px).
+
+## 0.11.3 — 4 November 2026
+
+- `Container`: `align="start"` keeps a narrow (form or reading) container against the leading edge, under a left-aligned page title.
+- `CalendarAgenda`: `renderAction` puts an action beside an entry (for example "Send a card"), next to the entry's own button rather than inside it; on phones it wraps below.
+
+## 0.11.2 — 4 November 2026
+
+- `AppShell`: `toolbarOverflow` holds secondary toolbar items (language, light/dark, sign out): at the end of the toolbar on wide screens, inside the menu drawer on narrow ones, so a phone header stays one row.
+- `AppShell appearance="editorial"`: the one-row masthead needs a wide screen (above 1200px); narrower windows get the menu drawer instead of a squeezed, wrapping masthead, and the header spans the full width. Brand and navigation labels no longer break mid-word.
+
+## 0.11.1 — 4 November 2026
+
+- `AppShell`: `tone="brand"` with `appearance="editorial"` sets the masthead (brand, navigation and toolbar) on the primary colour, like a website header on its hero; a deep tint in dark mode. The current page stays on the page surface.
+
+## 0.11.0 — 4 November 2026
+
+- `ThemeProvider`: `displayFont` (`{ family, weight? }`) sets the app's own display face for headings, inherited by nested providers and portals. The app loads the font; theme JSON is unchanged.
+- `AppShell appearance="editorial"`: on wider screens the brand, navigation and toolbar share one masthead row, like a website header, and `SideNav` items run sideways there; phones keep the menu drawer.
+- `PageHeader`: `tone="brand"` puts the header on a bold block of the primary colour (a deep tint in dark mode), like a landing page hero; text and buttons switch to readable colours on it.
+
+## 0.10.6 — 4 November 2026
+
+- `NumberField`: on an empty field the increase and decrease buttons (and arrow keys) step from 0, so up gives 1 and down −1; before, both jumped to `min`. When 0 is out of range it starts at the nearest limit.
+
+## 0.10.5 — 3 November 2026
+
+- `VisualChoiceGroup`: `layout="people"` shows one calm row per choice, avatar or icon beside the name and a short note; an option's `highlight` sets it apart with a festive edge and the note as a pill, `quiet` makes it a lighter dashed extra.
+- `Avatar`: `colorful` puts the initials on a soft theme hue picked from the name, the same every time.
+
+## 0.10.4 — 3 November 2026
+
+- `Stepper`: moving between steps, each number glides to its new place and the new step's name fades in, so the move reads as a move; skipped when motion is reduced.
+
+## 0.10.3 — 3 November 2026
+
+- `SideNav`: `badgeTone: 'attention'` fills an item's badge with the primary colour for work waiting there; the collapsed rail keeps it as a dot.
+
+## 0.10.2 — 3 November 2026
+
+- `Stepper`: `reachedStep` keeps steps already reached finished and selectable after going back, so people can jump forward again.
+
+## 0.10.1 — 3 November 2026
+
+- `VisualChoiceGroup`: `hideCaptions` keeps option labels for assistive technology only, when the pictures speak for themselves.
+
+## 0.10.0 — 3 November 2026
+
+- `VisualChoiceGroup`: `layout="masonry"` shows previews at a column's full width and their own height, in balanced columns, for a large set of mixed pictures; selection looks the same as `gallery`.
+
 ## 0.9.0 — 3 November 2026
 
 - `EditorLayout`: `aside.preview` for a live preview beside the document: a wider column that stays in view while scrolling, above the document when stacked.

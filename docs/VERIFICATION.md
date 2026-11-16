@@ -1,5 +1,9 @@
 # Verification record — 29 September 2026
 
+## Visual choice large view (0.28.0)
+
+Added `VisualChoiceGroup enlargeLabels` and an option's `enlarge`. `npm run check` passed with 601 unit/interaction/SSR tests and all builds. A new interaction check covers the eye button only on options with a large view, opening the dialog without changing the selection, and choosing from it. Browser suites were not run for this change and the button was not visually reviewed in dark mode or RTL.
+
 ## Passwordless and generalised social sign-in (KH-14) — 4 November 2026
 
 Added `PasswordlessSignIn` (request → code entry → complete, with resend countdown, optional expiry, change-email, `AuthResult` error/retry and focus moved to the code field or heading after each step) and `AuthForm socialProviders`/`socialModes`; Google/Apple callbacks now go through the same provider list. Eight new English/Hungarian messages. The workbench Authentication page gains a "Passwordless email code" flow, a "Google, Apple and Microsoft" provider option, providers on registration, and the login screen's "Email me a code instead" link opens the new journey. No new CSS.
@@ -547,3 +551,11 @@ Added `HeroSection`, `FeatureGrid`, `Testimonials`, `LogoCloud` and `CtaBand` wi
 ## MonthDayField and 0.5.0 — 30 October 2026
 
 Added `MonthDayField` and `daysInMonth` with five English/Hungarian messages, requested by KindHello's contact form (KH-39). `npm run check` passed with 549 tests (five new in `tests/month-day-field.test.tsx`: grouped month/day selection saving a date without a year; 29 February without a year, clamping to 28 for a non-leap year and the day option count; Hungarian month names with month-first order and English day-first order; the group's accessible description from `error`; `daysInMonth`), types, both style boundaries with unchanged literal counts, all builds and current style guides; `npm run format:check` passed. In Chromium, in the KindHello web app on the 0.5.0 tarballs (Bloom/Lagoon, dark mode, 1280px): Hungarian showed month before day with Hungarian month names, February offered 29 days, saved values reloaded into the edit form, and the English list formatted the date as "29 February". Not verified: browser e2e and axe runs, narrow screens for this field, light mode, Firefox, WebKit, RTL in a browser and manual screen-reader use.
+
+## Board moves and controlled ConfirmDialog — 7 November 2026
+
+Added `Board onMove`/`canMove` with `BoardItem` (HTML drag and drop between lanes plus a handle menu that lists the lanes an item may go to, for keyboard and touch) and a controlled, trigger-less `ConfirmDialog`. `npm run check` passed with 600 unit/interaction/SSR tests and all builds. New unit checks cover a plain board without `onMove` (no handles, nothing draggable), the handle menu in Hungarian with `canMove` filtering its lanes and `onMove` receiving the move, drag start/over/drop marking only the lanes the item may go to and calling `onMove` once, and the controlled ConfirmDialog opening from app state, confirming, cancelling and closing through `onOpenChange`. Drag and drop was exercised in jsdom with a stand-in `dataTransfer`; real pointer drags, touch devices (which rely on the handle menu) and browser drag images were not run in a real browser here. Firefox and WebKit were not run locally.
+
+## PricingCards action text and recommended highlight — 16 November 2026
+
+Added `PricingPlan.action`, `PricingCards recommendedLabel` and the recommended-card styling (2px primary border, lift, primary badge and button, `data-recommended`), requested for KindHello's credit packs. `npm run check` passed with 608 tests (one new interaction test in `tests/expansion.test.tsx`), types, style boundaries, builds and style guides; formatting passed. Follow-up (0.36.1, shared rows, display price, checkmarked features): screenshots of a three-pack Credit Packs catalog entry were reviewed in Chromium for Cream light and dark and Flat light at a wide container (three aligned columns) and Cream at a narrow container and a 390px viewport (stacked). The Chromium pricing and catalog browser checks passed (36, including axe in every preset, light and dark). Firefox, WebKit, mobile emulation and the rest of the browser suite were not run for this change.

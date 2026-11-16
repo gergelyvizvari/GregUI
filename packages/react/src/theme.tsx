@@ -34,6 +34,29 @@ interface ThemeState {
   /** Device mode; null during server rendering and hydration, or when not following the system. */
   systemMode: Mode | null;
   scheme?: SystemScheme;
+  /** App-supplied display face for headings, inherited by nested providers and portals. */
+  displayFont?: ThemeDisplayFont;
+  /** App-supplied highlight colour and handwriting face, inherited like the display face. */
+  highlight?: ThemeHighlight;
+  handFont?: string;
+}
+
+/**
+ * A display face the app loads itself (for example with `next/font`): a CSS `font-family` value
+ * and an optional weight. It replaces the preset's display face for headings only.
+ */
+export interface ThemeDisplayFont {
+  family: string;
+  weight?: number;
+}
+/**
+ * A warm highlight the app brings for what is chosen right now (the current step, a chosen tile),
+ * as CSS colour values: `color` and the text colour on it, `on`. Without one, those use the
+ * theme's selection colour.
+ */
+export interface ThemeHighlight {
+  color: string;
+  on: string;
 }
 const defaultTheme = createTheme();
 const ThemeContext = createContext<ThemeState>({
@@ -93,6 +116,16 @@ function ThemeFrame({
   // Variables that differ by mode come from the scoped stylesheet so CSS can pick them before
   // JavaScript knows the device preference; inline values would override it.
   if (scheme) for (const name of Object.keys(scheme.light)) delete variables[name];
+  if (state.displayFont) {
+    variables['--g-display-font'] = state.displayFont.family;
+    if (state.displayFont.weight)
+      variables['--g-display-weight'] = String(state.displayFont.weight);
+  }
+  if (state.highlight) {
+    variables['--g-mark'] = state.highlight.color;
+    variables['--g-onMark'] = state.highlight.on;
+  }
+  if (state.handFont) variables['--g-hand-font'] = state.handFont;
   return (
     <div
       className={`g-theme${portal ? ' g-portal' : ''}`}
@@ -130,9 +163,24 @@ export function ThemeProvider({
   theme,
   colorScheme,
   page = false,
+  displayFont,
+  highlight,
+  handFont,
   children,
 }: {
   theme?: Theme;
+  /**
+   * A warm highlight for what is chosen right now: the current step on a brand header and chosen
+   * tiles. Inherited like `displayFont`; theme JSON is unchanged.
+   */
+  highlight?: ThemeHighlight;
+  /** A handwriting face the app loads itself (a CSS `font-family` value), for notes on cards. */
+  handFont?: string;
+  /**
+   * The app's own display face for headings. Nested providers and portals inherit it unless they
+   * set their own. Theme JSON is unchanged: fonts stay an app decision, not stored theme data.
+   */
+  displayFont?: ThemeDisplayFont;
   /**
    * `'system'` follows the device's light/dark preference, including live changes, and renders
    * both variants in CSS so the first paint matches the device. Defaults to `'theme'`, or to the
@@ -149,8 +197,15 @@ export function ThemeProvider({
 }) {
   const inherited = useContext(ThemeContext);
   const inherit =
-    theme === undefined && (colorScheme ?? inherited.colorScheme) === inherited.colorScheme;
-  const scheme = inherit ? inherited.colorScheme : (colorScheme ?? 'theme');
+    theme === undefined &&
+    displayFont === undefined &&
+    highlight === undefined &&
+    handFont === undefined &&
+    (colorScheme ?? inherited.colorScheme) === inherited.colorScheme;
+  // A provider that only sets a display font keeps its parent's light/dark handling.
+  const scheme = inherit
+    ? inherited.colorScheme
+    : (colorScheme ?? (theme === undefined ? inherited.colorScheme : 'theme'));
   const base = theme ?? (scheme === 'system' ? inherited.base : inherited.theme);
   const system = scheme === 'system';
   const id = useId();
@@ -172,6 +227,11 @@ export function ThemeProvider({
       Object.fromEntries(changed.map((name) => [name, vars[name]!]));
     return { light, dark, scheme: { id, light: pick(lightVars), dark: pick(darkVars) } };
   }, [owns, base, id]);
+  const font = displayFont ?? inherited.displayFont;
+  const extras = {
+    highlight: highlight ?? inherited.highlight,
+    handFont: handFont ?? inherited.handFont,
+  };
   let state: ThemeState;
   if (inherit) state = inherited;
   else if (variants)
@@ -181,8 +241,18 @@ export function ThemeProvider({
       colorScheme: 'system',
       systemMode,
       scheme: variants.scheme,
+      displayFont: font,
+      ...extras,
     };
-  else state = { theme: base, base, colorScheme: 'theme', systemMode: null };
+  else
+    state = {
+      theme: base,
+      base,
+      colorScheme: 'theme',
+      systemMode: null,
+      displayFont: font,
+      ...extras,
+    };
   return (
     <ThemeContext.Provider value={state}>
       {variants && <style dangerouslySetInnerHTML={{ __html: schemeStyles(variants.scheme) }} />}

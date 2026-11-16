@@ -133,8 +133,17 @@ export function NumberField({
   };
   const stepBy = (delta: number) => {
     const base = parsed !== null && !Number.isNaN(parsed) ? parsed : null;
+    // Empty steps from 0 (up gives one step, down minus one); when 0 is out of range it lands on
+    // the nearest limit instead.
+    const zeroInRange = (min === undefined || min <= 0) && (max === undefined || max >= 0);
     let next =
-      base === null ? (min ?? (max !== undefined && max < 0 ? max : 0)) : base + delta * step;
+      base !== null
+        ? base + delta * step
+        : zeroInRange
+          ? delta * step
+          : min !== undefined && min > 0
+            ? min
+            : (max as number);
     const precision = Math.max(
       decimals(step),
       decimals(min ?? 0),

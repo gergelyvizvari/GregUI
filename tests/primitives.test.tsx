@@ -128,3 +128,17 @@ describe('Avatar', () => {
     expect(screen.getByRole('img', { name: '3 more people' })).toHaveTextContent('+3');
   });
 });
+
+it('gives colourful avatars a stable hue from the name', () => {
+  const { container } = render(
+    <>
+      <Avatar name="Kiss Anna" colorful decorative />
+      <Avatar name="Kiss Anna" colorful decorative />
+      <Avatar name="Kiss Anna" decorative />
+    </>,
+  );
+  const [a, b, plain] = Array.from(container.querySelectorAll('.g-avatar'));
+  expect(a!.getAttribute('data-hue')).toMatch(/^[0-4]$/);
+  expect(b!.getAttribute('data-hue')).toBe(a!.getAttribute('data-hue'));
+  expect(plain).not.toHaveAttribute('data-hue');
+});

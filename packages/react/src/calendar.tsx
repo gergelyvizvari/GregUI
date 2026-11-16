@@ -65,6 +65,8 @@ export interface CalendarEvent {
   repeat?: 'yearly';
   /** Last date a repeating event can occur, inclusive. */
   until?: CalendarDate;
+  /** Colour of the event in a large month (`CalendarMonth size="large"`). Defaults to `primary`. */
+  tone?: 'primary' | 'accent' | 'neutral';
 }
 export interface CalendarOccurrence<E extends CalendarEvent = CalendarEvent> {
   event: E;
@@ -120,6 +122,8 @@ export function useDateFormat() {
     const make = (options: Intl.DateTimeFormatOptions) =>
       new Intl.DateTimeFormat(locale, { timeZone: 'UTC', ...options });
     const month = make({ month: 'long', year: 'numeric' });
+    const monthName = make({ month: 'long' });
+    const weekdayOf = make({ weekday: 'short' });
     const full = make({ weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     const medium = make({ day: 'numeric', month: 'short', year: 'numeric' });
     const short = make({ weekday: 'short' });
@@ -127,6 +131,10 @@ export function useDateFormat() {
     const relative = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
     return {
       month: (value: CalendarMonthValue) => month.format(toUTC(`${value}-01`)),
+      /** "November", without the year. */
+      monthName: (value: CalendarMonthValue) => monthName.format(toUTC(`${value}-01`)),
+      /** Short weekday of a date, for example "Wed". */
+      weekdayOf: (date: CalendarDate) => weekdayOf.format(toUTC(date)),
       full: (date: CalendarDate) => full.format(toUTC(date)),
       medium: (date: CalendarDate) => medium.format(toUTC(date)),
       // 2024-01-01 was a Monday, so day index 0..6 maps to Sunday..Saturday from 2023-12-31.
@@ -162,6 +170,11 @@ export interface CalendarMonthProps {
   today?: CalendarDate;
   /** Move focus into the grid on mount (used by DatePicker). */
   autoFocus?: boolean;
+  /**
+   * `large` is a planner month: tall days listing their events as small coloured labels (dots
+   * on phones), for pages where the calendar is the main view rather than a date picker.
+   */
+  size?: 'default' | 'large';
 }
 
 /** A month grid following the WAI-ARIA date grid pattern. */
@@ -180,6 +193,7 @@ export function CalendarMonth({
   weekStartsOn = 1,
   today: todayProp,
   autoFocus = false,
+  size = 'default',
 }: CalendarMonthProps) {
   const { messages } = useLocale();
   const format = useDateFormat();
@@ -199,7 +213,7 @@ export function CalendarMonth({
     return isDateUnavailable?.(date) || undefined;
   };
   const byDate = useMemo(() => {
-    const map = new Map<CalendarDate, string[]>();
+    const map = new Map<CalendarDate, CalendarEvent[]>();
     if (!events?.length) return map;
     for (const { event, date } of occurrencesBetween(
       events,
@@ -209,7 +223,7 @@ export function CalendarMonth({
         leapDay,
       },
     ))
-      map.set(date, [...(map.get(date) ?? []), event.title]);
+      map.set(date, [...(map.get(date) ?? []), event]);
     return map;
   }, [events, first, leapDay]);
   const start = addDays(first, -((weekday(first) - weekStartsOn + 7) % 7));
@@ -255,7 +269,7 @@ export function CalendarMonth({
   const order = Array.from({ length: 7 }, (_, i) => (i + weekStartsOn) % 7);
   const activeReason = reason(active);
   return (
-    <div className="g-calendar">
+    <div className="g-calendar" data-size={size === 'large' ? 'large' : undefined}>
       <div className="g-calendar-header">
         <IconButton
           variant="ghost"
@@ -301,7 +315,8 @@ export function CalendarMonth({
                 const outOfRange = (!!min && date < min) || (!!max && date > max);
                 const selected = value === date;
                 const extra = renderDay?.(date);
-                const titles = byDate.get(date);
+                const dayEvents = byDate.get(date);
+                const titles = dayEvents?.map((event) => event.title);
                 const described = [
                   blocked && `${id}-reason-${date}`,
                   titles && `${id}-events-${date}`,
@@ -330,13 +345,30 @@ export function CalendarMonth({
                         {Number(date.slice(8))}
                       </span>
                       {extra && <span className="g-calendar-extra">{extra}</span>}
-                      {titles && (
-                        <span className="g-calendar-extra g-calendar-events" aria-hidden="true">
-                          <span className="g-calendar-event-title">{titles[0]}</span>
-                          {titles.length > 1 && (
-                            <span className="g-calendar-more">+{titles.length - 1}</span>
+                      {dayEvents && size === 'large' ? (
+                        <span className="g-calendar-chips" aria-hidden="true">
+                          {dayEvents.slice(0, 3).map((event) => (
+                            <span
+                              key={event.id}
+                              className="g-calendar-chip"
+                              data-tone={event.tone ?? 'primary'}
+                            >
+                              {event.title}
+                            </span>
+                          ))}
+                          {dayEvents.length > 3 && (
+                            <span className="g-calendar-more">+{dayEvents.length - 3}</span>
                           )}
                         </span>
+                      ) : (
+                        titles && (
+                          <span className="g-calendar-extra g-calendar-events" aria-hidden="true">
+                            <span className="g-calendar-event-title">{titles[0]}</span>
+                            {titles.length > 1 && (
+                              <span className="g-calendar-more">+{titles.length - 1}</span>
+                            )}
+                          </span>
+                        )
                       )}
                       {titles && (
                         <span id={`${id}-events-${date}`} className="g-sr-only">

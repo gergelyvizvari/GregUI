@@ -33,11 +33,38 @@ export function PageHeader({
   artwork,
   breadcrumbs,
   meta,
+  progress,
+  headingLevel = 1,
+  titleId,
+  hideTitle = false,
   size = 'default',
+  tone = 'default',
 }: {
   artwork?: ReactNode;
+  /**
+   * `brand` sets the header on a bold block of the primary colour (a deep tint of it in dark
+   * mode), like a landing page hero; text and buttons switch to readable colours on it.
+   */
+  tone?: 'default' | 'brand';
   breadcrumbs?: ReactNode;
   meta?: ReactNode;
+  /**
+   * Where a multi-step task stands, above the title (normally a compact `Stepper`). In a `brand`
+   * header the steps take readable colours on the block.
+   */
+  progress?: ReactNode;
+  /** 2 when the page already has its `h1`, such as a wizard asking one question per step. */
+  headingLevel?: 1 | 2;
+  /**
+   * The title's id. The title can then take focus from code (`tabIndex={-1}`), so moving to a
+   * new step can announce its question.
+   */
+  titleId?: string;
+  /**
+   * Keeps the title for screen readers only, taking no room, such as when the steps above it
+   * already say where you are.
+   */
+  hideTitle?: boolean;
   size?: 'default' | 'compact';
   eyebrow?: string;
   title: string;
@@ -45,16 +72,22 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <header className="g-page-header" data-editorial={Boolean(artwork)} data-size={size}>
+    <header
+      className="g-page-header"
+      data-editorial={Boolean(artwork)}
+      data-size={size}
+      data-tone={tone === 'brand' ? 'brand' : undefined}
+    >
       <Stack gap={3}>
         {breadcrumbs}
+        {progress && <div className="g-page-progress">{progress}</div>}
         {eyebrow && (
           <Text size="eyebrow" tone="primary">
             {eyebrow}
           </Text>
         )}
-        <Heading level={1} size="page">
-          {title}
+        <Heading level={headingLevel} size="page" id={titleId} tabIndex={titleId ? -1 : undefined}>
+          {hideTitle ? <span className="g-sr-only">{title}</span> : title}
         </Heading>
         {description && (
           <Text tone="muted" size="large">
@@ -100,23 +133,49 @@ export function NavItem({
 }
 const railContext = { collapsed: true };
 const drawerContext = { collapsed: false };
+export interface PhoneNavItem {
+  id: string;
+  label: string;
+  icon: IconSource;
+  href: string;
+  /** The one main action (such as "Send a card"), raised in the middle of the bar. */
+  primary?: boolean;
+}
+
 export function AppShell({
+  phoneNav,
   brand,
   subtitle,
   nav,
   footer,
   toolbar,
+  toolbarOverflow,
   children,
   viewKey,
   appearance = 'standard',
+  tone = 'default',
   stickyToolbar = false,
+  stickyMasthead = false,
   brandMark,
+  brandHref,
+  brandLinkComponent: BrandLink = 'a',
   sidebarCollapsible = false,
   sidebarCollapsed,
   defaultSidebarCollapsed = false,
   onSidebarCollapsedChange,
   banner,
 }: {
+  /**
+   * Phones only: a bar of up to five destinations fixed at the bottom of the screen, within
+   * thumb reach, instead of hiding them in the menu drawer. `value` marks the current one;
+   * `linkComponent` routes client-side, like `LinkButton component`.
+   */
+  phoneNav?: {
+    label: string;
+    items: readonly PhoneNavItem[];
+    value?: string;
+    linkComponent?: React.ElementType;
+  };
   /**
    * Page-level Banner shown across the workspace above the toolbar. A sticky banner stays at the
    * top and a sticky toolbar then sits below it.
@@ -128,14 +187,35 @@ export function AppShell({
   defaultSidebarCollapsed?: boolean;
   onSidebarCollapsedChange?: (collapsed: boolean) => void;
   appearance?: 'standard' | 'editorial' | 'dashboard';
+  /**
+   * With `appearance="editorial"`, `brand` sets the masthead (brand, navigation and toolbar) on
+   * the primary colour, like a website header on its hero (a deep tint in dark mode).
+   */
+  tone?: 'default' | 'brand';
   stickyToolbar?: boolean;
+  /**
+   * With `appearance="editorial"`, keeps the masthead (brand, navigation and toolbar) at the top
+   * while the page scrolls; on phones and small tablets, the header with the brand and tools.
+   * With `tone="brand"`, the room above the header takes its colour when the page is pulled past
+   * its top (Safari's bounce).
+   */
+  stickyMasthead?: boolean;
   brandMark?: ReactNode;
+  /** Makes the brand (masthead and phone header) a link home, for example `/home`. */
+  brandHref?: string;
+  /** Router link component for `brandHref`, like `LinkButton component`; defaults to `a`. */
+  brandLinkComponent?: React.ElementType;
   viewKey?: string;
   brand: string;
   subtitle?: string;
   nav: ReactNode;
   footer?: ReactNode;
   toolbar?: ReactNode;
+  /**
+   * Secondary toolbar items (language, light/dark, sign out): at the end of the toolbar on wide
+   * screens, and inside the menu drawer on narrow ones, so the phone header stays one row.
+   */
+  toolbarOverflow?: ReactNode;
   children: ReactNode;
 }) {
   const { messages, direction } = useLocale();
@@ -163,18 +243,57 @@ export function AppShell({
     observer.observe(area);
     return () => observer.disconnect();
   }, [hasBanner]);
+  const toolbarRef = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const bar = toolbarRef.current;
+    if (!stickyMasthead || appearance !== 'editorial' || !bar) return;
+    if (typeof ResizeObserver === 'undefined') return;
+    // Sticky content below a sticky masthead (a preview beside a form) starts under it, never
+    // behind it. The toolbar row is the masthead's height on every width.
+    const shell = bar.closest<HTMLElement>('.g-app-shell');
+    const observer = new ResizeObserver(() =>
+      shell?.style.setProperty('--g-shell-sticky-size', `${bar.offsetHeight}px`),
+    );
+    observer.observe(bar);
+    return () => {
+      observer.disconnect();
+      shell?.style.removeProperty('--g-shell-sticky-size');
+    };
+  }, [stickyMasthead, appearance]);
   return (
-    <div className="g-app-shell" data-appearance={appearance}>
+    <div
+      className="g-app-shell"
+      data-phone-nav={phoneNav && !toolbarOverflow ? 'only' : phoneNav ? true : undefined}
+      data-appearance={appearance}
+      data-sticky-masthead={(appearance === 'editorial' && stickyMasthead) || undefined}
+      data-tone={tone === 'brand' ? 'brand' : undefined}
+    >
       <SkipLink href={`#${mainId}`} />
       <aside className="g-sidebar" data-collapsed={collapsed || undefined}>
         <div className="g-brand">
-          {brandMark ?? (
-            <span className="g-brand-mark">
-              g<span>↗</span>
-            </span>
-          )}
+          {(() => {
+            const mark = brandMark ?? (
+              <span className="g-brand-mark">
+                g<span>↗</span>
+              </span>
+            );
+            // The mark repeats the brand link for pointers; keyboards use the name's link.
+            return brandHref ? (
+              <BrandLink href={brandHref} className="g-brand-link" tabIndex={-1} aria-hidden="true">
+                {mark}
+              </BrandLink>
+            ) : (
+              mark
+            );
+          })()}
           <Stack gap={0}>
-            <Text weight="strong">{brand}</Text>
+            {brandHref ? (
+              <BrandLink href={brandHref} className="g-brand-link">
+                <Text weight="strong">{brand}</Text>
+              </BrandLink>
+            ) : (
+              <Text weight="strong">{brand}</Text>
+            )}
             {subtitle && (
               <Text size="small" tone="muted">
                 {subtitle}
@@ -208,7 +327,7 @@ export function AppShell({
             {banner}
           </div>
         )}
-        <div className="g-toolbar" data-sticky={stickyToolbar || undefined}>
+        <div className="g-toolbar" ref={toolbarRef} data-sticky={stickyToolbar || undefined}>
           <div className="g-mobile-nav">
             <Drawer
               open={navOpen}
@@ -233,19 +352,59 @@ export function AppShell({
               >
                 {nav}
               </nav>
+              {toolbarOverflow && <div className="g-drawer-settings">{toolbarOverflow}</div>}
             </Drawer>
             {/* On phones the sidebar is hidden, so the brand rides next to the menu button. */}
-            <span className="g-mobile-brand">
-              {brandMark ?? (
-                <span className="g-brand-mark" aria-hidden="true">
-                  g<span>↗</span>
-                </span>
-              )}
-              <Text weight="strong">{brand}</Text>
-            </span>
+            {(() => {
+              const content = (
+                <>
+                  {brandMark ?? (
+                    <span className="g-brand-mark" aria-hidden="true">
+                      g<span>↗</span>
+                    </span>
+                  )}
+                  <Text weight="strong">{brand}</Text>
+                </>
+              );
+              return brandHref ? (
+                <BrandLink href={brandHref} className="g-mobile-brand g-brand-link">
+                  {content}
+                </BrandLink>
+              ) : (
+                <span className="g-mobile-brand">{content}</span>
+              );
+            })()}
           </div>
-          {toolbar}
+          {toolbarOverflow ? (
+            <div className="g-toolbar-actions">
+              {toolbar}
+              <div className="g-toolbar-overflow">{toolbarOverflow}</div>
+            </div>
+          ) : (
+            toolbar
+          )}
         </div>
+        {phoneNav && (
+          <nav className="g-phone-nav" aria-label={phoneNav.label}>
+            {phoneNav.items.slice(0, 5).map((item) => {
+              const Link = phoneNav.linkComponent ?? 'a';
+              return (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className="g-phone-nav-item"
+                  data-primary={item.primary || undefined}
+                  aria-current={item.id === phoneNav.value ? 'page' : undefined}
+                >
+                  <span className="g-phone-nav-icon" aria-hidden="true">
+                    {renderIcon(item.icon)}
+                  </span>
+                  <span className="g-phone-nav-label">{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        )}
         <main className="g-main" id={mainId} tabIndex={-1}>
           {viewKey ? (
             <div key={viewKey} className="g-page-content">

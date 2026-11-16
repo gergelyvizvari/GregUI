@@ -90,7 +90,7 @@
       }
     },
     "fontSize": {
-      "count": 73,
+      "count": 75,
       "entries": {
         "font-size: 0.5625rem;": 2,
         "font-size: 0.6875rem;": 4,
@@ -114,8 +114,9 @@
         "font-size: 6px;": 1,
         "font-size: 8px;": 2,
         "font-size: clamp(1.5rem, 2vw, 2rem);": 2,
+        "font-size: clamp(1.6rem, 2.6vw, 2.35rem);": 1,
         "font-size: clamp(2.25rem, 3.6vw, 3.75rem);": 1,
-        "font-size: clamp(2.2rem, 4vw, 3.65rem);": 1,
+        "font-size: clamp(2.2rem, 4vw, 3.65rem);": 2,
         "font-size: clamp(2.5rem, 4.6vw, 4.8rem);": 1,
         "font-size: clamp(2rem, 3.2vw, 3rem);": 1
       }

@@ -179,6 +179,16 @@ export interface AuthFormProps {
    * accounts are made for people (staff tools, invitations).
    */
   registration?: boolean;
+  /**
+   * The email code is the usual way in: the code screen's way back reads "Sign in with a
+   * password" instead of "Back to sign in". Pair with starting on `email-code`.
+   */
+  codeFirst?: boolean;
+  /**
+   * Shows "Keep me signed in" on the login screen. Defaults to true; set false when sessions
+   * always last, so the box would change nothing.
+   */
+  rememberChoice?: boolean;
 }
 /** Providers own authentication, session persistence, token validation and rate limits. */
 export function AuthForm(props: AuthFormProps) {
@@ -205,6 +215,8 @@ function AuthFormScreen({
   headingLevel = 2,
   emailCode = false,
   registration = true,
+  codeFirst = false,
+  rememberChoice = true,
 }: AuthFormProps) {
   const { messages: m } = useLocale();
   const id = useId();
@@ -216,10 +228,15 @@ function AuthFormScreen({
   const [mismatch, setMismatch] = useState(false);
   const feedback = useRef<HTMLDivElement>(null);
   const confirm = useRef<HTMLInputElement>(null);
+  const code = useRef<HTMLInputElement>(null);
   const email = ['login', 'register', 'forgot-password', 'email-code'].includes(mode);
   const password = ['login', 'register', 'reset-password'].includes(mode);
   const newPassword = mode === 'register' || mode === 'reset-password';
   const verification = mode === 'verify-email' || mode === 'two-factor';
+  // A code screen always follows a step the person just took, so put them straight in the field.
+  useEffect(() => {
+    if (verification) code.current?.focus();
+  }, [verification]);
   const titles = {
     login: m.authLogin,
     register: m.authRegister,
@@ -390,8 +407,12 @@ function AuthFormScreen({
                 onInput={() => setMismatch(false)}
               />
             )}
-            {verification && <VerificationCodeField name="code" length={codeLength} required />}
-            {mode === 'login' && <Checkbox name="remember" label={m.authRemember} />}
+            {verification && (
+              <VerificationCodeField ref={code} name="code" length={codeLength} required />
+            )}
+            {mode === 'login' && rememberChoice && (
+              <Checkbox name="remember" label={m.authRemember} />
+            )}
             <Button
               type="submit"
               loading={pending && pendingAction === 'submit'}
@@ -426,6 +447,16 @@ function AuthFormScreen({
                       </Button>
                     )}
                   </>
+                ) : codeFirst && mode === 'email-code' ? (
+                  // Code first: the password way stays available but quiet, so the code is the
+                  // one clear action.
+                  <button
+                    type="button"
+                    className="g-auth-quiet-link"
+                    onClick={() => onNavigate('login')}
+                  >
+                    {m.authUsePassword}
+                  </button>
                 ) : (
                   <Button variant="ghost" onClick={() => onNavigate('login')}>
                     {m.authBackLogin}

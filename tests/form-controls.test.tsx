@@ -288,6 +288,19 @@ describe('NumberField', () => {
     await userEvent.type(input, '200');
     expect(input).toHaveAccessibleDescription('Enter 120 or less.');
   });
+  it('steps an empty field from zero in the direction pressed', async () => {
+    const { unmount } = render(<NumberField label="Change" min={-100} max={100} />);
+    const input = screen.getByRole('textbox', { name: 'Change' });
+    await userEvent.click(screen.getByRole('button', { name: /increase/i }));
+    expect(input).toHaveValue('1');
+    await userEvent.clear(input);
+    await userEvent.click(screen.getByRole('button', { name: /decrease/i }));
+    expect(input).toHaveValue('-1');
+    unmount();
+    render(<NumberField label="Age" min={18} max={120} />);
+    await userEvent.click(screen.getByRole('button', { name: /decrease/i }));
+    expect(screen.getByRole('textbox', { name: 'Age' })).toHaveValue('18');
+  });
   it('lets the application error replace built-in feedback', () => {
     render(<NumberField label="Seats" error="No seats left" defaultValue={500} max={10} />);
     expect(screen.getByRole('textbox', { name: 'Seats' })).toHaveAccessibleDescription(

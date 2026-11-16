@@ -11,6 +11,9 @@ import {
   Prose,
   Section,
   Text,
+  ThemeProvider,
+  PostcardStage,
+  EditorLayout,
 } from '@gregui/react';
 
 it('keeps deep heading semantics independent of visual size and labels nested sections correctly', () => {
@@ -91,4 +94,54 @@ it('preserves native content semantics and accessible links inside a reading con
   expect(within(article).getByRole('list')).toContainElement(screen.getByText('First step'));
   expect(within(article).getByRole('link', { name: 'guide' })).toHaveAttribute('href', '/guide');
   expect(screen.getByText('A quotation.').closest('blockquote')).not.toBeNull();
+});
+
+it('puts progress above a second-level page title that code can focus', () => {
+  render(
+    <PageHeader
+      tone="brand"
+      headingLevel={2}
+      titleId="step-question"
+      title="Who is it for?"
+      progress={<ol aria-label="Progress" />}
+    />,
+  );
+  const title = screen.getByRole('heading', { level: 2, name: 'Who is it for?' });
+  expect(title).toHaveAttribute('id', 'step-question');
+  expect(title).toHaveAttribute('tabindex', '-1');
+  const progress = screen.getByRole('list', { name: 'Progress' });
+  expect(progress.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(screen.queryByRole('heading', { level: 1 })).toBeNull();
+});
+
+it('carries an app highlight and handwriting face into the theme', () => {
+  const { container } = render(
+    <ThemeProvider highlight={{ color: 'gold', on: 'black' }} handFont="cursive">
+      <span>Hi</span>
+    </ThemeProvider>,
+  );
+  const frame = container.querySelector('.g-theme') as HTMLElement;
+  expect(frame.style.getPropertyValue('--g-mark')).toBe('gold');
+  expect(frame.style.getPropertyValue('--g-onMark')).toBe('black');
+  expect(frame.style.getPropertyValue('--g-hand-font')).toBe('cursive');
+});
+
+it('tucks a note on the picture side of a postcard and hides it on the back', () => {
+  const { container, rerender } = render(
+    <PostcardStage label="Card" front={<span />} back={<span />} note="Happy birthday" />,
+  );
+  const note = container.querySelector('.g-postcard-note')!;
+  expect(note).toHaveAttribute('data-shown', 'true');
+  expect(note).toHaveAttribute('aria-hidden', 'true');
+  rerender(<PostcardStage label="Card" side="back" front={<span />} back={<span />} note="Hi" />);
+  expect(container.querySelector('.g-postcard-note')).toHaveAttribute('data-shown', 'false');
+});
+
+it('sets the editor on panels when asked', () => {
+  const { container } = render(
+    <EditorLayout appearance="panels" aside={{ label: 'Preview', preview: true, content: 'x' }}>
+      y
+    </EditorLayout>,
+  );
+  expect(container.querySelector('.g-editor-layout')).toHaveAttribute('data-appearance', 'panels');
 });

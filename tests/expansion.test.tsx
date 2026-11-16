@@ -228,6 +228,31 @@ it('preserves a comment draft after rejection then clears it on success', async 
   await user.click(screen.getByRole('button', { name: 'Post comment' }));
   await waitFor(() => expect(screen.getByLabelText('Comment')).toHaveValue(''));
 });
+it('names the comment box and button for what posting does, or shows a read-only thread', async () => {
+  const user = userEvent.setup(),
+    save = vi.fn().mockResolvedValue(undefined);
+  const { rerender } = render(
+    <CommentsPanel
+      title="Conversation"
+      comments={[{ id: '1', author: 'Pat', dateLabel: 'Today', body: 'Hello' }]}
+      onSubmit={save}
+      inputLabel="Your answer"
+      submitLabel="Send answer by email"
+    />,
+  );
+  await user.type(screen.getByLabelText('Your answer'), 'Hi Pat');
+  await user.click(screen.getByRole('button', { name: 'Send answer by email' }));
+  expect(save).toHaveBeenCalledWith('Hi Pat');
+  rerender(
+    <CommentsPanel
+      title="Conversation"
+      comments={[{ id: '1', author: 'Pat', dateLabel: 'Today', body: 'Hello' }]}
+    />,
+  );
+  expect(screen.getByText('Hello')).toBeInTheDocument();
+  expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button')).not.toBeInTheDocument();
+});
 it('blocks both approval actions during a pending decision', async () => {
   let resolve!: () => void;
   const save = vi.fn(
@@ -301,6 +326,54 @@ it('disables current pricing plan and delegates other choices', async () => {
   expect(screen.getByRole('button', { name: 'Current plan: Free' })).toBeDisabled();
   await user.click(screen.getByRole('button', { name: 'Choose plan: Team' }));
   expect(choose).toHaveBeenCalledWith('b');
+});
+it('uses per-plan action text, a custom recommended label and highlights the recommended plan', async () => {
+  const user = userEvent.setup(),
+    choose = vi.fn();
+  render(
+    <PricingCards
+      label="Credit packs"
+      onSelect={choose}
+      recommendedLabel="Best value"
+      plans={[
+        {
+          id: 's',
+          name: '5 credits',
+          price: '£5',
+          description: '',
+          features: [],
+          action: 'Buy 5 credits',
+        },
+        {
+          id: 'm',
+          name: '12 credits',
+          price: '£10',
+          description: '',
+          features: [],
+          action: 'Buy 12 credits',
+          recommended: true,
+        },
+        { id: 'l', name: '30 credits', price: '£20', description: '', features: [] },
+      ]}
+    />,
+  );
+  const recommended = screen.getByRole('article', { name: '12 credits' });
+  expect(recommended).toHaveAttribute('data-recommended', 'true');
+  expect(screen.getByRole('article', { name: '5 credits' })).not.toHaveAttribute(
+    'data-recommended',
+  );
+  expect(within(recommended).getByText('Best value')).toBeVisible();
+  expect(screen.queryByText('Recommended')).not.toBeInTheDocument();
+  const primary = screen.getByRole('button', { name: 'Buy 12 credits: 12 credits' });
+  expect(primary).toHaveTextContent('Buy 12 credits');
+  expect(primary).toHaveAttribute('data-variant', 'primary');
+  expect(screen.getByRole('button', { name: 'Buy 5 credits: 5 credits' })).toHaveAttribute(
+    'data-variant',
+    'secondary',
+  );
+  expect(screen.getByRole('button', { name: 'Choose plan: 30 credits' })).toBeEnabled();
+  await user.click(primary);
+  expect(choose).toHaveBeenCalledWith('m');
 });
 it('filters commands and returns focus to the trigger after running one', async () => {
   const user = userEvent.setup(),

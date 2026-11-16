@@ -1,4 +1,6 @@
 import React from 'react';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, it, vi } from 'vitest';
@@ -135,6 +137,29 @@ it('lets people go back to completed steps when the consumer allows it', async (
   expect(screen.getByText('Words').closest('li')).toHaveAttribute('aria-current', 'step');
 });
 
+it('keeps steps already reached selectable after going back', async () => {
+  const select = vi.fn();
+  render(
+    <Stepper
+      currentStep={0}
+      reachedStep={2}
+      onStepSelect={select}
+      steps={[
+        { value: 'who', label: 'Who' },
+        { value: 'card', label: 'Card' },
+        { value: 'words', label: 'Words' },
+        { value: 'send', label: 'Send' },
+      ]}
+    />,
+  );
+  await userEvent.setup().click(screen.getByRole('button', { name: /Words/ }));
+  expect(select).toHaveBeenCalledWith(2);
+  // Card was finished; Words was reached but not finished; Send was never reached.
+  expect(screen.getByText('Card').closest('li')).toHaveAttribute('data-complete', 'true');
+  expect(screen.getByText('Words').closest('li')).toHaveAttribute('data-complete', 'false');
+  expect(screen.getAllByRole('button')).toHaveLength(2);
+});
+
 it('fits the steps on one row when compact', () => {
   render(
     <Stepper
@@ -165,4 +190,14 @@ it('shows what each finished step chose when compact', () => {
   expect(document.querySelectorAll('.g-step-summary')[0]).toHaveTextContent('Anna Kiss');
   // Without a summary, the step's own label stands in.
   expect(document.querySelectorAll('.g-step-summary')[1]).toHaveTextContent('Which card?');
+});
+
+it('names every step under its number on phones in a brand block', () => {
+  const css = readFileSync(join(process.cwd(), 'packages/react/src/styles.css'), 'utf8');
+  const phone = css.slice(css.indexOf('Phones: every step is an equal column'));
+  const rules = phone.slice(0, phone.indexOf('\n}\n'));
+  // Labels are no longer hidden on phones; each step is a column with a small, cut-off name.
+  expect(rules).not.toContain('clip-path');
+  expect(rules).toContain('flex-direction: column');
+  expect(rules).toContain('text-overflow: ellipsis');
 });

@@ -80,6 +80,7 @@ Use roles through component props such as `tone` and `variant`. Never hard-code 
 | `page` | `clamp(2rem, 3.4vw, 3.25rem)` | 1.15 | -0.035em |
 | `section` | `1.125rem` | 1.15 | -0.02em |
 | `card` | `1rem` | 1.15 | -0.01em |
+| `brand` | `1.3rem` | 1.1 | -0.02em |
 
 ## Spacing
 

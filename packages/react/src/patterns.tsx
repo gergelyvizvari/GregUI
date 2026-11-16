@@ -8,6 +8,7 @@ import { Checkbox, Field, Select, Textarea, TextField } from './forms';
 import { Card, Inline, Stack } from './layout';
 import { DescriptionList } from './tables';
 import { Heading, Text } from './typography';
+import { Icon } from './icons';
 import { Metric } from './workbench';
 import { useAsyncAction } from './use-async-action';
 
@@ -654,6 +655,8 @@ export interface PricingPlan {
   description: string;
   features: string[];
   recommended?: boolean;
+  /** Button text for this plan, e.g. "Buy 10 credits". Defaults to the localized "Choose plan". */
+  action?: string;
 }
 export function PricingCards({
   plans,
@@ -661,6 +664,7 @@ export function PricingCards({
   onSelect,
   label,
   headingLevel = 3,
+  recommendedLabel,
 }: {
   plans: PricingPlan[];
   currentId?: string;
@@ -668,6 +672,8 @@ export function PricingCards({
   label: string;
   /** Level of each plan name heading. Defaults to 3. */
   headingLevel?: 2 | 3 | 4 | 5 | 6;
+  /** Badge text on recommended plans, e.g. "Best value". Defaults to the localized "Recommended". */
+  recommendedLabel?: string;
 }) {
   const { messages } = useLocale();
   const [target, setTarget] = useState<string | null>(null);
@@ -679,51 +685,64 @@ export function PricingCards({
     void run(() => onSelect(id));
   }
   return (
-    <section aria-label={label}>
-      <div className="g-pattern-cards g-pricing-grid">
-        {plans.map((plan) => (
-          <article
-            key={plan.id}
-            className="g-card g-pricing-card"
-            aria-label={plan.name}
-            data-current={currentId === plan.id}
-            aria-current={currentId === plan.id ? 'true' : undefined}
-          >
-            <div className="g-plan-badges">
-              {currentId === plan.id && (
-                <Badge tone="primary">
-                  <span aria-hidden="true">✓ </span>
-                  {messages.currentPlan}
-                </Badge>
-              )}
-              {plan.recommended && <Badge>{messages.recommended}</Badge>}
-            </div>
-            <Heading level={headingLevel}>{plan.name}</Heading>
-            <Text size="large" weight="strong">
-              {plan.price}
-            </Text>
-            <Text tone="muted">{plan.description}</Text>
-            <ul className="g-feature-list">
-              {plan.features.map((feature) => (
-                <li key={feature}>{feature}</li>
-              ))}
-            </ul>
-            <div className="g-plan-action">
-              <Button
-                variant={currentId === plan.id ? 'primary' : 'secondary'}
-                disabled={currentId === plan.id || pending !== null}
-                loading={pending === plan.id}
-                aria-label={`${currentId === plan.id ? messages.currentPlan : messages.choosePlan}: ${plan.name}`}
-                onClick={() => void select(plan.id)}
-              >
-                {currentId === plan.id ? messages.currentPlan : messages.choosePlan}
-              </Button>
-              {failed && target === plan.id && (
-                <Alert tone="danger" live title={messages.workflowError} />
-              )}
-            </div>
-          </article>
-        ))}
+    <section className="g-pricing" aria-label={label}>
+      <div className="g-pricing-grid" data-count={plans.length}>
+        {plans.map((plan) => {
+          const current = currentId === plan.id;
+          const recommended = Boolean(plan.recommended);
+          const action = current ? messages.currentPlan : (plan.action ?? messages.choosePlan);
+          return (
+            <article
+              key={plan.id}
+              className="g-card g-pricing-card"
+              aria-label={plan.name}
+              data-current={current}
+              data-recommended={recommended || undefined}
+              aria-current={current ? 'true' : undefined}
+            >
+              <div className="g-plan-badges">
+                {current && (
+                  <Badge tone="primary">
+                    <span aria-hidden="true">✓ </span>
+                    {messages.currentPlan}
+                  </Badge>
+                )}
+                {recommended && (
+                  <span className="g-plan-flag">
+                    <Badge tone="primary">{recommendedLabel ?? messages.recommended}</Badge>
+                  </span>
+                )}
+              </div>
+              <Heading level={headingLevel}>{plan.name}</Heading>
+              <div className="g-plan-price">
+                <p className="g-plan-amount">{plan.price}</p>
+                {plan.description && <Text tone="muted">{plan.description}</Text>}
+              </div>
+              <ul className="g-plan-features">
+                {plan.features.map((feature) => (
+                  <li key={feature}>
+                    <Icon name="check" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="g-plan-action">
+                <Button
+                  variant={current || recommended ? 'primary' : 'secondary'}
+                  disabled={current || pending !== null}
+                  loading={pending === plan.id}
+                  aria-label={`${action}: ${plan.name}`}
+                  onClick={() => void select(plan.id)}
+                >
+                  {action}
+                </Button>
+                {failed && target === plan.id && (
+                  <Alert tone="danger" live title={messages.workflowError} />
+                )}
+              </div>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
@@ -740,12 +759,19 @@ export function CommentsPanel({
   comments,
   onSubmit,
   headingLevel = 2,
+  inputLabel,
+  submitLabel,
 }: {
   title: string;
   comments: CommentItem[];
-  onSubmit: (body: string) => void | Promise<void>;
+  /** Posts a comment. Leave it out for a read-only thread: no composer is shown. */
+  onSubmit?: (body: string) => void | Promise<void>;
   /** Level of the title heading; nested headings follow it. Defaults to 2. */
   headingLevel?: 2 | 3 | 4 | 5 | 6;
+  /** Label of the text box; defaults to the localized "Comment". */
+  inputLabel?: string;
+  /** Text of the submit button, such as "Send answer by email"; defaults to "Post comment". */
+  submitLabel?: string;
 }) {
   const { messages } = useLocale();
   const [body, setBody] = useState('');
@@ -765,34 +791,36 @@ export function CommentsPanel({
             <p className="g-comment-body">{comment.body}</p>
           </article>
         ))}
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (!body.trim()) return;
-            void run(async () => {
-              await onSubmit(body.trim());
-              setBody('');
-            });
-          }}
-        >
-          <Stack>
-            <Field label={messages.comment}>
-              {(p) => (
-                <Textarea
-                  {...p}
-                  required
-                  disabled={busy}
-                  value={body}
-                  onChange={(e) => setBody(e.target.value)}
-                />
-              )}
-            </Field>
-            {error && <Alert tone="danger" live title={messages.workflowError} />}
-            <Button type="submit" loading={busy} disabled={!body.trim()}>
-              {messages.postComment}
-            </Button>
-          </Stack>
-        </form>
+        {onSubmit && (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (!body.trim()) return;
+              void run(async () => {
+                await onSubmit(body.trim());
+                setBody('');
+              });
+            }}
+          >
+            <Stack>
+              <Field label={inputLabel ?? messages.comment}>
+                {(p) => (
+                  <Textarea
+                    {...p}
+                    required
+                    disabled={busy}
+                    value={body}
+                    onChange={(e) => setBody(e.target.value)}
+                  />
+                )}
+              </Field>
+              {error && <Alert tone="danger" live title={messages.workflowError} />}
+              <Button type="submit" loading={busy} disabled={!body.trim()}>
+                {submitLabel ?? messages.postComment}
+              </Button>
+            </Stack>
+          </form>
+        )}
       </Stack>
     </Card>
   );

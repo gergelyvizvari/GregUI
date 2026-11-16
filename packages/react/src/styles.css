@@ -24,6 +24,10 @@ body {
 .g-theme[data-page] {
   min-height: 100vh;
   min-height: 100dvh;
+  /* A page never pans sideways: what pokes past its edge is clipped, not scrolled to. Clipping
+     on this element (not the root) also stops iOS Safari's sideways rubber-banding, and unlike
+     hidden it keeps sticky headers and bars working. */
+  overflow-x: clip;
 }
 :root:has(> body .g-theme[data-page][data-mode='dark']:not(.g-portal)) {
   color-scheme: dark;
@@ -108,6 +112,16 @@ body {
 .g-inline[data-justify='between'] {
   justify-content: space-between;
 }
+.g-inline[data-wrap='false'] {
+  flex-wrap: nowrap;
+}
+.g-inline[data-wrap='false'] > * {
+  min-width: 0;
+}
+/* Only the text gives way: buttons, badges and icons keep their size. */
+.g-inline[data-wrap='false'] > :is(.g-button, .g-badge, .g-icon) {
+  flex: none;
+}
 .g-inline[data-justify='end'] {
   justify-content: flex-end;
 }
@@ -124,6 +138,72 @@ body {
 }
 .g-grid[data-columns='4'] {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+/* Board: equal lanes that scroll sideways rather than wrap, each a quiet bounded surface. */
+.g-board {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(14rem, 1fr);
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  padding-bottom: 0.25rem;
+}
+.g-board-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.75rem;
+  border-radius: var(--g-card-radius);
+  background: var(--g-quiet-fill);
+  scroll-snap-align: start;
+}
+.g-board-column-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 1.75rem;
+  padding-inline: 0.25rem;
+}
+.g-board-column-head > .g-heading {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.g-board-column-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.g-board-column-body > .g-card,
+.g-board-item > .g-card {
+  background: var(--g-surface);
+}
+/* A lane an item may be dropped on shows a dashed edge, and fills in while it is over it. */
+.g-board-column[data-droppable] {
+  outline: 2px dashed var(--g-focus);
+  outline-offset: -2px;
+}
+.g-board-column[data-over] {
+  background: color-mix(in srgb, var(--g-primary) 12%, var(--g-quiet-fill));
+}
+.g-board-item {
+  position: relative;
+  min-width: 0;
+}
+.g-board-item[draggable='true'] {
+  cursor: grab;
+}
+.g-board-item[data-dragging] {
+  opacity: 0.5;
+}
+/* The move handle sits in the item's top corner, over the card's own padding. */
+.g-board-item-handle {
+  position: absolute;
+  top: 0.25rem;
+  inset-inline-end: 0.25rem;
 }
 .g-split {
   display: grid;
@@ -1015,6 +1095,27 @@ body {
   font-weight: 600;
   line-height: 1;
 }
+/* Colourful initials: a soft wash of a theme role, its ink for the letters. */
+.g-avatar[data-hue] {
+  background: color-mix(in srgb, var(--g-avatar-hue) 16%, var(--g-surface));
+  color: color-mix(in srgb, var(--g-avatar-hue) 85%, var(--g-text));
+  font-weight: 600;
+}
+.g-avatar[data-hue='0'] {
+  --g-avatar-hue: var(--g-primary);
+}
+.g-avatar[data-hue='1'] {
+  --g-avatar-hue: var(--g-success);
+}
+.g-avatar[data-hue='2'] {
+  --g-avatar-hue: var(--g-warning);
+}
+.g-avatar[data-hue='3'] {
+  --g-avatar-hue: var(--g-danger);
+}
+.g-avatar[data-hue='4'] {
+  --g-avatar-hue: var(--g-focus);
+}
 .g-avatar[data-size='small'] {
   --g-avatar-size: 1.75rem;
   font-size: var(--g-type-caption-size);
@@ -1737,14 +1838,256 @@ body {
 .g-page-header > .g-stack {
   max-width: 680px;
 }
+/* A bold primary block, like a landing page hero; dark mode uses a deep tint of the primary. */
+.g-page-header[data-tone='brand'] {
+  --g-page-band: var(--g-primary);
+  --g-page-band-ink: var(--g-onPrimary);
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  border-radius: calc(var(--g-radius) * 1.5);
+  background: var(--g-page-band);
+  color: var(--g-page-band-ink);
+}
+.g-theme[data-mode='dark'] .g-page-header[data-tone='brand'] {
+  --g-page-band: color-mix(in srgb, var(--g-primary) 24%, var(--g-background));
+  --g-page-band-ink: var(--g-text);
+}
+.g-page-header[data-tone='brand'] .g-heading,
+.g-page-header[data-tone='brand'] .g-text {
+  color: inherit;
+}
+.g-page-header[data-tone='brand'] .g-text[data-tone='muted'] {
+  opacity: 0.88;
+}
+/* The block keeps soft corners even in a square theme, like the website's hero. */
+.g-page-header[data-tone='brand'] {
+  border-radius: max(calc(var(--g-radius) * 1.5), 1.25rem);
+}
+.g-page-header > .g-stack:has(> .g-page-progress) {
+  max-width: none;
+}
+/* Steps on the block: the current one is a light pill, finished ones are soft, later ones faint. */
+.g-page-header[data-tone='brand'] .g-stepper li {
+  border-color: color-mix(in srgb, currentColor 30%, transparent);
+}
+.g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li {
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+.g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li[aria-current='step'] {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding-inline-end: 0.85rem;
+  background: var(--g-mark, var(--g-surface));
+  color: var(--g-onMark, var(--g-text));
+}
+/* On the block every step shows its name, like the website's pills; phones keep numbers only. */
+.g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li .g-step-label {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  white-space: nowrap;
+  font-weight: 650;
+}
+.g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li:not([aria-current='step']) {
+  padding-inline-end: 0.85rem;
+}
+.g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] .g-step-summary {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* The brand block's question is set the same inside an editorial AppShell and on its own (such
+   as a page under a website header), so a flow looks alike signed in and signed out. */
+.g-page-header[data-tone='brand'] .g-heading[data-size='page'] {
+  letter-spacing: -0.055em;
+  font-size: clamp(2.2rem, 4vw, 3.65rem);
+  line-height: 1.05;
+}
+.g-page-header[data-tone='brand']
+  .g-stepper[data-compact='true']
+  li[aria-current='step']
+  > span:last-child {
+  min-width: 0;
+}
+.g-page-header[data-tone='brand']
+  .g-stepper[data-compact='true']
+  li[aria-current='step']
+  .g-step-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-page-header[data-tone='brand'] {
+    padding: 1.25rem;
+  }
+  /* Phones: every step is an equal column, its number above a short name in small type, so
+     five steps fit side by side; a longer name is cut with an ellipsis (its title says it all). */
+  .g-page-header[data-tone='brand'] > .g-stack:has(> .g-page-progress) {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] {
+    gap: 0.25rem;
+  }
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] .g-step-number {
+    flex: none;
+    width: 1.75rem;
+  }
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li,
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li[aria-current='step'] {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.3rem 0.2rem 0.25rem;
+    border-radius: max(var(--g-radius), 0.85rem);
+  }
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] .g-step-button {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    width: 100%;
+    min-width: 0;
+  }
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li > span:last-child,
+  .g-page-header[data-tone='brand']
+    .g-stepper[data-compact='true']
+    .g-step-button
+    > span:last-child {
+    max-width: 100%;
+    min-width: 0;
+  }
+  .g-page-header[data-tone='brand'] .g-stepper[data-compact='true'] li .g-step-label,
+  .g-page-header[data-tone='brand']
+    .g-stepper[data-compact='true']
+    li[aria-current='step']
+    .g-step-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    font-size: var(--g-type-caption-size);
+    line-height: 1.2;
+    animation: none;
+  }
+}
+/* A compact brand block (a step in a flow) keeps the question smaller and the block tighter, so
+   the form under it fits on one screen. */
+.g-page-header[data-tone='brand'][data-size='compact'] {
+  margin-bottom: 0;
+  padding: clamp(1rem, 2.5vw, 1.5rem) clamp(1.25rem, 3vw, 2rem);
+}
+.g-page-header[data-tone='brand'][data-size='compact'] .g-heading[data-size='page'] {
+  letter-spacing: -0.04em;
+  font-size: clamp(1.6rem, 2.6vw, 2.35rem);
+}
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-page-header[data-tone='brand'][data-size='compact'] {
+    padding: 1rem;
+  }
+}
+/* PageHeader hideTitle: the title is kept for screen readers only and takes no room, so a brand
+   block can hold just the steps. */
+.g-page-header .g-heading[data-size='page']:has(> .g-sr-only:only-child) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+/* Panels beside a card preview: the card shrinks with a short window, so the form and its preview
+   fit on one screen together. On a narrow screen the form comes first and the preview follows. */
+.g-editor-layout[data-appearance='panels'][data-aside-kind='preview'] .g-postcard-stage {
+  max-height: max(14rem, min(28rem, calc(100dvh - 26rem)));
+}
+@media (max-width: 860px) /* off-scale: component threshold */ {
+  .g-editor-layout[data-appearance='panels'][data-aside='true'][data-aside-kind='preview']
+    > .g-editor-aside {
+    order: 1;
+  }
+}
+.g-page-header[data-tone='brand'] .g-stepper li[aria-current='step'] .g-step-number {
+  background: var(--g-onMark, var(--g-primary));
+  border-color: var(--g-onMark, var(--g-primary));
+  color: var(--g-mark, var(--g-onPrimary));
+}
+.g-page-header[data-tone='brand'] .g-stepper li[data-complete='true'] .g-step-number {
+  background: var(--g-surface);
+  border-color: var(--g-surface);
+  color: var(--g-primary);
+}
+.g-page-header[data-tone='brand'] .g-step-summary,
+.g-page-header[data-tone='brand'] .g-step-description {
+  color: inherit;
+  opacity: 0.85;
+}
+.g-page-header[data-tone='brand'] .g-step-button {
+  color: inherit;
+}
+/* A primary action would vanish into the block, so it takes the page surface instead. */
+.g-page-header[data-tone='brand'] .g-button[data-variant='primary'] {
+  background: var(--g-surface);
+  background-image: none;
+  color: var(--g-text);
+  box-shadow: none;
+}
+.g-page-header[data-tone='brand'] .g-button[data-variant='secondary'],
+.g-page-header[data-tone='brand'] .g-button[data-variant='ghost'] {
+  background: transparent;
+  border-color: currentColor;
+  color: inherit;
+}
 .g-mobile-nav {
   display: none;
+}
+.g-toolbar-actions,
+.g-toolbar-overflow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.g-toolbar-actions {
+  margin-inline-start: auto;
+}
+.g-drawer-settings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--g-line);
 }
 .g-mobile-brand {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   min-width: 0;
+}
+/* The brand as a link home keeps its look: no underline, the surrounding colour. */
+.g-brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--g-radius);
+}
+.g-brand-link:focus-visible {
+  outline: 2px solid var(--g-focus);
+  outline-offset: 2px;
+}
+/* The mark never shrinks next to the menu button and toolbar. */
+.g-mobile-brand > :first-child,
+.g-mobile-brand svg {
+  flex: none;
 }
 .g-mobile-brand .g-brand-mark {
   width: 32px;
@@ -2022,6 +2365,9 @@ body {
 }
 @media (max-width: 760px) /* breakpoints.compact */ {
   .g-sidebar {
+    display: none;
+  }
+  .g-toolbar-overflow {
     display: none;
   }
   .g-mobile-nav {
@@ -2303,6 +2649,29 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.5rem;
+}
+/* AuthForm codeFirst: the way back to a password is a small, muted text link, not a button. */
+.g-auth-quiet-link {
+  min-block-size: 2.75rem;
+  margin: 0;
+  padding: 0.5rem 0.25rem;
+  border: 0;
+  background: none;
+  color: var(--g-muted);
+  font: inherit;
+  font-size: var(--g-type-small-size);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+.g-auth-quiet-link:hover {
+  color: var(--g-text);
+}
+.g-auth-quiet-link:focus-visible {
+  outline: 2px solid var(--g-focus);
+  outline-offset: 2px;
+  border-radius: var(--g-radius);
 }
 .g-auth-feedback:has(> div:empty):not(:has(.g-alert)) {
   display: none;
@@ -2705,6 +3074,21 @@ body {
 .g-stepper[data-compact='true'] .g-step-number {
   flex-basis: 1.75rem;
   height: 1.75rem;
+}
+/* The step just reached shows its name softly while its number glides into place. */
+.g-stepper[data-compact='true'] li[aria-current='step'] .g-step-label {
+  animation: g-step-label-in var(--g-duration-enter) var(--g-ease) both;
+}
+@keyframes g-step-label-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.5rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-stepper[data-compact='true'] li[aria-current='step'] .g-step-label {
+    animation: none;
+  }
 }
 .g-stepper[data-compact='true'] .g-step-button {
   align-items: center;
@@ -3343,13 +3727,54 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
 }
 
+/*
+ * Pricing cards share their rows through subgrid, so a plan name that wraps keeps every price,
+ * feature list and button on the same line as its neighbours. Two to four plans sit side by side
+ * when they all fit, otherwise they stack: never a lone card on a second row.
+ */
+.g-pricing {
+  container-type: inline-size;
+}
+.g-pricing-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+@container (min-width: 25rem) {
+  .g-pricing-grid[data-count='2'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container (min-width: 37rem) {
+  .g-pricing-grid[data-count='3'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@container (min-width: 50rem) {
+  .g-pricing-grid[data-count='4'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@container (min-width: 50rem) {
+  .g-pricing-grid:not([data-count='1'], [data-count='2'], [data-count='3'], [data-count='4']) {
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  }
+}
+
 /* Persistent selection must be distinguishable from recommendation and hover. */
 .g-pricing-card {
   padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 5;
+  row-gap: 1rem;
+  align-content: start;
   position: relative;
+}
+.g-pricing-grid > .g-pricing-card[data-recommended='true'] {
+  border: 2px solid var(--g-primary);
+  padding: calc(1.5rem - 2px + var(--g-card-border-width));
+  box-shadow: 0 18px 36px -20px rgba(var(--g-shadow-color), 0.5);
 }
 .g-pricing-card[data-current='true'] {
   outline: 3px solid var(--g-selection);
@@ -3359,14 +3784,58 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  min-height: 2rem;
   align-items: flex-start;
 }
+.g-plan-flag > .g-badge {
+  background: var(--g-primary);
+  border-color: var(--g-primary);
+  color: var(--g-onPrimary);
+}
+.g-pricing-card .g-heading {
+  margin: 0;
+  align-self: end;
+}
+.g-plan-price {
+  display: grid;
+  gap: 0.25rem;
+  align-content: start;
+}
+.g-plan-amount {
+  margin: 0;
+  font-family: var(--g-display-font);
+  font-weight: var(--g-display-weight);
+  font-size: calc(var(--g-type-section-size) * 2);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--g-text);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.g-plan-features {
+  list-style: none;
+  margin: 0;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--g-line);
+  display: grid;
+  gap: 0.625rem;
+  align-content: start;
+}
+.g-plan-features li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+.g-plan-features .g-icon {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.125rem;
+  color: var(--g-primary);
+}
 .g-plan-action {
-  margin-top: auto;
   display: grid;
   gap: 0.75rem;
-  padding-top: 1rem;
+  align-content: end;
 }
 .g-plan-action .g-button {
   width: 100%;
@@ -3437,6 +3906,20 @@ body {
 .g-container[data-inset='false'] {
   width: 100%;
   padding: 0;
+}
+.g-container[data-align='start'] {
+  margin-inline: 0;
+}
+
+/* A long menu scrolls inside the standard sidebar, so its last items stay in reach on a short
+   screen instead of being cut off below the fold. */
+.g-app-shell[data-appearance='standard'] > .g-sidebar {
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+.g-app-shell[data-appearance='standard'] > .g-sidebar > * {
+  flex-shrink: 0;
 }
 
 /* Editorial and operational applications opt in; existing shells keep their defaults. */
@@ -3550,6 +4033,117 @@ body {
 .g-media-copy {
   padding: 1.5rem;
 }
+/* Editorial masthead on the primary colour, like a website header on its hero. */
+.g-app-shell[data-tone='brand'] {
+  --g-masthead: var(--g-primary);
+  --g-masthead-ink: var(--g-onPrimary);
+}
+.g-theme[data-mode='dark'] .g-app-shell[data-tone='brand'] {
+  --g-masthead: color-mix(in srgb, var(--g-primary) 24%, var(--g-background));
+  --g-masthead-ink: var(--g-text);
+}
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] > .g-sidebar,
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] .g-toolbar {
+  background: var(--g-masthead);
+  color: var(--g-masthead-ink);
+  border-bottom-color: transparent;
+}
+/* The masthead and toolbar meet at a fractional pixel; overlap them so no seam shows. */
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] > .g-sidebar {
+  box-shadow: 2px 0 0 var(--g-masthead);
+}
+/* Pulled past its top (Safari's bounce), the page shows the room above the masthead in the
+   masthead's colour, so the header reads as the page's own top edge rather than a sheet lifting
+   off a white table. The strip sits above the viewport and only shows while bouncing. */
+.g-app-shell[data-appearance='editorial'][data-tone='brand'][data-sticky-masthead]::before {
+  content: '';
+  position: fixed;
+  inset-inline: 0;
+  top: -100vh;
+  height: 100vh;
+  background: var(--g-masthead);
+  pointer-events: none;
+}
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] > .g-sidebar .g-text,
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] .g-toolbar .g-text,
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] > .g-sidebar .g-nav-item,
+.g-app-shell[data-appearance='editorial'][data-tone='brand']
+  .g-toolbar
+  .g-button[data-variant='ghost'] {
+  color: inherit;
+}
+.g-app-shell[data-appearance='editorial'][data-tone='brand'] > .g-sidebar .g-nav-item:hover,
+.g-app-shell[data-appearance='editorial'][data-tone='brand']
+  .g-toolbar
+  .g-button[data-variant='ghost']:hover {
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+.g-app-shell[data-appearance='editorial'][data-tone='brand']
+  > .g-sidebar
+  .g-nav-item[aria-current='page'] {
+  background: var(--g-surface);
+  color: var(--g-text);
+}
+/*
+ * Editorial masthead on wide screens: brand, navigation and the toolbar share one row, like a
+ * website header; navigation lists run sideways. Narrower windows (960px and below) get the menu
+ * drawer, since the row would otherwise squeeze the brand and wrap the navigation.
+ */
+@media (min-width: 961px) /* breakpoints.medium */ {
+  .g-app-shell[data-appearance='editorial'] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      'banner banner'
+      'masthead tools'
+      'main main';
+  }
+  .g-app-shell[data-appearance='editorial'] > .g-workspace {
+    display: contents;
+  }
+  .g-app-shell[data-appearance='editorial'] > .g-sidebar {
+    grid-area: masthead;
+    justify-content: flex-start;
+    gap: 2.5rem;
+    padding-inline-end: 1rem;
+  }
+  .g-app-shell[data-appearance='editorial'] .g-shell-banner {
+    grid-area: banner;
+  }
+  /* stickyMasthead: brand, navigation and toolbar stay at the top while the page scrolls. */
+  .g-app-shell[data-appearance='editorial'][data-sticky-masthead] > .g-sidebar,
+  .g-app-shell[data-appearance='editorial'][data-sticky-masthead] .g-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: var(--g-z-sticky);
+  }
+  .g-app-shell[data-appearance='editorial'] .g-toolbar {
+    grid-area: tools;
+    max-width: none;
+    margin: 0;
+    border-bottom: 1px solid var(--g-line);
+    padding-block: 1.25rem;
+    padding-inline: 0 max(1.25rem, calc((100vw - 1200px) / 2));
+  }
+  .g-app-shell[data-appearance='editorial'] .g-main {
+    grid-area: main;
+    width: 100%;
+    margin-inline: auto;
+  }
+  .g-app-shell[data-appearance='editorial'] > .g-sidebar .g-side-nav,
+  .g-app-shell[data-appearance='editorial'] > .g-sidebar .g-side-nav-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .g-app-shell[data-appearance='editorial'] > .g-sidebar .g-side-nav-heading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
 @media (max-width: 800px) /* off-scale: component threshold */ {
   .g-feature-panel {
     grid-template-columns: 1fr;
@@ -3558,16 +4152,68 @@ body {
     min-height: 0;
     height: 240px;
   }
-  .g-app-shell[data-appearance='editorial'] > .g-sidebar {
-    display: none;
-  }
   .g-app-shell[data-appearance='dashboard'] > .g-sidebar {
     display: none;
   }
-  .g-app-shell[data-appearance='editorial'] .g-mobile-nav,
   .g-app-shell[data-appearance='dashboard'] .g-mobile-nav {
     display: flex;
   }
+  .g-app-shell[data-appearance='dashboard'] .g-toolbar-overflow {
+    display: none;
+  }
+}
+@media (max-width: 960px) /* breakpoints.medium */ {
+  .g-app-shell[data-appearance='editorial'] > .g-sidebar {
+    display: none;
+  }
+  .g-app-shell[data-appearance='editorial'] .g-mobile-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .g-app-shell[data-appearance='editorial'] .g-toolbar-overflow {
+    display: none;
+  }
+  /* stickyMasthead: the phone header stays at the top too, so it is always in reach and the
+     browser's own bars (Safari tints them from what sits at the top) take its colour. */
+  .g-app-shell[data-appearance='editorial'][data-sticky-masthead] .g-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: var(--g-z-sticky);
+  }
+  /* The toolbar is the whole header here, so it spans the width: the brand on one side, the
+     tools on the other, sized like a website header rather than a row of small print. */
+  .g-app-shell[data-appearance='editorial'] .g-toolbar {
+    max-width: none;
+    margin: 0;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    padding-block: 0.85rem;
+    font-size: var(--g-type-body-size);
+  }
+  .g-app-shell[data-appearance='editorial'] .g-mobile-brand .g-text {
+    font-family: var(--g-display-font);
+    font-size: var(--g-type-brand-size);
+    line-height: var(--g-type-brand-line-height);
+    font-weight: 800;
+    letter-spacing: var(--g-type-brand-tracking);
+  }
+  .g-app-shell[data-appearance='editorial'] .g-mobile-brand > :first-child,
+  .g-app-shell[data-appearance='editorial'] .g-mobile-brand svg {
+    width: 36px;
+    height: 36px;
+  }
+  .g-app-shell[data-appearance='editorial'] .g-toolbar .g-button[data-icon-only='true'] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+/* The brand and navigation labels never break mid-word in the masthead. */
+.g-app-shell[data-appearance='editorial'] .g-brand,
+.g-app-shell[data-appearance='editorial'] .g-mobile-brand,
+.g-app-shell[data-appearance='editorial'] > .g-sidebar .g-nav-item {
+  flex: none;
+  white-space: nowrap;
 }
 
 /* Image-rich editorial discovery. Copy always sits on opaque theme surfaces. */
@@ -4520,7 +5166,8 @@ body {
 }
 .g-editor-layout[data-aside='true'][data-aside-kind='preview'] > .g-editor-aside {
   position: sticky;
-  top: 1rem;
+  /* Below a sticky masthead, not behind it: AppShell measures it into --g-shell-sticky-size. */
+  top: calc(var(--g-shell-sticky-size, 0px) + 1rem);
 }
 .g-editor-layout[data-aside='false'] {
   max-width: 56rem;
@@ -4587,6 +5234,39 @@ body {
 .g-editor-main :where(input, select, textarea, button, a) {
   scroll-margin-block: 5rem 10rem;
 }
+/* Panels: the document on one soft surface, its actions as the panel's footer; the preview on a
+   tinted stage. Corners stay soft in square themes. */
+.g-editor-layout[data-appearance='panels'] {
+  --g-panel-pad: clamp(1rem, 3vw, 1.75rem);
+  --g-panel-radius: max(calc(var(--g-radius) * 2), 1.5rem);
+  align-items: stretch;
+}
+.g-editor-layout[data-appearance='panels'] > .g-editor-main {
+  display: flex;
+  flex-direction: column;
+  padding: var(--g-panel-pad) var(--g-panel-pad) 0;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-panel-radius);
+  background: var(--g-surface);
+  box-shadow: 0 2px 10px rgba(var(--g-shadow-color), 0.05);
+}
+.g-editor-layout[data-appearance='panels'] > .g-editor-main > :last-child {
+  flex: 1;
+}
+.g-editor-layout[data-appearance='panels'] .g-form-actions {
+  margin: auto calc(-1 * var(--g-panel-pad)) 0;
+  padding-inline: var(--g-panel-pad);
+  bottom: 0;
+  border-width: 1px 0 0;
+  border-radius: 0 0 var(--g-panel-radius) var(--g-panel-radius);
+  box-shadow: none;
+}
+.g-editor-layout[data-appearance='panels'][data-aside-kind='preview'] > .g-editor-aside {
+  align-self: start;
+  padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem) clamp(2rem, 4vw, 3rem);
+  border-radius: var(--g-panel-radius);
+  background: var(--g-tint);
+}
 @media (max-width: 1100px) /* off-scale: component threshold */ {
   .g-editor-layout[data-aside='true'] {
     grid-template-columns: minmax(0, 1fr);
@@ -4599,6 +5279,9 @@ body {
   .g-editor-layout[data-aside='true'][data-aside-kind='preview'] > .g-editor-aside {
     position: static;
     order: -1;
+  }
+  .g-editor-layout[data-appearance='panels'][data-aside-kind='preview'] > .g-editor-aside {
+    padding: 0.5rem 0.75rem 1.75rem;
   }
 }
 @media (max-width: 600px) /* breakpoints.phone */ {
@@ -4967,12 +5650,30 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 8.5rem), 1fr));
   gap: 0.75rem;
 }
+/* Exactly four tiles sit two by two, never three and one. */
+.g-visual-choice-group[data-layout='tiles']
+  .g-visual-choice-options:has(> :nth-child(4):last-child) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+/* On a phone, three tiles put the last one across the row, never two and a lone one. */
+@media (max-width: 760px) /* breakpoints.compact */ {
+  .g-visual-choice-group[data-layout='tiles']
+    .g-visual-choice-options:has(> :nth-child(3):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .g-visual-choice-group[data-layout='tiles']
+    .g-visual-choice-options:has(> :nth-child(3):last-child)
+    > :last-child {
+    grid-column: 1 / -1;
+  }
+}
 .g-visual-choice-group[data-layout='tiles'] .g-visual-choice {
   align-items: center;
   gap: 0.6rem;
   padding: 1rem 0.75rem 0.85rem;
   border-width: 1px;
-  border-radius: calc(var(--g-radius) * 1.5);
+  /* Big friendly choices keep soft corners even in a square theme. */
+  border-radius: max(calc(var(--g-radius) * 1.5), 0.75rem);
   text-align: center;
   transition:
     transform var(--g-duration) var(--g-ease),
@@ -5015,6 +5716,135 @@ body {
 }
 .g-visual-choice-group[data-layout='tiles'] .g-visual-choice-caption > strong {
   font-weight: 600;
+}
+/* People: a calm row per person, avatar first, the note as a soft line or pill. */
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-options {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 0.75rem;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.875rem;
+  min-height: 4.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--g-border) 40%, transparent);
+  border-radius: max(calc(var(--g-radius) * 1.5), 0.75rem);
+  background: var(--g-surface);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--g-text) 6%, transparent);
+  transition:
+    transform var(--g-duration) var(--g-ease),
+    box-shadow var(--g-duration) var(--g-ease),
+    border-color var(--g-duration) var(--g-ease);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--g-selection) 55%, transparent);
+  box-shadow: var(--g-card-shadow);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice:has(input:checked) {
+  border-color: var(--g-selection);
+  box-shadow: 0 0 0 1px var(--g-selection);
+  background: var(--g-tint);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice:has(input:checked)::after {
+  content: '✓';
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-inline-start: auto;
+  border-radius: 50%;
+  background: var(--g-selection);
+  color: var(--g-onSelection);
+  font-size: var(--g-type-caption-size);
+  font-weight: 700;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice input {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-preview {
+  flex: none;
+  display: grid;
+  place-items: center;
+  aspect-ratio: auto;
+  background: none;
+  overflow: visible;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-preview .g-avatar {
+  --g-avatar-size: 2.75rem;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-caption {
+  gap: 0.15rem;
+  padding: 0;
+  min-width: 0;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-caption > strong {
+  font-weight: 600;
+  line-height: 1.3;
+}
+/* Set apart: a festive rose edge and the note as a pill, with room for the pill. */
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-options:has([data-highlight]) {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-highlight] {
+  border-color: color-mix(in srgb, var(--g-danger) 30%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--g-danger) 7%, var(--g-surface)),
+    var(--g-surface) 60%
+  );
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-highlight]:has(input:checked) {
+  border-color: var(--g-selection);
+  background: var(--g-tint);
+}
+.g-visual-choice-group[data-layout='people']
+  .g-visual-choice[data-highlight]
+  .g-visual-choice-caption
+  > span {
+  justify-self: start;
+  max-width: 100%;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--g-danger) 12%, transparent);
+  color: var(--g-danger);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* A lighter extra: dashed, no fill, the icon in a soft circle. */
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-quiet] {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--g-border) 70%, transparent);
+  background: transparent;
+  box-shadow: none;
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-quiet]:has(input:checked) {
+  border-style: solid;
+  background: var(--g-tint);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice[data-quiet] .g-visual-choice-preview {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--g-tint);
+  color: var(--g-primary);
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice-preview .g-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-visual-choice-group[data-layout='people'] .g-visual-choice {
+    transition: none;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .g-visual-choice-group[data-layout='tiles'] .g-visual-choice {
@@ -5101,23 +5931,25 @@ body {
   align-items: flex-start;
   gap: 1.5rem 1.25rem;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry']) .g-visual-choice {
   border: 0;
   background: none;
   overflow: visible;
   max-width: 100%;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice input {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry']) .g-visual-choice input {
   inset: 0;
   width: 100%;
   height: 100%;
   opacity: 0;
   cursor: pointer;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice:has(input:focus-visible) {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice:has(input:focus-visible) {
   outline: 0;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-preview {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice-preview {
   position: relative;
   display: block;
   height: var(--g-gallery-height);
@@ -5125,7 +5957,9 @@ body {
   background: none;
   overflow: visible;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-preview > * {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice-preview
+  > * {
   display: block;
   height: 100%;
   width: auto;
@@ -5134,27 +5968,30 @@ body {
   box-shadow: var(--g-card-shadow);
   transition: transform var(--g-duration) var(--g-ease);
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice:hover .g-visual-choice-preview > * {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice:hover
+  .g-visual-choice-preview
+  > * {
   transform: translateY(-2px);
 }
-.g-visual-choice-group[data-layout='gallery']
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
   .g-visual-choice:has(input:checked)
   .g-visual-choice-preview
   > *,
-.g-visual-choice-group[data-layout='gallery']
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
   .g-visual-choice:has(input:focus-visible)
   .g-visual-choice-preview
   > * {
   outline: 3px solid var(--g-selection);
   outline-offset: 3px;
 }
-.g-visual-choice-group[data-layout='gallery']
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
   .g-visual-choice:has(input:focus-visible)
   .g-visual-choice-preview
   > * {
   outline-color: var(--g-focus);
 }
-.g-visual-choice-group[data-layout='gallery']
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
   .g-visual-choice:has(input:checked)
   .g-visual-choice-preview::after {
   content: '✓';
@@ -5170,20 +6007,248 @@ body {
   color: var(--g-onSelection);
   font-weight: 700;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-caption {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice-caption {
   padding: 0.6rem 0 0;
 }
-.g-visual-choice-group[data-layout='gallery'] .g-visual-choice-caption > strong {
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice-caption
+  > strong {
   font-size: var(--g-type-small-size);
   font-weight: 500;
   color: var(--g-muted);
 }
-.g-visual-choice-group[data-layout='gallery']
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
   .g-visual-choice:has(input:checked)
   .g-visual-choice-caption
   > strong {
   color: var(--g-text);
   font-weight: 650;
+}
+/* With an app highlight (ThemeProvider highlight), what is chosen right now takes it: tiles,
+   people rows and pictures get its ring and tick; without one the selection colour stays. */
+.g-visual-choice-group:is([data-layout='tiles'], [data-layout='people'])
+  .g-visual-choice:has(input:checked) {
+  border-color: var(--g-mark, var(--g-selection));
+  background: color-mix(in srgb, var(--g-mark, var(--g-selection)) 14%, var(--g-surface));
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice:has(input:checked) {
+  box-shadow: 0 0 0 1px var(--g-mark, var(--g-selection));
+}
+.g-visual-choice-group[data-layout='people'] .g-visual-choice:has(input:checked)::after,
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice:has(input:checked)
+  .g-visual-choice-preview::after {
+  background: var(--g-mark, var(--g-selection));
+  color: var(--g-onMark, var(--g-onSelection));
+}
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice:has(input:checked)
+  .g-visual-choice-preview
+  > * {
+  outline-color: var(--g-mark, var(--g-selection));
+}
+/* Tiles read like the website's: the icon in a soft rounded box, the words beneath, left aligned. */
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice {
+  align-items: flex-start;
+  padding: 1rem 1.1rem;
+  border-radius: max(calc(var(--g-radius) * 2), 1.25rem);
+  text-align: start;
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice:has(input:checked) {
+  padding: calc(1rem - 1px) calc(1.1rem - 1px);
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice-preview {
+  width: 2.75rem;
+  height: 2.75rem;
+  min-height: 0;
+  border-radius: 0.85rem;
+  background: var(--g-tint);
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice-preview .g-icon {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+.g-visual-choice-group[data-layout='tiles']
+  .g-visual-choice:has(input:checked)
+  .g-visual-choice-preview {
+  background: var(--g-mark, var(--g-selection));
+  color: var(--g-onMark, var(--g-onSelection));
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice-caption {
+  justify-items: start;
+}
+.g-visual-choice-group[data-layout='tiles'] .g-visual-choice-caption > strong {
+  font-weight: 700;
+}
+/* Several picked at once: each choice can show controls (such as a count) beneath it. */
+.g-visual-choice-item {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+  min-width: 0;
+}
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice-item {
+  margin-block-end: 1.5rem;
+  break-inside: avoid;
+}
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice-item > .g-visual-choice {
+  margin-block-end: 0;
+}
+/* An eye button on a choice opens its large view; it sits over the preview's top corner, away
+   from the tick, and stays visible on touch screens where there is no hover. */
+.g-visual-choice-item[data-enlargeable] {
+  position: relative;
+  justify-items: stretch;
+}
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice-item[data-enlargeable] {
+  justify-items: start;
+}
+.g-visual-choice-enlarge {
+  position: absolute;
+  inset-block-start: 0.5rem;
+  inset-inline-end: 0.5rem;
+  z-index: var(--g-z-raised);
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--g-line);
+  border-radius: 50%;
+  background: var(--g-surface);
+  color: var(--g-text);
+  box-shadow: var(--g-card-shadow);
+  cursor: zoom-in;
+  opacity: 0.9;
+  transition:
+    opacity var(--g-duration-fast) var(--g-ease),
+    transform var(--g-duration-fast) var(--g-ease);
+}
+.g-visual-choice-group:is([data-layout='gallery'], [data-layout='masonry'])
+  .g-visual-choice-enlarge {
+  inset-inline-end: auto;
+  inset-inline-start: 0.5rem;
+}
+.g-visual-choice-enlarge:hover:not(:disabled) {
+  opacity: 1;
+  transform: scale(1.06);
+}
+.g-visual-choice-enlarge:focus-visible {
+  outline: 2px solid var(--g-focus);
+  outline-offset: 2px;
+  opacity: 1;
+}
+.g-visual-choice-enlarge:disabled {
+  display: none;
+}
+@media (pointer: coarse) {
+  .g-visual-choice-enlarge {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+/* The large view: the picture as big as the dialog allows, in its own proportions. */
+.g-visual-choice-enlarged {
+  display: grid;
+  place-items: center;
+}
+.g-visual-choice-enlarged > * {
+  max-width: 100%;
+  max-height: 75vh;
+  width: auto;
+  height: auto;
+  border-radius: calc(var(--g-radius) / 2);
+  box-shadow: var(--g-card-shadow);
+}
+/* A compact count: round minus and plus around the number, in one pill. */
+.g-quantity-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  border: 1px solid var(--g-line);
+  border-radius: 999px;
+  background: var(--g-surface);
+}
+.g-quantity-stepper-button {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--g-tint);
+  color: var(--g-text);
+  cursor: pointer;
+  transition: background-color var(--g-duration-fast) var(--g-ease);
+}
+.g-quantity-stepper-button:hover:not(:disabled) {
+  background: var(--g-selection);
+  color: var(--g-onSelection);
+}
+.g-quantity-stepper-button:focus-visible {
+  outline: 2px solid var(--g-focus);
+  outline-offset: 2px;
+}
+.g-quantity-stepper-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.g-quantity-stepper-value {
+  min-width: 1.75rem;
+  font-weight: 650;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+@media (pointer: coarse) {
+  .g-quantity-stepper-button {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+/* Masonry: every preview at the column's full width and its own height, in balanced columns. */
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice-options {
+  display: block;
+  columns: 13rem;
+  column-gap: 1.25rem;
+}
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice {
+  display: block;
+  width: 100%;
+  margin-block-end: 1.5rem;
+  break-inside: avoid;
+}
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice-preview {
+  height: auto;
+}
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice-preview > * {
+  width: 100%;
+  height: auto;
+}
+/* Masonry: a preview that is not a picture is a quiet tile as wide as the column. */
+.g-visual-choice-group[data-layout='masonry'] .g-visual-choice-preview > :not(img, svg, canvas) {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  box-sizing: border-box;
+  aspect-ratio: 4 / 3;
+  padding: 1rem;
+  border: 1px dashed var(--g-line);
+  background: var(--g-quiet-fill);
+  box-shadow: none;
+  color: var(--g-muted);
+  text-align: center;
+}
+@media (max-width: 600px) /* breakpoints.phone */ {
+  /* On a phone one column holds everything: the quiet tile is only as tall as its words, so the
+     pictures start right below it. */
+  .g-visual-choice-group[data-layout='masonry'] .g-visual-choice-preview > :not(img, svg, canvas) {
+    aspect-ratio: auto;
+    padding: 1rem 1.25rem;
+  }
 }
 /* A preview that is not a picture, such as "make your own", is a quiet landscape tile. */
 .g-visual-choice-group[data-layout='gallery'] .g-visual-choice-preview > :not(img, svg, canvas) {
@@ -5568,15 +6633,36 @@ body {
   font: inherit;
 }
 
-/* Inside a folded card: the message alone, centred, in the display face. */
+/* A postcard's message: handwriting, centred in its half of the card, as it is printed. */
+.g-mail-face[data-variant='postcard'] .g-mail-message {
+  display: grid;
+  place-content: center;
+  text-align: center;
+  font-family: var(--g-hand-font, var(--g-font));
+  font-size: var(--g-type-lead-size);
+  line-height: 1.2;
+}
+.g-mail-face[data-variant='postcard'] .g-mail-message :is(.g-text, .g-heading) {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* Inside a folded card, or an e-card's back: the message alone, handwritten, centred. */
 .g-mail-face[data-variant='inside'] .g-mail-message {
-  inset: 14mm 12mm;
+  inset: 12mm 20mm;
   width: auto;
   display: grid;
   place-content: center;
   text-align: center;
-  font-family: var(--g-display-font);
-  line-height: 1.45;
+  font-family: var(--g-hand-font, var(--g-font));
+  font-size: calc(var(--g-type-lead-size) * 1.35);
+  line-height: 1.2;
+}
+.g-mail-face[data-variant='inside'] .g-mail-message :is(.g-text, .g-heading) {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
 }
 .g-mail-face[data-sender='true'] .g-mail-message {
   top: 42mm;
@@ -5773,9 +6859,193 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* Planner month (size="large"): tall days that list their events. */
+.g-calendar[data-size='large'] .g-calendar-grid {
+  border-spacing: 0;
+  border-top: 1px solid var(--g-line);
+  border-inline-start: 1px solid var(--g-line);
+}
+.g-calendar[data-size='large'] .g-calendar-grid td {
+  border-bottom: 1px solid var(--g-line);
+  border-inline-end: 1px solid var(--g-line);
+}
+.g-calendar[data-size='large'] .g-calendar-day {
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0.3rem;
+  min-height: 6.5rem;
+  padding: 0.4rem;
+  border-radius: 0;
+  text-align: start;
+}
+.g-calendar[data-size='large'] .g-calendar-number {
+  align-self: flex-start;
+  min-width: 1.75rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+  text-align: center;
+}
+.g-calendar[data-size='large'] .g-calendar-day[data-today] .g-calendar-number {
+  background: var(--g-primary);
+  color: var(--g-onPrimary);
+  text-decoration: none;
+}
+.g-calendar[data-size='large'] .g-calendar-day[data-selected] {
+  background: var(--g-tint);
+  color: var(--g-text);
+  box-shadow: inset 0 0 0 2px var(--g-selection);
+}
+.g-calendar-chips {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.g-calendar-chip {
+  overflow: hidden;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.3rem;
+  background: color-mix(in srgb, var(--g-primary) 14%, var(--g-surface));
+  color: var(--g-text);
+  font-size: var(--g-type-caption-size);
+  line-height: 1.35;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.g-calendar-chip[data-tone='accent'] {
+  background: color-mix(in srgb, var(--g-warning) 22%, var(--g-surface));
+}
+.g-calendar-chip[data-tone='neutral'] {
+  background: var(--g-background);
+  color: var(--g-muted);
+}
+/* Phones: a dot per event keeps the month readable; the day's list shows the names. */
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-calendar[data-size='large'] .g-calendar-day {
+    min-height: 3.25rem;
+    padding: 0.25rem;
+    align-items: center;
+  }
+  .g-calendar[data-size='large'] .g-calendar-number {
+    align-self: center;
+  }
+  .g-calendar[data-size='large'] .g-calendar-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.2rem;
+  }
+  .g-calendar[data-size='large'] .g-calendar-chip {
+    width: 0.45rem;
+    height: 0.45rem;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--g-primary);
+    font-size: 0;
+  }
+  .g-calendar[data-size='large'] .g-calendar-chip[data-tone='neutral'] {
+    background: var(--g-muted);
+  }
+  .g-calendar[data-size='large'] .g-calendar-chip[data-tone='accent'] {
+    background: var(--g-warning);
+  }
+  .g-calendar[data-size='large'] .g-calendar-more {
+    font-size: var(--g-type-caption-size);
+  }
+}
 .g-calendar-more {
   flex: none;
   font-weight: 600;
+}
+/* Bar chart: stacked counts over a few periods; the numbers are also in a hidden table. */
+.g-bar-chart {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  min-width: 0;
+}
+.g-bar-chart-title {
+  font-weight: 600;
+}
+.g-bar-chart-empty {
+  margin: 0;
+  color: var(--g-muted);
+}
+.g-bar-chart-bars {
+  display: flex;
+  align-items: stretch;
+  gap: 0.375rem;
+  height: 10rem;
+}
+.g-bar-chart-column {
+  display: grid;
+  flex: 1;
+  grid-template-rows: auto 1fr auto;
+  gap: 0.25rem;
+  min-width: 0;
+  text-align: center;
+}
+.g-bar-chart-track {
+  display: flex;
+  flex-direction: column-reverse;
+  border-block-end: 1px solid var(--g-line);
+}
+.g-bar-chart-part {
+  display: block;
+  border-radius: 0.2rem 0.2rem 0 0;
+  background: var(--g-primary);
+}
+.g-bar-chart-part + .g-bar-chart-part {
+  border-radius: 0.2rem 0.2rem 0 0;
+  border-block-end: 1px solid var(--g-surface);
+}
+.g-bar-chart-part[data-series='1'],
+.g-bar-chart-legend > li[data-series='1']::before {
+  background: color-mix(in srgb, var(--g-warning) 70%, var(--g-surface));
+}
+.g-bar-chart-part[data-series='2'],
+.g-bar-chart-legend > li[data-series='2']::before {
+  background: var(--g-success);
+}
+.g-bar-chart-part[data-series='3'],
+.g-bar-chart-legend > li[data-series='3']::before {
+  background: var(--g-muted);
+}
+.g-bar-chart-total,
+.g-bar-chart-label {
+  overflow: hidden;
+  font-size: var(--g-type-caption-size);
+  color: var(--g-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.g-bar-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--g-type-small-size);
+  color: var(--g-muted);
+}
+.g-bar-chart-legend > li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.g-bar-chart-legend > li::before {
+  content: '';
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 0.2rem;
+  background: var(--g-primary);
+}
+@media (forced-colors: active) {
+  .g-bar-chart-part,
+  .g-bar-chart-legend > li::before {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
 }
 /* Agenda: upcoming events grouped by day. */
 .g-agenda {
@@ -5824,6 +7094,23 @@ body {
   font-weight: 600;
   color: var(--g-selection);
 }
+.g-agenda-events > li[data-action] {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.g-agenda-events > li[data-action] > .g-agenda-event {
+  flex: 1;
+  min-width: 0;
+}
+.g-agenda-action {
+  flex: none;
+}
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-agenda-events > li[data-action] {
+    flex-wrap: wrap;
+  }
+}
 .g-agenda-event {
   display: flex;
   flex-wrap: wrap;
@@ -5855,6 +7142,111 @@ button.g-agenda-event:hover {
 .g-agenda-repeat {
   font-size: var(--g-type-small-size);
   color: var(--g-muted);
+}
+/* Agenda grouped by month: one card per month, a row per entry with a date tile. */
+.g-agenda[data-group='month'] .g-agenda-days {
+  gap: 1.25rem;
+}
+.g-agenda[data-group='month'] .g-agenda-date {
+  margin-block-end: 0.5rem;
+  color: var(--g-muted);
+}
+.g-agenda[data-group='month'] .g-agenda-events {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-card-radius);
+  background: var(--g-surface);
+}
+.g-agenda[data-group='month'] .g-agenda-events > li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline-end: 0.75rem;
+  transition: background-color var(--g-duration-fast) var(--g-ease);
+}
+.g-agenda[data-group='month'] .g-agenda-events > li + li {
+  border-top: 1px solid var(--g-line);
+}
+.g-agenda[data-group='month'] .g-agenda-events > li:has(> button.g-agenda-event:hover) {
+  background: var(--g-tint);
+}
+.g-agenda[data-group='month'] .g-agenda-event {
+  flex: 1;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.875rem;
+  min-width: 0;
+  padding: 0.625rem 0.75rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.g-agenda[data-group='month'] button.g-agenda-event:hover {
+  background: transparent;
+}
+.g-agenda-tile {
+  order: -1;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 3rem;
+  padding: 0.3rem 0;
+  border-radius: var(--g-control-radius);
+  background: var(--g-background);
+  line-height: 1.1;
+}
+.g-agenda-tile-day {
+  font-family: var(--g-display-font);
+  font-weight: var(--g-display-weight);
+  font-size: var(--g-type-card-size);
+}
+.g-agenda-tile-weekday {
+  font-size: var(--g-type-caption-size);
+  color: var(--g-muted);
+}
+.g-agenda-events > li[data-today] .g-agenda-tile {
+  background: var(--g-selection);
+  color: var(--g-onSelection);
+}
+.g-agenda-events > li[data-today] .g-agenda-tile-weekday {
+  color: inherit;
+}
+.g-agenda-text {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+.g-agenda[data-group='month'] .g-agenda-event-title {
+  flex: none;
+}
+.g-agenda-events > li[data-today] .g-agenda-relative {
+  font-weight: 600;
+  color: var(--g-selection);
+}
+.g-agenda-events > li[data-tone='neutral'] .g-agenda-event-title {
+  font-weight: 400;
+  color: var(--g-muted);
+}
+/* Phones: the action moves under the text, so a title keeps the full row and does not wrap. */
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-agenda[data-group='month'] .g-agenda-events > li[data-action] {
+    flex-wrap: wrap;
+    gap: 0;
+    padding-block-end: 0.625rem;
+  }
+  .g-agenda[data-group='month'] .g-agenda-events > li[data-action] > .g-agenda-event {
+    flex-basis: 100%;
+    padding-block-end: 0.375rem;
+  }
+  .g-agenda[data-group='month'] .g-agenda-action {
+    margin-inline-start: calc(0.75rem + 3rem + 0.875rem);
+  }
+}
+@media (forced-colors: active) {
+  .g-agenda-events > li[data-today] .g-agenda-tile {
+    outline: 2px solid Highlight;
+  }
 }
 @media (forced-colors: active) {
   .g-calendar-day[data-selected] {
@@ -6036,6 +7428,12 @@ button.g-agenda-event:hover {
   font-size: 0.6875rem;
   text-align: center;
 }
+.g-side-nav-badge[data-tone='attention'] {
+  background: var(--g-primary);
+  color: var(--g-onPrimary);
+  font-weight: 700;
+  line-height: 1.25rem;
+}
 .g-side-nav-disclosure {
   display: inline-flex;
   transition: transform var(--g-duration) var(--g-ease);
@@ -6074,6 +7472,23 @@ button.g-agenda-event:hover {
 .g-sidebar[data-collapsed] .g-brand {
   flex-direction: column;
   padding: 0;
+}
+/* In the rail an attention badge stays as a dot on the item; its text stays for screen readers. */
+.g-sidebar[data-collapsed] .g-side-nav .g-nav-item {
+  position: relative;
+}
+.g-sidebar[data-collapsed] .g-side-nav-badge[data-tone='attention'] {
+  position: absolute;
+  inset-block-start: 6px;
+  inset-inline-end: 6px;
+  width: 8px;
+  min-width: 0;
+  height: 8px;
+  padding: 0;
+  overflow: hidden;
+  font-size: 0;
+  line-height: 0;
+  clip-path: none;
 }
 .g-sidebar[data-collapsed] .g-brand > .g-stack,
 .g-sidebar[data-collapsed] .g-nav-dot,
@@ -6634,6 +8049,52 @@ button.g-agenda-event:hover {
 .g-postcard-stage[data-size='large'] {
   max-height: 40rem;
 }
+/* A small handwritten note tucked under the card's lower end corner, like one left on the
+   table: it overlaps only the corner and fades out rather than covering the picture. */
+.g-postcard-note {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-end: -1.75rem;
+  width: min(40%, 13rem);
+  max-height: 30%;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, var(--g-text) 70%, transparent);
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.6rem;
+  background: color-mix(in srgb, var(--g-mark, var(--g-surface)) 6%, var(--g-surface));
+  color: color-mix(in srgb, var(--g-primary) 75%, var(--g-text));
+  box-shadow: 0 10px 24px rgba(var(--g-shadow-color), 0.18);
+  font-family: var(--g-hand-font, var(--g-font));
+  font-size: var(--g-type-body-size);
+  line-height: 1.1;
+  text-align: start;
+  rotate: 3deg;
+  transition:
+    opacity var(--g-duration) var(--g-ease),
+    translate var(--g-duration) var(--g-ease);
+}
+.g-postcard-note :is(.g-text, .g-heading) {
+  font: inherit;
+  color: inherit;
+}
+.g-postcard-note :is(.g-text, .g-heading)[data-weight='strong'] {
+  font-weight: 700;
+}
+.g-postcard-note[data-shown='false'] {
+  opacity: 0;
+  translate: 0 0.75rem;
+}
+@media (max-width: 760px) /* breakpoints.compact */ {
+  .g-postcard-note {
+    width: min(46%, 11rem);
+    padding: 0.4rem 0.55rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-postcard-note {
+    transition: none;
+  }
+}
 button.g-postcard-stage {
   cursor: pointer;
 }
@@ -6679,13 +8140,22 @@ button.g-postcard-stage:focus-visible {
 .g-postcard-card[data-orientation='portrait'] .g-postcard-back {
   rotate: 90deg;
 }
+/*
+ * A card is a physical object on the table: it keeps a hairline edge and a soft cast shadow in
+ * every preset (flat ones included), so a white card stays visible on a white page.
+ */
+.g-postcard-stage {
+  --g-postcard-shadow:
+    0 0 0 1px color-mix(in srgb, var(--g-border) 80%, transparent),
+    0 2px 4px rgba(var(--g-shadow-color), 0.14), 0 14px 32px rgba(var(--g-shadow-color), 0.18);
+}
 .g-postcard-face {
   position: absolute;
   inset: 0;
   overflow: hidden;
   border-radius: 6px;
   background: var(--g-surface);
-  box-shadow: var(--g-card-shadow);
+  box-shadow: var(--g-postcard-shadow);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
@@ -6701,7 +8171,7 @@ button.g-postcard-stage:focus-visible {
   overflow: hidden;
   border-radius: 6px;
   background: var(--g-surface);
-  box-shadow: var(--g-card-shadow);
+  box-shadow: var(--g-postcard-shadow);
 }
 .g-postcard-face > img,
 .g-postcard-face > svg {
@@ -6787,5 +8257,157 @@ button.g-postcard-stage:focus-visible {
   .g-postcard-card[data-settle],
   .g-postcard-folded[data-settle] {
     animation: none;
+  }
+}
+
+/* Phone tab bar: the app's few destinations at the bottom, within thumb reach. */
+.g-phone-nav {
+  display: none;
+}
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-app-shell[data-phone-nav] .g-phone-nav {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: var(--g-z-sticky-actions);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom));
+    border-block-start: 1px solid var(--g-line);
+    background: var(--g-surface);
+  }
+  .g-app-shell[data-phone-nav] .g-main {
+    padding-block-end: calc(5rem + env(safe-area-inset-bottom));
+  }
+  /* A form's sticky buttons sit above the tab bar, never under it. */
+  .g-app-shell[data-phone-nav] .g-form-actions {
+    bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+  /* Everything is in the bar, so the menu button goes (unless it also holds settings). */
+  .g-app-shell[data-phone-nav='only'] .g-mobile-nav > :first-child {
+    display: none;
+  }
+  .g-phone-nav-item {
+    display: grid;
+    flex: 1;
+    justify-items: center;
+    gap: 0.15rem;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.25rem 0;
+    color: var(--g-muted);
+    font-size: var(--g-type-caption-size);
+    text-decoration: none;
+  }
+  .g-phone-nav-item[aria-current='page'] {
+    color: var(--g-selection);
+    font-weight: 600;
+  }
+  .g-phone-nav-item:focus-visible {
+    outline: 2px solid var(--g-focus);
+    outline-offset: -2px;
+    border-radius: var(--g-control-radius);
+  }
+  .g-phone-nav-icon {
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  .g-phone-nav-label {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  /* The main action is a raised round button in the middle. */
+  .g-phone-nav-item[data-primary] .g-phone-nav-icon {
+    width: 3rem;
+    height: 3rem;
+    margin-block-start: -1.25rem;
+    border-radius: 50%;
+    background: var(--g-primary);
+    color: var(--g-onPrimary);
+    box-shadow: var(--g-card-shadow);
+  }
+  .g-phone-nav-item[data-primary] {
+    color: var(--g-text);
+  }
+}
+@media (forced-colors: active) {
+  .g-phone-nav-item[aria-current='page'] {
+    text-decoration: underline;
+  }
+}
+
+/* A list item led by a small picture: picture, text, actions; actions under the text on phones. */
+.g-media-row {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-card-radius);
+  background: var(--g-surface);
+}
+.g-media-row-media > * {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: calc(var(--g-radius) / 2);
+  box-shadow: var(--g-card-shadow);
+}
+.g-media-row-body {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.g-media-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-media-row {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+  }
+  .g-media-row-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+}
+
+/* Phones: chips on one row that scrolls sideways, so filters do not push the content down. */
+@media (max-width: 600px) /* breakpoints.phone */ {
+  .g-segmented[data-variant='chips'][data-phone-row] {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    padding-block: 0.25rem;
+  }
+  .g-segmented[data-variant='chips'][data-phone-row]::-webkit-scrollbar {
+    display: none;
+  }
+  .g-segmented[data-variant='chips'][data-phone-row] .g-segment {
+    flex: none;
+    scroll-snap-align: start;
+  }
+  /* Compact steppers: one row of numbers on phones; the summaries of finished steps stay for
+     assistive technology only, so the row never wraps into three. */
+  .g-stepper[data-compact='true'] {
+    flex-wrap: nowrap;
+  }
+  .g-stepper[data-compact='true'] li:not([aria-current='step']) .g-step-summary {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }

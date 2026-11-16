@@ -109,3 +109,7 @@ For any other provider, pass `socialProviders`: a list of `{ id, name, label?, i
 These callbacks receive no email/password values and bypass the email form's validation. Each is invoked directly from the user click so the application can open its provider popup synchronously. Return a promise to keep all login actions disabled until the operation completes; reject on failure to show translated retry feedback. The active provider gets the loading indicator. Application adapters own OAuth configuration, redirect/callback handling, cancellation and sessions; no provider SDK or external request is added by gregUI. Resolving a callback uses the same `successMessage` contract as email submission.
 
 The labels and email separator use `authGoogle`, `authApple` and `authOrEmail` locale messages. The workbench's provider selector demonstrates both, either, or neither provider, with simulated success/error responses. These controls are rendered in login mode unless `socialModes` lists other screens.
+
+## Code-first sign-in and the remember box
+
+`codeFirst` is for apps where the emailed code is the usual way in: start on `email-code`, and the code screen's way back reads "Sign in with a password" (`authUsePassword`) instead of "Back to sign in". `rememberChoice={false}` hides "Keep me signed in" on the login screen, for providers whose sessions always last, so the box would change nothing. Apps providing a complete `Messages` object must add `authUsePassword`.

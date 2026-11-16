@@ -1,5 +1,5 @@
 'use client';
-import { useId, type KeyboardEvent } from 'react';
+import { useEffect, useId, useRef, type KeyboardEvent } from 'react';
 import { useLocale } from '@gregui/localization';
 import { renderIcon, type IconSource } from './icons';
 import { useControllableState } from './controllable';
@@ -35,6 +35,11 @@ export interface SegmentedControlProps {
   fullWidth?: boolean;
   /** `chips`: separate rounded chips that wrap, for filters with more options. */
   variant?: 'segments' | 'chips';
+  /**
+   * With `chips`: on phones keep them on one row that scrolls sideways (with the chosen chip
+   * scrolled into view) instead of wrapping onto several rows before the content.
+   */
+  phoneRow?: boolean;
 }
 const navigationKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
 /** Single choice among a few short options, built from native radio inputs. */
@@ -52,6 +57,7 @@ export function SegmentedControl({
   size = 'medium',
   fullWidth = false,
   variant = 'segments',
+  phoneRow = false,
 }: SegmentedControlProps) {
   const id = useId();
   const { direction } = useLocale();
@@ -84,6 +90,15 @@ export function SegmentedControl({
     target.focus();
     if (target.value !== selected) select(target.value);
   };
+  // On a scrolling phone row, keep the chosen chip in sight (it may start off-screen).
+  const row = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!phoneRow) return;
+    const chip = row.current?.querySelector('input:checked')?.closest('label');
+    const box = row.current;
+    if (!chip || !box || box.scrollWidth <= box.clientWidth) return;
+    box.scrollLeft = Math.max(0, (chip as HTMLElement).offsetLeft - 16);
+  }, [phoneRow, selected]);
   return (
     <fieldset className="g-segmented-field" disabled={disabled} aria-describedby={feedback}>
       <legend className={hideLabel ? 'g-sr-only' : 'g-label'}>{label}</legend>
@@ -93,9 +108,11 @@ export function SegmentedControl({
         </p>
       )}
       <div
+        ref={row}
         className="g-segmented"
         data-size={size}
         data-variant={variant}
+        data-phone-row={variant === 'chips' && phoneRow ? true : undefined}
         data-full-width={fullWidth}
         data-invalid={error ? true : undefined}
       >
