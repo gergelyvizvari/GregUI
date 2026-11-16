@@ -1,5 +1,10 @@
 # Changelog
 
+## react 0.36.0 — 16 November 2026
+
+- `PricingCards`: `PricingPlan.action` sets a plan's button text (e.g. "Buy 12 credits"; default "Choose plan"), also used in its accessible label. `recommendedLabel` replaces the "Recommended" badge text.
+- `PricingCards` recommended plan stands out: a 2px primary border, a soft lift, a primary badge and a primary button (others stay secondary). The current plan keeps its own outline and checkmarked badge. The card carries `data-recommended="true"`. Same on phones.
+
 ## 0.35.2 — 15 November 2026
 
 - `Stepper compact` in a `PageHeader tone="brand"` block: on phones every step shows its short name under its number, not only the current one; long names are cut with an ellipsis. Wider screens are unchanged.

@@ -3543,6 +3543,12 @@ body {
   gap: 1rem;
   position: relative;
 }
+/* Recommended: primary border and a lift; the current outline (selection colour) still wins. */
+.g-pricing-card[data-recommended='true'] {
+  border: 2px solid var(--g-primary);
+  padding: calc(1.5rem - 2px + var(--g-card-border-width));
+  box-shadow: 0 14px 32px -18px rgba(var(--g-shadow-color), 0.45);
+}
 .g-pricing-card[data-current='true'] {
   outline: 3px solid var(--g-selection);
   outline-offset: -3px;

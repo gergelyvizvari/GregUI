@@ -654,6 +654,8 @@ export interface PricingPlan {
   description: string;
   features: string[];
   recommended?: boolean;
+  /** Button text for this plan, e.g. "Buy 10 credits". Defaults to the localized "Choose plan". */
+  action?: string;
 }
 export function PricingCards({
   plans,
@@ -661,6 +663,7 @@ export function PricingCards({
   onSelect,
   label,
   headingLevel = 3,
+  recommendedLabel,
 }: {
   plans: PricingPlan[];
   currentId?: string;
@@ -668,6 +671,8 @@ export function PricingCards({
   label: string;
   /** Level of each plan name heading. Defaults to 3. */
   headingLevel?: 2 | 3 | 4 | 5 | 6;
+  /** Badge text on recommended plans, e.g. "Best value". Defaults to the localized "Recommended". */
+  recommendedLabel?: string;
 }) {
   const { messages } = useLocale();
   const [target, setTarget] = useState<string | null>(null);
@@ -681,49 +686,57 @@ export function PricingCards({
   return (
     <section aria-label={label}>
       <div className="g-pattern-cards g-pricing-grid">
-        {plans.map((plan) => (
-          <article
-            key={plan.id}
-            className="g-card g-pricing-card"
-            aria-label={plan.name}
-            data-current={currentId === plan.id}
-            aria-current={currentId === plan.id ? 'true' : undefined}
-          >
-            <div className="g-plan-badges">
-              {currentId === plan.id && (
-                <Badge tone="primary">
-                  <span aria-hidden="true">✓ </span>
-                  {messages.currentPlan}
-                </Badge>
-              )}
-              {plan.recommended && <Badge>{messages.recommended}</Badge>}
-            </div>
-            <Heading level={headingLevel}>{plan.name}</Heading>
-            <Text size="large" weight="strong">
-              {plan.price}
-            </Text>
-            <Text tone="muted">{plan.description}</Text>
-            <ul className="g-feature-list">
-              {plan.features.map((feature) => (
-                <li key={feature}>{feature}</li>
-              ))}
-            </ul>
-            <div className="g-plan-action">
-              <Button
-                variant={currentId === plan.id ? 'primary' : 'secondary'}
-                disabled={currentId === plan.id || pending !== null}
-                loading={pending === plan.id}
-                aria-label={`${currentId === plan.id ? messages.currentPlan : messages.choosePlan}: ${plan.name}`}
-                onClick={() => void select(plan.id)}
-              >
-                {currentId === plan.id ? messages.currentPlan : messages.choosePlan}
-              </Button>
-              {failed && target === plan.id && (
-                <Alert tone="danger" live title={messages.workflowError} />
-              )}
-            </div>
-          </article>
-        ))}
+        {plans.map((plan) => {
+          const current = currentId === plan.id;
+          const recommended = Boolean(plan.recommended);
+          const action = current ? messages.currentPlan : (plan.action ?? messages.choosePlan);
+          return (
+            <article
+              key={plan.id}
+              className="g-card g-pricing-card"
+              aria-label={plan.name}
+              data-current={current}
+              data-recommended={recommended || undefined}
+              aria-current={current ? 'true' : undefined}
+            >
+              <div className="g-plan-badges">
+                {current && (
+                  <Badge tone="primary">
+                    <span aria-hidden="true">✓ </span>
+                    {messages.currentPlan}
+                  </Badge>
+                )}
+                {recommended && (
+                  <Badge tone="primary">{recommendedLabel ?? messages.recommended}</Badge>
+                )}
+              </div>
+              <Heading level={headingLevel}>{plan.name}</Heading>
+              <Text size="large" weight="strong">
+                {plan.price}
+              </Text>
+              <Text tone="muted">{plan.description}</Text>
+              <ul className="g-feature-list">
+                {plan.features.map((feature) => (
+                  <li key={feature}>{feature}</li>
+                ))}
+              </ul>
+              <div className="g-plan-action">
+                <Button
+                  variant={current || recommended ? 'primary' : 'secondary'}
+                  disabled={current || pending !== null}
+                  loading={pending === plan.id}
+                  aria-label={`${action}: ${plan.name}`}
+                  onClick={() => void select(plan.id)}
+                >
+                  {action}
+                </Button>
+                {failed && target === plan.id && (
+                  <Alert tone="danger" live title={messages.workflowError} />
+                )}
+              </div>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
