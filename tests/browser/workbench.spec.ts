@@ -245,6 +245,7 @@ test('all authentication screens pass accessibility and narrow reflow checks', a
     'reset-password',
     'verify-email',
     'two-factor',
+    'passwordless',
   ]) {
     await page.getByLabel('Authentication flow').selectOption(flow);
     const results = await new AxeBuilder({ page })
@@ -289,6 +290,44 @@ test('optional social login providers support configuration, failure and retry',
   expect(results.violations).toEqual([]);
   await page.screenshot({
     path: `test-results/social-auth-${testInfo.project.name}.png`,
+    fullPage: true,
+  });
+});
+
+test('passwordless sign-in sends, rejects, resends and accepts a code', async ({
+  page,
+}, testInfo) => {
+  await page.clock.install();
+  await page.goto('/');
+  await navigate(page, 'Authentication');
+  await page.getByRole('button', { name: 'Email me a code instead' }).click();
+  await expect(page.getByRole('heading', { name: 'Sign in with an email code' })).toBeVisible();
+  await page.getByLabel(/Email address/).fill('ada@example.com');
+  await page.getByRole('button', { name: 'Email me a code' }).click();
+  await page.clock.runFor(700);
+  await expect(page.getByText('Enter the code we sent to ada@example.com.')).toBeVisible();
+  const code = page.getByLabel(/Verification code/);
+  await expect(code).toBeFocused();
+  await expect(page.getByRole('button', { name: /Resend code in \d+ s/ })).toBeDisabled();
+  await code.fill('000000');
+  await page.getByRole('button', { name: 'Verify code' }).click();
+  await page.clock.runFor(700);
+  await expect(page.getByRole('alert')).toContainText('That code is not right.');
+  await page.clock.runFor(21_000);
+  await page.getByRole('button', { name: 'Resend code', exact: true }).click();
+  await page.clock.runFor(700);
+  await expect(page.getByText('A new code has been requested.')).toBeVisible();
+  const results = await new AxeBuilder({ page })
+    .include('.g-auth-layout')
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+    .analyze();
+  expect(results.violations).toEqual([]);
+  await code.fill('123456');
+  await page.getByRole('button', { name: 'Verify code' }).click();
+  await page.clock.runFor(700);
+  await expect(page.getByText('You are signed in.')).toBeVisible();
+  await page.screenshot({
+    path: `test-results/passwordless-${testInfo.project.name}.png`,
     fullPage: true,
   });
 });
@@ -667,4 +706,105 @@ test('refreshed palettes stay readable on Paper in both modes', async ({ page },
       }
     }
   }
+});
+
+test('upload list shows progress, failure, retry and focus after removal', async ({
+  page,
+}, testInfo) => {
+  await page.clock.install();
+  await page.goto('/');
+  await navigate(page, 'Components');
+  await page.getByLabel('Find a component').fill('Upload List');
+  await expect(page.getByRole('heading', { name: 'Upload List', exact: true })).toBeVisible();
+  await page.getByLabel('Demo photos').setInputFiles([
+    { name: 'beach.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('a'.repeat(3000)) },
+    { name: 'fail.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('b') },
+  ]);
+  const list = page.getByRole('group', { name: 'Demo uploads' });
+  await page.clock.runFor(1300);
+  await expect(list.getByRole('progressbar', { name: 'beach.jpg' })).toBeVisible();
+  const results = await new AxeBuilder({ page })
+    .include('.g-upload-list')
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+    .analyze();
+  expect(results.violations).toEqual([]);
+  await page.clock.runFor(4000);
+  await expect(list.getByText('1 of 2 uploaded')).toBeVisible();
+  await expect(list.getByText('The demo server rejected this file.')).toBeVisible();
+  await expect(list.getByRole('status')).toHaveText('beach.jpg uploaded.');
+  await page.getByRole('button', { name: 'Retry upload: fail.jpg' }).click();
+  await page.clock.runFor(900);
+  await expect(list.getByRole('progressbar', { name: 'fail.jpg' })).toBeVisible();
+  await page.getByRole('button', { name: 'Cancel upload: fail.jpg' }).click();
+  await page.getByRole('button', { name: 'Remove file: beach.jpg' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('button', { name: 'Retry upload: fail.jpg' })).toBeFocused();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await list.screenshot({ path: `test-results/upload-list-${testInfo.project.name}.png` });
+});
+
+test('kanban board moves cards by keyboard, menu and drag', async ({ page }, testInfo) => {
+  await page.goto('/');
+  await navigate(page, 'Components');
+  await page.getByLabel('Find a component').fill('Kanban Board');
+  const board = page.getByRole('region', { name: 'Print pipeline' });
+  const column = (name: string) => board.getByRole('region', { name });
+  await expect(column('Printing')).toContainText('2 of 2');
+  const handle = board.getByRole('button', { name: 'Move Birthday card #1042' });
+  await handle.focus();
+  await page.keyboard.press('Space');
+  await page.keyboard.press('ArrowRight');
+  await expect(board.getByRole('button', { name: 'Move Birthday card #1042' })).toBeFocused();
+  await page.keyboard.press('Space');
+  await expect(column('Printing')).toContainText('Birthday card #1042');
+  await expect(column('Printing')).toHaveAttribute('data-over-limit', 'true');
+  await expect(board.getByRole('status')).toHaveText(
+    'Birthday card #1042 moved to Printing, position 1 of 3.',
+  );
+  const results = await new AxeBuilder({ page })
+    .include('.g-kanban')
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+    .analyze();
+  expect(results.violations).toEqual([]);
+  await board.getByRole('button', { name: 'Move options: Birthday card #1035' }).focus();
+  await page.keyboard.press('Enter');
+  await page.getByRole('menuitem', { name: 'Move to Posted' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(column('Posted')).toContainText('Birthday card #1035');
+  if (testInfo.project.name !== 'mobile') {
+    await board
+      .locator('[data-card-id="j2"]')
+      .dragTo(column('Packed').getByRole('list'), { targetPosition: { x: 40, y: 8 } });
+    await expect(column('Packed')).toContainText('Thank-you card #1043');
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await board.screenshot({ path: `test-results/kanban-${testInfo.project.name}.png` });
+});
+
+test('data import maps columns, fixes a row and skips another', async ({ page }, testInfo) => {
+  await page.goto('/');
+  await navigate(page, 'Components');
+  await page.getByLabel('Find a component').fill('Data Import');
+  await expect(page.getByRole('combobox', { name: 'Full name' })).toHaveValue('name');
+  await expect(page.getByRole('combobox', { name: 'Team' })).toHaveValue('');
+  await expect(page.getByText('2 ready, 2 with problems, 0 skipped')).toBeVisible();
+  const results = await new AxeBuilder({ page })
+    .include('[aria-label="Component preview"]')
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+    .analyze();
+  expect(results.violations).toEqual([]);
+  const email = page.getByRole('textbox', { name: 'Email, row 3' });
+  await email.fill('ben@example.com');
+  await email.press('Enter');
+  await expect(page.getByText('3 ready, 1 with problems, 0 skipped')).toBeVisible();
+  await page.getByRole('radio', { name: 'Rows with problems' }).check();
+  await page.getByRole('button', { name: 'Skip all rows with problems' }).click();
+  await expect(page.getByText('3 ready, 0 with problems, 1 skipped')).toBeVisible();
+  await page.getByRole('combobox', { name: 'Full name' }).selectOption('');
+  await expect(page.getByText('Choose a column for: Name')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole('combobox', { name: 'Full name' }).selectOption('name');
+  await page.locator('.g-import-preview').screenshot({
+    path: `test-results/import-${testInfo.project.name}.png`,
+  });
 });

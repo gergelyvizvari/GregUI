@@ -1,8 +1,16 @@
 import { PostcardDemo } from './postcard-demo';
 import { BannerDemo, ToastDemo } from './feedback-demo';
 import { BreadcrumbsDemo, MenuDemo, ContextMenuDemo, SideNavDemo } from './navigation-demo';
-import { CalendarAgendaDemo, CalendarMonthDemo, DatePickerDemo } from './calendar-demo';
+import {
+  CalendarAgendaDemo,
+  CalendarMonthDemo,
+  DatePickerDemo,
+  RecurrenceFieldDemo,
+} from './calendar-demo';
 import { samplePhoto, PhotoCredit } from './sample-media';
+import { UploadListDemo } from './upload-demo';
+import { KanbanDemo } from './kanban-demo';
+import { DataImportDemo } from './import-demo';
 import { TypographyDemo, PageCompositionDemo } from './content-demo';
 import { useEffect, useState, type ReactNode } from 'react';
 import {
@@ -638,11 +646,32 @@ export function useAdvancedExamples(): CatalogEntry[] {
       <CalendarAgendaDemo />,
     ),
     entry(
+      'Recurrence Field',
+      'Forms',
+      'Once, yearly, monthly or every N days/weeks/months/years, with a lead time, a localised summary and the next date.',
+      '<RecurrenceField label="When to send" value={rule} onChange={setRule} leadLabel="Send this many days before" />',
+      <RecurrenceFieldDemo />,
+    ),
+    entry(
       'Date Range Picker',
       'Forms',
       'Native localized date controls and range feedback. Apps supply min/max dates and validate before saving.',
       '<DateRangePicker label="Reporting period" {...range} onChange={setRange} />',
       <DateRangePicker label="Reporting period" {...range} onChange={setRange} />,
+    ),
+    entry(
+      'Kanban Board',
+      'Data display',
+      'Columns of cards with counts and limits. Move cards with the keyboard (Space, arrows, Space), a move menu or drag and drop.',
+      '<KanbanBoard label="Print pipeline" columns={columns} cards={cards} onMove={(move) => setCards(moveKanbanCard(cards, move))} />',
+      <KanbanDemo />,
+    ),
+    entry(
+      'Data Import',
+      'Forms',
+      'Match file columns to fields, then review rows with per-cell problems, fix them inline or skip them. Parsing and validation stay in the app.',
+      '<ImportColumnMapping label="Match columns" columns={headers} fields={fields} value={mapping} onChange={setMapping} />\n<ImportPreview label="Rows to import" fields={fields} rows={rows} onSkipChange={skip} onValueChange={fix} />',
+      <DataImportDemo />,
     ),
     entry(
       'File Upload',
@@ -668,6 +697,13 @@ export function useAdvancedExamples(): CatalogEntry[] {
           onFiles={() => {}}
         />
       </Stack>,
+    ),
+    entry(
+      'Upload List',
+      'Forms',
+      'Per-file upload progress with cancel, retry and remove. Controlled: the app owns the transport and the list.',
+      '<UploadList label="Uploads" items={items} onCancel={cancel} onRetry={retry} onRemove={remove} />',
+      <UploadListDemo />,
     ),
     entry(
       'Action Menu',

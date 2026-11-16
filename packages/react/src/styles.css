@@ -3378,6 +3378,198 @@ body {
   height: auto;
   white-space: normal;
 }
+.g-upload-list > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.g-upload-list > .g-text {
+  display: block;
+  margin-block-end: 0.5rem;
+}
+.g-upload-list:focus {
+  outline: none;
+}
+.g-upload-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-control-radius);
+  background: var(--g-surface);
+}
+.g-upload-item[data-status='error'] {
+  border-color: var(--g-danger);
+}
+.g-upload-item-mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: var(--g-control-radius);
+  background: var(--g-background);
+  color: var(--g-muted);
+}
+.g-upload-item-mark > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.g-upload-item[data-status='complete'] .g-upload-item-mark {
+  color: var(--g-success);
+}
+.g-upload-item[data-status='error'] .g-upload-item-mark {
+  color: var(--g-danger);
+}
+.g-upload-item-body {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.g-upload-item-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.g-upload-item-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+/* Size to the container, never to the columns, so a wide board scrolls inside itself. */
+.g-kanban {
+  min-width: 0;
+  contain: inline-size;
+}
+.g-kanban-columns {
+  /* Contains absolutely positioned hidden text so it scrolls with the columns. */
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(16rem, 1fr);
+  gap: 1rem;
+  overflow-x: auto;
+  padding-block-end: 0.5rem;
+  scroll-snap-type: x proximity;
+}
+.g-kanban-column {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-card-radius);
+  background: var(--g-background);
+  scroll-snap-align: start;
+}
+.g-kanban-column[data-over-limit] {
+  border-color: var(--g-danger);
+}
+.g-kanban-column[data-drop-target] {
+  outline: 2px dashed var(--g-focus);
+  outline-offset: -2px;
+}
+.g-kanban-column-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-inline: 0.25rem;
+}
+.g-kanban-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  min-height: 4rem;
+}
+.g-kanban-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-control-radius);
+  background: var(--g-surface);
+  box-shadow: var(--g-nested-card-shadow);
+}
+.g-kanban-card[draggable='true'] {
+  cursor: grab;
+}
+.g-kanban-card-tools {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  gap: 0.125rem;
+  align-self: start;
+}
+.g-kanban-card-body {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.g-kanban-card[data-picked] {
+  outline: 2px solid var(--g-focus);
+  outline-offset: 2px;
+}
+.g-kanban-card[data-dragging] {
+  opacity: 0.5;
+}
+.g-kanban-card[data-drop-before]::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: -0.375rem;
+  border-block-start: 2px solid var(--g-focus);
+}
+.g-kanban-empty {
+  display: grid;
+  place-items: center;
+  min-height: 4rem;
+  border: 1px dashed var(--g-line);
+  border-radius: var(--g-control-radius);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .g-kanban-card {
+    transition: box-shadow 120ms ease;
+  }
+}
+.g-import-choice {
+  display: grid;
+  gap: 0.375rem;
+  min-width: 12rem;
+}
+.g-import-choice > .g-error {
+  margin: 0;
+}
+.g-import-preview td,
+.g-import-preview th[scope='row'] {
+  vertical-align: top;
+}
+.g-import-preview td[data-invalid] {
+  background: color-mix(in srgb, var(--g-danger) 8%, transparent);
+}
+.g-import-preview td .g-input {
+  min-width: 9rem;
+}
+.g-import-issue {
+  display: block;
+  margin-block-start: 0.25rem;
+  color: var(--g-danger);
+  font-size: var(--g-type-small-size);
+}
+.g-import-preview tr[data-skipped] > :not(:last-child) {
+  color: var(--g-muted);
+  text-decoration: line-through;
+}
 .g-list-detail {
   display: grid;
   grid-template-columns: minmax(10rem, 1fr) minmax(0, 2fr);
@@ -6269,6 +6461,45 @@ body {
   column-gap: 1rem;
   row-gap: var(--g-field-gap);
   max-width: 34rem;
+}
+.g-recurrence-field {
+  min-width: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.g-recurrence-field > legend {
+  padding: 0;
+  margin-block-end: 0.75rem;
+  font-weight: 650;
+}
+.g-recurrence-field > .g-hint {
+  margin-block: 0 0.75rem;
+}
+.g-recurrence-field > .g-error {
+  margin-block: 0.5rem 0;
+}
+.g-recurrence-grid {
+  display: grid;
+  row-gap: var(--g-field-gap);
+  max-width: 34rem;
+}
+.g-recurrence-every {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  column-gap: 1rem;
+  row-gap: var(--g-field-gap);
+}
+.g-recurrence-summary {
+  display: grid;
+  gap: 0.25rem;
+  margin-block-start: 1rem;
+  padding: 0.75rem 1rem;
+  max-width: 34rem;
+  box-sizing: border-box;
+  border-radius: var(--g-control-radius);
+  background: var(--g-background);
+  border: 1px solid var(--g-line);
 }
 .g-address-grid {
   display: grid;

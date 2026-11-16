@@ -292,9 +292,12 @@ export function FileUpload({
   directory = false,
   hint,
   disabled = false,
+  showSelection = true,
 }: {
   label: string;
   onFiles: (files: File[]) => void;
+  /** Lists the chosen names with a clear button. Turn off when an `UploadList` shows the files. */
+  showSelection?: boolean;
   accept?: string;
   multiple?: boolean;
   maxBytes?: number;
@@ -361,7 +364,7 @@ export function FileUpload({
             />
           )}
         </Field>
-        {!!names.length && (
+        {showSelection && !!names.length && (
           <Stack gap={2}>
             <Text>{names.join(', ')}</Text>
             <Button

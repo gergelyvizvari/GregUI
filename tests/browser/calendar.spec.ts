@@ -93,3 +93,30 @@ test('calendar agenda lists yearly occasions, moves by arrow keys and adds a rep
   await expect(added).toHaveAccessibleDescription(/today/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+test('recurrence field switches rules and stays accessible', async ({ page }, testInfo) => {
+  for (const dark of [false, true]) {
+    await page.goto('/');
+    await page.getByRole('switch', { name: 'Dark mode' }).setChecked(dark);
+    if (await page.getByRole('button', { name: 'Open navigation' }).isVisible())
+      await page.getByRole('button', { name: 'Open navigation' }).click();
+    await page.getByRole('button', { name: 'Components', exact: true }).first().click();
+    await page.getByLabel('Find a component').fill('Recurrence Field');
+    const field = page.getByRole('group', { name: 'When to send' });
+    await expect(field.getByText('Every year on 12 March, 7 days before')).toBeVisible();
+    await field.getByRole('radio', { name: 'Custom' }).click();
+    await field.getByLabel('Unit').selectOption('month');
+    await field.getByLabel('Every').fill('3');
+    await field.getByLabel('Every').blur();
+    await expect(
+      field.getByText('Every 3 months, from 12 March 1990, 7 days before'),
+    ).toBeVisible();
+    expect((await axe(page)).violations, dark ? 'dark' : 'light').toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await field.screenshot({
+      path: `test-results/recurrence-${testInfo.project.name}-${dark ? 'dark' : 'light'}.png`,
+    });
+  }
+});

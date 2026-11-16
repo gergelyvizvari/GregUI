@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+- `PasswordlessSignIn`: the passwordless email-code journey in one component: email, code entry naming the address, resend with a countdown, optional expiry (`codeLifetime` or `expiresAt` from `onRequestCode`), wrong-code and failure retry, "Use a different email", and a success step.
+- `AuthForm`: `socialProviders` for any social or single sign-on provider (`{ id, name, label?, icon?, onSignIn }`) next to `onGoogleSignIn`/`onAppleSignIn`, and `socialModes` to show them on registration too. Provider callbacks may return `{ error }`. A provider success now shows `successMessage` when set, as the docs already described.
+- New English and Hungarian messages: `authOrRegisterEmail`, `authContinueWith`, `authCodeSentTo`, `authChangeEmail`, `authResendIn`, `authCodeValidFor`, `authCodeExpired`, `authSignedIn`.
+- `UploadList`: per-file upload rows with size, status, progress (or an indeterminate bar), the application's error text, and Cancel, Retry and Remove actions. Controlled by `items`; the application owns the transport. Duplicate names get distinct accessible names, focus moves sensibly after removal, and finished or failed files are announced once.
+- `FileUpload`: `showSelection={false}` hides the chosen-names line and clear button when an `UploadList` shows the files.
+- New English and Hungarian `upload*` messages.
+- `RecurrenceField`: once, yearly, monthly or every N days/weeks/months/years, with a lead time in days, a localised summary ("Every year on 12 March, 7 days before") and the next date.
+- `recurrenceDates`, `nextRecurrence` and `recurrenceSummary` helpers for the same rule, built on `yearlyDate`/`addMonths`.
+- New English and Hungarian `recur*` messages.
+- `KanbanBoard`: columns of cards with counts and work-in-progress limits. Cards move with the keyboard (Space to pick up, arrows, Space to drop, Escape to cancel, announced at each step), a per-card move menu, or native drag and drop; `canMove` keeps cards out of columns. Controlled through `onMove`; `moveKanbanCard` applies a move to an array.
+- New English and Hungarian `kanban*` messages.
+- `ImportColumnMapping`: match file columns to fields with example values, duplicate and missing-field feedback.
+- `ImportPreview`: the mapped rows before import, with ready/problem/skipped counts, a problem filter, per-cell messages, inline fixes, per-row and bulk skipping, and paging.
+- `suggestImportMapping`, `applyImportMapping` and `missingImportFields` helpers. Parsing and validation stay in the application.
+- New English and Hungarian `import*` messages.
+
 ## react 0.36.1 — 16 November 2026
 
 - `PricingCards` layout: the cards share their rows (CSS subgrid), so a plan name that wraps keeps every price, feature list and button level with its neighbours. Two to four plans sit side by side when they all fit their container and otherwise stack; three plans never break into two plus a lone one.

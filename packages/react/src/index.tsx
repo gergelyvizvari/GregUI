@@ -170,7 +170,34 @@ export {
   type WizardStep,
 } from './workflows';
 export * from './data';
+export {
+  ImportColumnMapping,
+  ImportPreview,
+  applyImportMapping,
+  missingImportFields,
+  suggestImportMapping,
+  type ImportColumnMappingProps,
+  type ImportField,
+  type ImportMapping,
+  type ImportPreviewProps,
+  type ImportPreviewRow,
+  type ImportRowIssue,
+} from './data-import';
+export {
+  KanbanBoard,
+  moveKanbanCard,
+  type KanbanBoardProps,
+  type KanbanCard,
+  type KanbanColumn,
+  type KanbanMove,
+} from './kanban';
 export * from './advanced-inputs';
+export {
+  UploadList,
+  type UploadItem,
+  type UploadListProps,
+  type UploadStatus,
+} from './upload-list';
 export * from './patterns';
 export { ImageRegion, type ImageRegionValue } from './image-region';
 export { FieldEditorItem, TagInput } from './field-editor';
@@ -228,3 +255,14 @@ export {
   type DatePickerProps,
 } from './calendar';
 export { CalendarAgenda, type CalendarAgendaProps } from './calendar-agenda';
+export {
+  RecurrenceField,
+  recurrenceDates,
+  recurrenceSummary,
+  nextRecurrence,
+  type RecurrenceFieldProps,
+  type RecurrenceFrequency,
+  type RecurrenceOccurrence,
+  type RecurrenceUnit,
+  type RecurrenceValue,
+} from './recurrence';
